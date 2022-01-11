@@ -26,6 +26,7 @@ void MiniDSP::ParseHIDData(HID *hid __attribute__ ((unused)), bool is_rpt_id __a
         constexpr uint8_t StatusInputCommand[] = {0x05, 0xFF, 0xDA};
 
         // Only care about valid data for the MiniDSP 2x4HD.
+        Serial1.println("ParseHIDData...");
         if(HIDUniversal::VID != MINIDSP_VID || HIDUniversal::PID != MINIDSP_PID || len <= 4 || buf == nullptr)
                 return;
 

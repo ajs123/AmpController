@@ -50,7 +50,7 @@ void DisplaySetup() {
 }
 
 void OnMiniDSPConnected() {
-  //Serial1.println("MiniDSP connected");
+  Serial1.println("MiniDSP connected");
   displog.println("MiniDSP connected.");
 }
 
@@ -60,9 +60,12 @@ void OnVolumeChange(uint8_t volume) {
 }
 
 void OnMutedChange(bool isMuted) {
-  //Serial1.println("Muted status: " + String(isMuted ? "muted" : "unmuted"));
+  Serial1.println("Muted status: " + String(isMuted ? "muted" : "unmuted"));
   displog.println(String(isMuted ? "Muted" : "Unmuted"));
 }
+#if defined(ARDUINO_SAMD_ZERO) && defined(SERIAL_PORT_USBVIRTUAL)
+#define Serial SERIAL_PORT_USBVIRTUAL
+#endif
 
 void setup() {
   DisplaySetup();
@@ -86,5 +89,10 @@ void setup() {
 }
 
 void loop() {
+  //ourMiniDSP.;
+  //float vol = ourMiniDSP.getVolumeDB();
   thisUSB.Task();
+  if (ourMiniDSP.connected()) displog.println("Connected"); else displog.println("Not connected");
+  //displog.printf("Vol %f\r\n", vol);
+  delay(1000);
 }
