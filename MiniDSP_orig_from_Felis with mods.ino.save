@@ -5,6 +5,7 @@
 #include <Arduino.h>
 //#include <Usb.h>
 #include "MiniDSP.h"
+//#include "PSBuzz.h"
 #include <U8g2lib.h>
 
 #ifdef U8X8_HAVE_HW_SPI
@@ -20,11 +21,9 @@
 //#endif
 //#include <SPI.h>
 
-// **TODO** Needs re-definition of Serial for debug output (and/or using the OLED display)
-
 //ORIG USB Usb;
 USBHost thisUSB;
-MiniDSP ourMiniDSP(&thisUSB);
+//PSBuzz ourMiniDSP(&thisUSB); //MiniDSP ourMiniDSP(&thisUSB);
 
 // Display stuff
 #define LOG_FONT u8g2_font_5x7_tr //u8g2_font_7x14_tf
@@ -48,7 +47,7 @@ void DisplaySetup() {
   displog.println("Startup");
   //display.drawLog(0, 23, displog);			// draw the log content on the display
 }
-
+/* 
 void OnMiniDSPConnected() {
   Serial1.println("MiniDSP connected");
   displog.println("MiniDSP connected.");
@@ -62,14 +61,20 @@ void OnVolumeChange(uint8_t volume) {
 void OnMutedChange(bool isMuted) {
   Serial1.println("Muted status: " + String(isMuted ? "muted" : "unmuted"));
   displog.println(String(isMuted ? "Muted" : "Unmuted"));
-}
+} */
 #if defined(ARDUINO_SAMD_ZERO) && defined(SERIAL_PORT_USBVIRTUAL)
 #define Serial SERIAL_PORT_USBVIRTUAL
 #endif
 
+const uint8_t cmd[] = {0x05, 0x05, 0xFF, 0xDA, 0x02, 0xE5};
+uint8_t cbuf[64];
+
+
 void setup() {
   DisplaySetup();
+  Serial.begin(115200);
   Serial1.begin(115200);
+  //while(!Serial) delay(10);
 #if !defined(__MIPSEL__)
   while(!Serial1); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
     displog.println("UART is also ready.");
@@ -79,20 +84,65 @@ void setup() {
     displog.println("OSC did not start");
     while(1); // Halt
   }
+  delay(200);
   Serial1.println(F("\r\nMiniDSP 2x4HD Library Started"));
   displog.println(F("MiniDSP 2x4HD Library Started"));
 
   // Register callbacks.
-  ourMiniDSP.attachOnInit(&OnMiniDSPConnected);
-  ourMiniDSP.attachOnVolumeChange(&OnVolumeChange);
-  ourMiniDSP.attachOnMutedChange(&OnMutedChange);
+  //ourMiniDSP.attachOnInit(&OnMiniDSPConnected);
+  //ourMiniDSP.attachOnVolumeChange(&OnVolumeChange);
+  //ourMiniDSP.attachOnMutedChange(&OnMutedChange);
+
+  // Prep arrays
+  memset(&cbuf, 0xFF, sizeof(cbuf)); // Pad with 0xFF
+  memcpy(&cbuf, &cmd, 6);
+
+  //Init??
+  delay(1000);
+  thisUSB.Task(); // Do we need this?
+  //EpInfo * pEp = thisUSB.getEpInfoEntry(0, 0);
+  //Serial1.printf("epAddr is %X\r\n", pEp->epAddr);
+  //ourMiniDSP.Init(0, 0, false);
 }
 
+void showdev(UsbDeviceDefinition* pdev) {
+  Serial1.println("Device...");
+  Serial1.printf("address %X", pdev->address);
+  Serial1.printf("epcount %d", pdev->epcount);
+}
+//UsbDeviceHandleFunc* shofun;
+//showfun = &showdev;
+
 void loop() {
-  //ourMiniDSP.;
-  //float vol = ourMiniDSP.getVolumeDB();
-  thisUSB.Task();
+
+  uint8_t rbuf[65];
+  uint32_t rcode;
+
+  //Find out what devices are present
+  //thisUSB.Task();
+  //UsbDeviceDefinition* pdev;
+  //UsbDeviceHandleFunc(pdev);
+  //thisUSB.ForEachUsbDevice(&showdev);
+
+  Serial1.println("About to transfer");
+  rcode = thisUSB.outTransfer(1, 0, sizeof(cbuf), cbuf);
+  Serial1.printf("rcode %X. \r\n", rcode);
+  /* 
   if (ourMiniDSP.connected()) displog.println("Connected"); else displog.println("Not connected");
-  //displog.printf("Vol %f\r\n", vol);
+  if (thisUSB.getUsbTaskState() == USB_STATE_RUNNING) Serial1.println("USB running");
+  if (ourMiniDSP.connected()) Serial1.println("MiniDSP connected!"); */
+
+  uint8_t* nbytesptr;
+  Serial1.println("About to call Task()");
+  thisUSB.Task();
+  Serial1.println("About to ask for input");
+  rcode = thisUSB.inTransfer(1, 0, nbytesptr, rbuf);
+  Serial1.printf("rcode %X\r\n", rcode);
+  Serial1.printf("Resp: ");
+  for (byte i = 0; i < 6; i++) {
+    Serial1.printf("%0X ", rbuf[i]);
+  }
+  Serial1.println("\n\r");
+  
   delay(1000);
 }

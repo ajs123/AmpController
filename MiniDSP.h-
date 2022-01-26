@@ -25,6 +25,7 @@
 
 #define MINIDSP_VID 0x2752 // MiniDSP
 #define MINIDSP_PID 0x0011 // MiniDSP 2x4HD
+//#define DEBUG_USB_HOST // is this a functional place for this?
 
 /**
  * Arduino MiniDSP 2x4HD USB Host Driver by Dennis Frett.
@@ -43,7 +44,8 @@ public:
          * Constructor for the MiniDSP class.
          * @param  p   Pointer to the USB class instance.
          */
-        //ORIG MiniDSP(Usb *p) : HIDUniversal(p) {
+        //In the Adafruit core version, HIDUniversal takes USBHost *
+        //ORIGINAL MiniDSP(Usb *p) : HIDUniversal(p) { 
         MiniDSP(USBHost *p) : HIDUniversal(p) {
         };
 
@@ -119,7 +121,8 @@ protected:
          * @param len       The length of the incoming data.
          * @param buf       Pointer to the data buffer.
          */
-        //ORIGvoid ParseHIDData(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf);
+        //In the Adafruit core version, the first argument to ParseHIDData is HID *
+        //ParseHIDData(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf);
         void ParseHIDData(HID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf);
 
         /**
@@ -142,6 +145,7 @@ protected:
          * driver.
          */
         virtual bool VIDPIDOK(uint16_t vid, uint16_t pid) {
+                Serial1.printf("Minidsp VIDPIDOK called with %x, %x", vid, pid);
                 return vid == MINIDSP_VID && pid == MINIDSP_PID;
         };
         /**@}*/

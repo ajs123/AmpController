@@ -1,0 +1,8 @@
+{
+    "C_Cpp.errorSquiggles": "Enabled",
+    "files.associations": {
+        "*.ino": "cpp",
+        "samd21_host.h": "c",
+        "cmath": "cpp"
+    }
+}
