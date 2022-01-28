@@ -25,42 +25,26 @@
         char volString[8];
         uint8_t vsWidth;
 
-#define VOL_DB_RIGHT 98
-#define DB_LEFT 100
-#define VOL_BOTTOM 50
-
-        // NEED TO CLEAR THE FIELD, or find font settings to properly overwrite empty areas
-        // setFontMode(/*isTransparent*/ 0); when initializing
-        // find the width of " " when initializing
-        // left-pad strings with leading spaces to get just past x=0 
-        //      (it appears that setCursor allows values < 0)
-
         if (muteState)
         {
+            // display is -MUTE-
+            displayText("Mute", MUTE_FONT, volumeArea, true);
+            displayText(" ", DB_FONT, volLabArea, true);
         }
         else if (dBDisplay)
         {
             // display is -xxx.x dB with dB half-sized at baseline
             snprintf(volString, 7, "%3.1f", volumeState);
-            display->setFont(VOL_DB_FONT);
-            vsWidth = display->getStrWidth(volString);
-            //display->setCursor(VOL_DB_RIGHT - vsWidth, VOL_BOTTOM);
-            //display->print(volString);
             displayText(volString, VOL_DB_FONT, volumeArea, true);
             displayText("dB", DB_FONT, volLabArea, true);
-            //display->setFont(DB_FONT);
-            //display->print("dB");
         }
         else
         {
             // display is xxx %
-            snprintf(volString, 3, "%u", (volumeState - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME));
-            display->setFont(VOL_PCT_FONT);
-            vsWidth = display->getStrWidth(volString);
-            display->setCursor(VOL_DB_RIGHT - vsWidth, VOL_BOTTOM);
-            display->print(volString);
-            display->setFont(PCT_FONT);
-            display->print("%");
+            uint8_t volPct = (volumeState - MIN_VOLUME) / (MAX_VOLUME - MIN_VOLUME) * 100;
+            snprintf(volString, 7, "%3u", volPct);
+            displayText(volString, VOL_PCT_FONT, volumeArea, true);
+            displayText("%", PCT_FONT, volLabArea, true);
         }
         // Call displayUpdate to refresh, set to full brightness, and reset the timer
         displayUpdate();
@@ -72,10 +56,17 @@
         // Call displayUpdate to refresh, set to full brightness, and reset the timer
     }
 
-    void AmpDisplay::drawInput()
+    void AmpDisplay::drawSource()
     {
-        // Write the new source indicator to the display area
-        // Call displayUpdate
+        switch (sourceState)
+        {
+            case Analog:
+                displayText("ANALOG", SOURCE_FONT, sourceArea, true);
+                break;
+            case Toslink:
+                displayText("DIGITAL", SOURCE_FONT, sourceArea, true);
+        }
+        displayUpdate();
     }
 
     void AmpDisplay::displayUpdate()
@@ -85,7 +76,7 @@
         // Set to full brightness
         display->setContrast(CONTRAST_FULL);
         // Reset the timer
-        dimTimer = millis() + BRIGHT_TIME;
+        //dimTimer = millis() + BRIGHT_TIME;
     }
 
     void AmpDisplay::volume(float vol)
@@ -101,7 +92,15 @@
 
     void AmpDisplay::displayMessage(const char * message) {
     displayText(message, MSG_FONT, messageArea, true);
-    display->updateDisplay();
+    display->updateDisplay();   // Calling this directly avoids restoring full contrast
+    }
+
+    void AmpDisplay::dim() {
+        display->setContrast(CONTRAST_DIM);
+    }
+
+    void AmpDisplay::wakeup() {
+        display->setContrast(CONTRAST_FULL);
     }
 
     void AmpDisplay::volumeMode(bool dB)
@@ -122,14 +121,12 @@
         drawVolume();
     }
 
-   void AmpDisplay::mute()
+   void AmpDisplay::mute(bool isMuted)
     {
-        // If changed, call drawMute and call displayUpdate
-        // Set mute to true
-        if (!muteState)
+        if (muteState != isMuted)
         {
-            muteState = true;
-            drawVolume();
+            muteState = isMuted ? 1 : 0;
+            drawVolume();           // Presently, mute is part of the volume display
         }
     }
 
@@ -139,11 +136,15 @@
         // If changed and displaying %, call volume
     }
 
-    void AmpDisplay::setSource(uint8_t source)
+    void AmpDisplay::source(source_t source)
     {
         // Ignore if not 0 or 1
-        // Save source
-        // If changed, call displaySource and updateDisplay
+        if ((uint8_t) source > 1) return;
+        if (sourceState != source)
+        {
+            sourceState = source;
+            drawSource();
+        }
     }
 
     void AmpDisplay::displayText(const char *text, const uint8_t *font, areaSpec_t area, const bool erase)
@@ -151,7 +152,7 @@
         if (erase)
         {
             display->setDrawColor(0);
-            display->drawBox(area.XL, area.YT, area.XR, area.YB);
+            display->drawBox(area.XL, area.YT, area.XR - area.XL, area.YB - area.YT);
         }
         display->setDrawColor(1);
         display->setFont(font);

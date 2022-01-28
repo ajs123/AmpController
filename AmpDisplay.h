@@ -9,7 +9,7 @@
 // Display settings of most interest to the user
 #define BRIGHT_TIME (10 * 1000) // 10 seconds
 #define CONTRAST_FULL 128
-#define CONTRAST_DIM 32
+#define CONTRAST_DIM 0
 
 // Options
 #define DBDISPLAY true
@@ -23,20 +23,45 @@
 #define PCT_FONT        u8g2_font_helvR18_tr
 #define VOL_DB_FONT     u8g2_font_helvR24_tr
 #define DB_FONT         u8g2_font_helvR14_tf
+#define MUTE_FONT       u8g2_font_helvR18_tr
 #define MSG_FONT        u8g2_font_helvR08_tf
+#define SOURCE_FONT     u8g2_font_helvR12_tf
 
 // Display zones
 struct areaSpec_t {
-  uint8_t XL;
+  uint8_t XL;   // X left and right
   uint8_t XR;
-  uint8_t YT;
+  uint8_t YT;   // Y top and bottom (top of screen is 0)
   uint8_t YB;
-  bool rJust;
+  bool rJust;   // Right justify? - This could be an enum for left, right, center...
 } ;
 
-constexpr areaSpec_t messageArea = {0, 127, 40, 63, false};
-constexpr areaSpec_t volumeArea = {0, 100, 15, 39, true};
-constexpr areaSpec_t volLabArea = {101, 127, 15, 39, false};
+constexpr areaSpec_t sourceArea = {0, 127, 0, 20, false};
+constexpr areaSpec_t messageArea = {0, 127, 50, 63, false};
+constexpr areaSpec_t volumeArea = {0, 100, 22, 48, true};
+constexpr areaSpec_t volLabArea = {101, 127, 22, 48, false};
+
+// Input icons
+#define icons_binary_width 32
+#define icons_binary_height 32
+static unsigned char icons_binary[] = {
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   0x00, 0x00, 0x00, 0x00, 0x70, 0x30, 0x70, 0x30, 0xfc, 0x70, 0xfc, 0x70,
+   0xfc, 0x71, 0xfc, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71,
+   0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0xce, 0x71, 0xce, 0x71,
+   0xfc, 0x71, 0xfc, 0x71, 0xf8, 0x70, 0xf8, 0x70, 0x30, 0x20, 0x30, 0x20,
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x80, 0x81, 0x21,
+   0xf8, 0xe0, 0x87, 0x71, 0xfc, 0xe1, 0x87, 0x71, 0xce, 0x71, 0x8e, 0x71,
+   0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71,
+   0x8e, 0x71, 0x8e, 0x71, 0xfc, 0xf1, 0x8f, 0x71, 0xfc, 0xe0, 0x87, 0x71,
+   0x70, 0xc0, 0x83, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+// Inputs
+enum source_t { 
+    Analog = 0,
+    Toslink = 1,
+    Unset = 3};
 
 class AmpDisplay
 {
@@ -48,9 +73,9 @@ protected:
     bool dBDisplay = DBDISPLAY;      // Show dB (true) or %
 
     // State - supports updates only when necessary
-    uint8_t muteState;          // Muted? 0 = no; 1 = yes; 3 = undetermined
-    float volumeState;          // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
-    uint8_t sourceState;        // Current source. 0 = analog, 1 = toslink, 3 = undetermined
+    uint8_t muteState = 3;              // Muted? 0 = no; 1 = yes; 3 = undetermined
+    float volumeState = -129;           // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
+    source_t sourceState = Unset;       // Current source. 
     uint32_t dimTimer;
 
 public:
@@ -61,11 +86,11 @@ public:
         display = u8g2;
     }
 
-    AmpDisplay(U8G2 * u8g2, float vol, bool mute, uint8_t source, bool dB)
+    AmpDisplay(U8G2 * u8g2, float vol, bool mute, source_t input, bool dB)
     {
         display = u8g2;
         dBDisplay = dB;
-        sourceState = source;
+        sourceState = input;
         muteState = mute;
         volumeState = vol;
     }
@@ -80,15 +105,14 @@ public:
 
     // Display mute
     // This sets the mute state and as needed updates and wakes the display
-    // Note: There is no unmute() or mute(false) because volume() does this
-    void mute();
+    void mute(bool isMuted);
+
+    // Display source - 0 = analog, 1 = toslink
+    // This sets the source state and as needed updates and wakes the display
+    void source(source_t thesource);
 
     // Set max volume for % mode
     void setMaxVolume(float max);
-
-    // Set source - 0 = analog, 1 = toslink
-    // This sets the source state and as needed updates and wakes the display
-    void setSource(uint8_t source);
 
     // See if anything needs to be done (dim, return to default, etc.)
     void task();
@@ -100,6 +124,12 @@ public:
     // @brief Display a text string in the message area
     void displayMessage(const char * message);
 
+    // @brief Dim the display
+    void dim();
+
+    // @brief Wake up the display
+    void wakeup();
+
 private:
 
     // @brief Display a text string in a specified area
@@ -109,12 +139,9 @@ private:
     void drawVolume();
 
     // Draw the input indicator
-    void drawInput();
+    void drawSource();
 
     // Update the display
     void displayUpdate();
-
-    // Padded, right-justified string for overwriting of a text field
-    //void snRJust(const char * string, char * padded, const uint8_t len, const uint8_t fieldWidth, const uint8_t spaceWidth);
 
 };
