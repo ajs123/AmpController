@@ -12,7 +12,8 @@
 #define CONTRAST_DIM 0
 
 // Options
-#define DBDISPLAY true
+#define DBDISPLAY true  // Display volume in dB (instead of %). Potentially a live option.
+#define TRANSIENTVOLUME // Display volume only transient, when changed
 
 // Display settings relating to layout and other detail
 #define MAX_VOLUME 0 // These are the max and min in dB that can be set in the minidsp
@@ -36,10 +37,12 @@ struct areaSpec_t {
   bool rJust;   // Right justify? - This could be an enum for left, right, center...
 } ;
 
+// Text areas {XLeft, XRight, YTop, YBottom, rightJustify}
 constexpr areaSpec_t sourceArea = {0, 127, 0, 15, false};
 constexpr areaSpec_t messageArea = {0, 127, 50, 63, false};
 constexpr areaSpec_t volumeArea = {0, 100, 22, 48, true};
-constexpr areaSpec_t volLabArea = {101, 127, 24, 50, false};
+constexpr areaSpec_t volLabArea = {101, 127, 22, 48, false};
+constexpr areaSpec_t wholeVolumeArea = {0, 127, 22, 48, false};
 
 // Input icons
 #define icons_binary_width 32
@@ -77,6 +80,7 @@ protected:
     float volumeState = -129;           // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
     source_t sourceState = Unset;       // Current source. 
     uint32_t dimTimer;
+    bool volumeShown = false;           // Enables selective re-draw of volume in display wakeup 
 
 public:
 
@@ -95,29 +99,30 @@ public:
         volumeState = vol;
     }
     
-    // Display volume, in % or dB.
+    // @brief Display volume, in % or dB.
     // This updates the volume state and as needed updates and wakes the display
     void volume(float vol);
 
-    // Display mode - sets volume display for % or dB
+    // @brief Display mode - sets volume display for % or dB
     void volumeMode(bool dB);
     void volumeMode(); // toggles dB/% mode
 
-    // Display mute
+    // @brief Display mute
     // This sets the mute state and as needed updates and wakes the display
     void mute(bool isMuted);
 
-    // Display source - 0 = analog, 1 = toslink
+    // @brief Display source - 0 = analog, 1 = toslink
     // This sets the source state and as needed updates and wakes the display
     void source(source_t thesource);
 
-    // Set max volume for % mode
+    // @brief Set max volume for % mode
     void setMaxVolume(float max);
 
-    // See if anything needs to be done (dim, return to default, etc.)
+    // @brief See if anything needs to be done (dim, return to default, etc.)
+    // NOT IMPLEMENTED - CURRENTLY, THINGS LIKE DIMMING NEED TO BE DONE BY THE APPLICATION
     void task();
 
-    // Draw the display background
+    // @brief Draw the display background
     // Draws any dividers, etc. that persist
     void drawFrame();
 
@@ -139,8 +144,12 @@ private:
     // @brief Display a text string in a specified area
     void displayText(const char * text, const uint8_t * font,  areaSpec_t area, const bool erase);
 
-    // Draw the volume indicator (including mute)
+    // @brief Draw the volume indicator (including mute)
+    // erase causes the field to be erased instead of redrawn
     void drawVolume();
+
+    // @brief Erease the volume indicator
+    void eraseVolume();
 
     // Draw the input indicator
     void drawSource();

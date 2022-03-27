@@ -47,9 +47,26 @@
             displayText("%", PCT_FONT, volLabArea, true);
         }
         // Call displayUpdate to refresh, set to full brightness, and reset the timer
-        displayUpdate();
+        //displayUpdate();
+
+        // Update the display
+        display->updateDisplay();
+
+        #ifdef TRANSIENTVOLUME
+        volumeShown = true;
+        #endif
     }
 
+    void AmpDisplay::eraseVolume()
+    {
+        if (muteState) return;
+        // To keep any details in displayText, use it with a blank string to clear
+        displayText("", VOL_DB_FONT, wholeVolumeArea, true);  
+        volumeShown = false;
+        display->updateDisplay();  // Just redraw (no)
+    }
+
+    // Moved to drawVolume
     void drawMute()
     {
         // Write MUTE or its glyph to the volume display area
@@ -66,18 +83,29 @@
             case Toslink:
                 displayText("DIGITAL", SOURCE_FONT, sourceArea, true);
         }
-        displayUpdate();
+        display->updateDisplay();
     }
 
-    void AmpDisplay::displayUpdate()
+    /* void AmpDisplay::displayUpdate()
     {
-        // Write the buffer to the display
+    #ifdef TRANSIENTVOLUME
+        // Re-draw the volume if necessary
+        if (!volumeShown) 
+        {
+            drawVolume(); // Includes a call to updateDisplay
+        }
+        // Otherwise, just write the buffer to the display
+        else
+        {
+            display->updateDisplay();
+        }
+    #else
+         // Write the buffer to the display
         display->updateDisplay();
+    #endif
         // Set to full brightness
         display->setContrast(CONTRAST_FULL);
-        // Reset the timer
-        //dimTimer = millis() + BRIGHT_TIME;
-    }
+    } */
 
     void AmpDisplay::volume(float vol)
     {
@@ -87,9 +115,12 @@
             volumeState = vol;
             drawVolume();
         }
+        wakeup();
     }
 
 
+    // @brief Displays a message in the message area
+    // Does not wake up the display from a dimmed state
     void AmpDisplay::displayMessage(const char * message) {
     displayText(message, MSG_FONT, messageArea, true);
     display->updateDisplay();   // Calling this directly avoids restoring full contrast
@@ -97,9 +128,15 @@
 
     void AmpDisplay::dim() {
         display->setContrast(CONTRAST_DIM);
+    #ifdef TRANSIENTVOLUME
+        eraseVolume();
+    #endif
     }
 
     void AmpDisplay::wakeup() {
+    #ifdef TRANSIENTVOLUME
+        if (!volumeShown) drawVolume();
+    #endif
         display->setContrast(CONTRAST_FULL);
     }
 
@@ -128,6 +165,7 @@
             muteState = isMuted ? 1 : 0;
             drawVolume();           // Presently, mute is part of the volume display
         }
+        wakeup();
     }
 
     void AmpDisplay::setMaxVolume(float max)
@@ -145,6 +183,7 @@
             sourceState = source;
             drawSource();
         }
+        wakeup();
     }
 
     void AmpDisplay::displayText(const char *text, const uint8_t *font, areaSpec_t area, const bool erase)
@@ -154,6 +193,9 @@
             display->setDrawColor(0);
             display->drawBox(area.XL, area.YT, area.XR - area.XL, area.YB - area.YT);
         }
+
+        if (!text[0]) return;
+
         display->setDrawColor(1);
         display->setFont(font);
         if (area.rJust)
@@ -189,7 +231,7 @@
         display->setDrawColor(1);
         display->drawBox(leftAreaXR - leftWidth, area.YT + 2, leftWidth, area.YB - area.YT - 2);
         display->drawBox(rightAreaXL, area.YT + 2, rightWidth, area.YB - area.YT - 2);
-        display->updateDisplay();
+        display->updateDisplay();  // Re-draw only, without full refresh and wakeup
         //char bufStr[25];
         //snprintf(bufStr, 25, "L %6d, R%6d", leftWidth, rightWidth);
         //displayMessage(bufStr);

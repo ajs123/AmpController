@@ -95,6 +95,7 @@ void OnMiniDSPConnected() {
 
 void OnVolumeChange(uint8_t volume) {
   AmpDisp.volume(-volume/2.0);
+  if (volume == 0) ourMiniDSP.setVolume((uint8_t) 1); // Limit to -0.5 dB 
   scheduleDim();
   //Serial.println("Volume: " + String(volume));
   //Serial.flush();
@@ -233,10 +234,9 @@ void loop() {
     }
     else
     {
-      ourMiniDSP.RequestLevels();
+      ourMiniDSP.RequestOutputLevels();
     }
     levelsLast = !levelsLast;
-    //ourMiniDSP.RequestLevels();
     lastTime = currentTime;
   }
 
