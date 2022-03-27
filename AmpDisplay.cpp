@@ -167,3 +167,30 @@
         }
         display->print(text);
     }
+
+    void AmpDisplay::displayLRBarGraph(uint8_t left, uint8_t right, areaSpec_t area)
+    {
+        // Erase the area
+        display->setDrawColor(0);
+        display->drawBox(area.XL, area.YT, area.XR - area.XL, area.YB - area.YT);
+
+        // The bar graphs extend left and right from the center of the area
+        // There's a two-pixel gap in the center
+        // The area is assumed to have an even width
+        uint8_t barWidth = (area.XR - area.XL + 1) / 2 ; // Assumes total area width is an even number
+        uint8_t leftAreaXR = area.XL + barWidth  - 2; 
+        uint8_t rightAreaXL = leftAreaXR + 2;
+
+        // Get bar widths
+        uint8_t leftWidth = max( ( (int) left * (int) (barWidth) ) / 100, 1);
+        uint8_t rightWidth = max( ( (int) right * (int) (barWidth) ) / 100, 1);
+
+        // Draw the bars
+        display->setDrawColor(1);
+        display->drawBox(leftAreaXR - leftWidth, area.YT + 2, leftWidth, area.YB - area.YT - 2);
+        display->drawBox(rightAreaXL, area.YT + 2, rightWidth, area.YB - area.YT - 2);
+        display->updateDisplay();
+        //char bufStr[25];
+        //snprintf(bufStr, 25, "L %6d, R%6d", leftWidth, rightWidth);
+        //displayMessage(bufStr);
+    }

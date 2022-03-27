@@ -3,6 +3,7 @@
     "files.associations": {
         "*.ino": "cpp",
         "samd21_host.h": "c",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "arduino.h": "c"
     }
 }

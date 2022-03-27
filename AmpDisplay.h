@@ -25,7 +25,7 @@
 #define DB_FONT         u8g2_font_helvR14_tf
 #define MUTE_FONT       u8g2_font_helvR18_tr
 #define MSG_FONT        u8g2_font_helvR08_tf
-#define SOURCE_FONT     u8g2_font_helvR12_tf
+#define SOURCE_FONT     u8g2_font_helvB12_tf
 
 // Display zones
 struct areaSpec_t {
@@ -36,10 +36,10 @@ struct areaSpec_t {
   bool rJust;   // Right justify? - This could be an enum for left, right, center...
 } ;
 
-constexpr areaSpec_t sourceArea = {0, 127, 0, 20, false};
+constexpr areaSpec_t sourceArea = {0, 127, 0, 15, false};
 constexpr areaSpec_t messageArea = {0, 127, 50, 63, false};
 constexpr areaSpec_t volumeArea = {0, 100, 22, 48, true};
-constexpr areaSpec_t volLabArea = {101, 127, 22, 48, false};
+constexpr areaSpec_t volLabArea = {101, 127, 24, 50, false};
 
 // Input icons
 #define icons_binary_width 32
@@ -123,6 +123,10 @@ public:
 
     // @brief Display a text string in the message area
     void displayMessage(const char * message);
+
+    // @brief Bar graph in the specified message area
+    // Levels are integer percent of full width
+    void displayLRBarGraph(uint8_t leftLevel, uint8_t rightLevel, areaSpec_t area);
 
     // @brief Dim the display
     void dim();
