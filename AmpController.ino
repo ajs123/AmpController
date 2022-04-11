@@ -1,8 +1,7 @@
 #include <Arduino.h>
-//#include <Usb.h>
 #include <MiniDSP.h>
-#include <U8g2lib.h>
 #include "AmpDisplay.h"
+#include "PowerControl.h"
 
 #ifdef U8X8_HAVE_HW_I2C // For this hardware (nrf52840) should just be able to include Wire.h
 #include <Wire.h>
@@ -10,9 +9,11 @@
 
 //#include <SPI.h> // This doesn't seem to matter, at least not for the Adafruit nrf52840
 
-//ORIG USB Usb;
 USB thisUSB;
 MiniDSP ourMiniDSP(&thisUSB);
+
+// Options (these should move to an options.h)
+#define MAXIMUM_VOLUME 2 // -((max db)*2): Max of -1.0dB 
 
 // Display stuff
 #define LOG_FONT u8g2_font_5x7_tr //u8g2_font_7x14_tf
@@ -22,13 +23,10 @@ MiniDSP ourMiniDSP(&thisUSB);
 #define DIM_TIME 5000   // ms to dim the display
 uint32_t brightTime;
 
-// Analog input detect
-// Any signal on the analog input should turn the unit on and keep it on
-// If the connected device is super-quiet when off and provides just a teeny bit of noise when on, then this
-// could be set very low so that even turning the device (such as a turntable) on will wake up the amp.
-#define ANALOG_DETECT_L A1                  // Input pin
-#define ANALOG_THRESH ((50 * 2^12) / 3600)  // 50 mV with 12-bit resolution and 3.6V full scale
-#define ANALOG_HOLDUP 10 * 60000            // Remain on for 10 minutes after the analog input goes quiet
+// Interface stuff
+#define BUTTON_A 9
+#define BUTTON_B 6
+#define BUTTON_C 5
 
 // Trigger input
 // The external trigger should work with a nominal 5V input (e.g., from a USB connector) and also accept 12V from
@@ -94,9 +92,14 @@ void OnMiniDSPConnected() {
 }
 
 void OnVolumeChange(uint8_t volume) {
-  AmpDisp.volume(-volume/2.0);
-  if (volume == 0) ourMiniDSP.setVolume((uint8_t) 1); // Limit to -0.5 dB 
-  scheduleDim();
+  if (volume < MAXIMUM_VOLUME) {
+    ourMiniDSP.setVolume((uint8_t) MAXIMUM_VOLUME); 
+    AmpDisp.volume(-MAXIMUM_VOLUME/2.0);
+  } else {  
+    AmpDisp.volume(-volume/2.0);
+  }
+    scheduleDim();
+  
   //Serial.println("Volume: " + String(volume));
   //Serial.flush();
   //displog.println("Volume " + String(volume));
@@ -134,8 +137,11 @@ void OnNewLevels(float * levels ) {
   //scheduleDim();
   */
  
-  uint8_t left = max( (int) levels[0] - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
-  uint8_t right = max( (int) levels[1] - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
+  // To display the volume meter, we need to sum the woofer and fullrange outputs of each channel
+  int leftSum = ((int) levels[0] + (int) levels[1]) / 2;
+  int rightSum = ((int) levels[2] + (int) levels[3]) / 2;
+  uint8_t left = max( leftSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
+  uint8_t right = max( rightSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
   AmpDisp.displayLRBarGraph(left, right, messageArea);
   //char bufStr[25];
   //snprintf(bufStr, 25, "L %6d, R%6d", left, right);
@@ -151,10 +157,15 @@ void ledSetup() {
 void setup() {
   DisplaySetup();
   ledSetup();
-  //Serial.begin(115200);
-  //while(!Serial) delay(10);
+  #if (ENABLE_UHS_DEBUGGING == 1)  // From settings.h in the UHS library
+    Serial.begin(115200);
+    while(!Serial) delay(10);
+    Serial.print("STARTUP\r\n");
+  #endif
   if(thisUSB.Init() == -1) {
-    //Serial.print(F("\r\nOSC did not start"));
+    #if (ENABLE_UHS_DEBUGGING == 1)
+      //Serial.print(F("\r\nOSC did not start"));
+    #endif
     //displog.println("OSC did not start");
     while(1); // Halt
   }
@@ -167,9 +178,9 @@ void setup() {
   //ourMiniDSP.attachOnParse(&OnParse);
   ourMiniDSP.attachOnNewLevels(&OnNewLevels);
 
-  pinMode(5, INPUT_PULLUP); // Button C
-  pinMode(6, INPUT_PULLUP); // Button B
-  //Button A is pin 9 - used for UHS interrupt at the moment
+  pinMode(BUTTON_A, INPUT_PULLUP); 
+  pinMode(BUTTON_B, INPUT_PULLUP);
+  pinMode(BUTTON_C, INPUT_PULLUP);
 
 }
 
@@ -190,11 +201,9 @@ bool levelsLast;
 
 void loop() {
 
-  //thisUSB.busprobe();  // Now called by Task() , via MAX3421E::Task()
-
-  ledOn(LED_BLUE);
+  //ledOn(LED_BLUE);
   thisUSB.Task();
-  ledOff(LED_BLUE);
+  //ledOff(LED_BLUE);
 
   // DEBUG: Report the USB state
 
@@ -252,5 +261,5 @@ void loop() {
 
   checkDim();  // Dimming timer
 
-  //delay(50);
+  //delay(1000);
 }
