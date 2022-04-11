@@ -2,6 +2,7 @@
 #include <MiniDSP.h>
 #include "AmpDisplay.h"
 #include "PowerControl.h"
+#include "Options.h"
 
 #ifdef U8X8_HAVE_HW_I2C // For this hardware (nrf52840) should just be able to include Wire.h
 #include <Wire.h>
@@ -9,24 +10,22 @@
 
 //#include <SPI.h> // This doesn't seem to matter, at least not for the Adafruit nrf52840
 
-USB thisUSB;
-MiniDSP ourMiniDSP(&thisUSB);
+// Hardware
+USB thisUSB;                                                  // USB via Host Shield
+MiniDSP ourMiniDSP(&thisUSB);                                 // MiniDSP on thisUSB
+U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE);  // Adafruit OLED Featherwing display on I2C bus
 
-// Options (these should move to an options.h)
-#define MAXIMUM_VOLUME 2 // -((max db)*2): Max of -1.0dB 
+// Interface modules
+//U8G2 * display_p = &display;
+//AmpDisplay AmpDisp(display_p);
+AmpDisplay AmpDisp(&display);                                 // Abstracts the display elements
 
 // Display stuff
 #define LOG_FONT u8g2_font_5x7_tr //u8g2_font_7x14_tf
 #define LOG_WIDTH 25 
 #define LOG_HEIGHT 9
 
-#define DIM_TIME 5000   // ms to dim the display
 uint32_t brightTime;
-
-// Interface stuff
-#define BUTTON_A 9
-#define BUTTON_B 6
-#define BUTTON_C 5
 
 // Trigger input
 // The external trigger should work with a nominal 5V input (e.g., from a USB connector) and also accept 12V from
@@ -36,17 +35,13 @@ uint32_t brightTime;
 #define TRIGGER_THRESH ((4000 * 2^12) * 56 / (56 + 220) / 3600 )    // Triggers at 4V
 
 // Specify the display
-U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE); // Adafruit OLED Featherwing
 //U8G2_SH1106_128X64_NONAME_F_HW_I2C display(U8G2_R0, U8X8_PIN_NONE); // Generic 128 x 64 SH1106 display on hardware I2C
-U8G2 * display_p = &display;
 
 // Buttons on the Featherwing OLED
 #define BUTTON_A 9
 #define BUTTON_B 6
 #define BUTTON_C 5
 
-// Attach the AmpDisplay to the display
-AmpDisplay AmpDisp(display_p);
 
 // U8G2 log is used at startup
 //uint8_t u8log_buffer[LOG_WIDTH * LOG_HEIGHT];

@@ -2,6 +2,9 @@
 // Simple layout: Volume in dB or %, or MUTE, in a large font, and source indicator (line or toslink)
 // The display should dim shortly after a volume or source change
 
+// The U8G2 display driver is declared and initialized in the .ino and a pointer to it is used here.
+// That's the same as is done with U8G2Log, but it may make more sense to full encapsulate the display here.
+
 #pragma once
 
 #include <U8g2lib.h>
@@ -24,7 +27,7 @@
 #define PCT_FONT        u8g2_font_helvR18_tr
 #define VOL_DB_FONT     u8g2_font_helvR24_tr
 #define DB_FONT         u8g2_font_helvR14_tf
-#define MUTE_FONT       u8g2_font_helvR18_tr
+#define MUTE_FONT       u8g2_font_helvR24_tr
 #define MSG_FONT        u8g2_font_helvR08_tf
 #define SOURCE_FONT     u8g2_font_helvB12_tf
 
@@ -40,8 +43,8 @@ struct areaSpec_t {
 // Text areas {XLeft, XRight, YTop, YBottom, rightJustify}
 constexpr areaSpec_t sourceArea = {0, 127, 0, 15, false};
 constexpr areaSpec_t messageArea = {0, 127, 50, 63, false};
-constexpr areaSpec_t volumeArea = {0, 100, 22, 48, true};
-constexpr areaSpec_t volLabArea = {101, 127, 22, 48, false};
+constexpr areaSpec_t volumeArea = {0, 100, 21, 47, true};
+constexpr areaSpec_t volLabArea = {101, 127, 21, 47, false};
 constexpr areaSpec_t wholeVolumeArea = {0, 127, 22, 48, false};
 
 // Input icons

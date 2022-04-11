@@ -129,7 +129,7 @@
     void AmpDisplay::dim() {
         display->setContrast(CONTRAST_DIM);
     #ifdef TRANSIENTVOLUME
-        eraseVolume();
+        if (!muteState) eraseVolume();
     #endif
     }
 
