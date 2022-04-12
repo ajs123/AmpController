@@ -15,9 +15,7 @@ USB thisUSB;                                                  // USB via Host Sh
 MiniDSP ourMiniDSP(&thisUSB);                                 // MiniDSP on thisUSB
 U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE);  // Adafruit OLED Featherwing display on I2C bus
 
-// Interface modules
-//U8G2 * display_p = &display;
-//AmpDisplay AmpDisp(display_p);
+// Interface class instances
 AmpDisplay AmpDisp(&display);                                 // Abstracts the display elements
 
 // Display stuff
@@ -25,25 +23,21 @@ AmpDisplay AmpDisp(&display);                                 // Abstracts the d
 #define LOG_WIDTH 25 
 #define LOG_HEIGHT 9
 
+// Interval (ms) between queries to the dsp.
+// The update rate is mostly limited by display updates.
+// 
+#define INTERVAL 50          // Interval between signal level requests. 
+
+// Persistent state
+uint32_t lastTime;
 uint32_t brightTime;
-
-// Trigger input
-// The external trigger should work with a nominal 5V input (e.g., from a USB connector) and also accept 12V from
-// a standard AV component trigger output. It's passed through a 22K - 5.6K divider (0.20 ratio) to ensure that
-// a 12V input doesn't exceed Vdd. 
-#define TRIGGER_INPUT A3                                            // Input pin
-#define TRIGGER_THRESH ((4000 * 2^12) * 56 / (56 + 220) / 3600 )    // Triggers at 4V
-
-// Specify the display
-//U8G2_SH1106_128X64_NONAME_F_HW_I2C display(U8G2_R0, U8X8_PIN_NONE); // Generic 128 x 64 SH1106 display on hardware I2C
 
 // Buttons on the Featherwing OLED
 #define BUTTON_A 9
 #define BUTTON_B 6
 #define BUTTON_C 5
 
-
-// U8G2 log is used at startup
+// U8G2 log can be used at startup
 //uint8_t u8log_buffer[LOG_WIDTH * LOG_HEIGHT];
 //U8G2LOG displog;
 
@@ -84,6 +78,7 @@ void OnMiniDSPConnected() {
   //Serial.flush();
   //displog.println("MiniDSP connected.");
   AmpDisp.displayMessage("CONNECTED");
+  lastTime = millis() + INTERVAL;
 }
 
 void OnVolumeChange(uint8_t volume) {
@@ -94,17 +89,9 @@ void OnVolumeChange(uint8_t volume) {
     AmpDisp.volume(-volume/2.0);
   }
     scheduleDim();
-  
-  //Serial.println("Volume: " + String(volume));
-  //Serial.flush();
-  //displog.println("Volume " + String(volume));
 }
 
 void OnMutedChange(bool isMuted) {
-  //Serial.println("Muted status: " + String(isMuted ? "muted" : "unmuted"));
-  //Serial.flush();
-  //displog.println(String(isMuted ? "Muted" : "Unmuted"));
-  //if (isMuted) displayMessage("MUTE"); else displayMessage("UNMUTE");
   AmpDisp.mute(isMuted);
   scheduleDim();
 }
@@ -121,30 +108,15 @@ void OnParse(uint8_t * buf) {
   AmpDisp.displayMessage(bufStr);
 }
 
-#define MINBARLEVEL -90
 void OnNewLevels(float * levels ) {
-  
-  // For testing only - just display the two values
-  /*
-  char bufStr[25];
-  snprintf(bufStr, 25, "L %6.1f,  R %6.1f", levels[0], levels[1]);
-  AmpDisp.displayMessage(bufStr);
-  //scheduleDim();
-  */
- 
-  // To display the volume meter, we need to sum the woofer and fullrange outputs of each channel
-  int leftSum = ((int) levels[0] + (int) levels[1]) / 2;
+  int leftSum = ((int) levels[0] + (int) levels[1]) / 2;    // On L and R, sum the woofer and tweeter levels
   int rightSum = ((int) levels[2] + (int) levels[3]) / 2;
   uint8_t left = max( leftSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
   uint8_t right = max( rightSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
   AmpDisp.displayLRBarGraph(left, right, messageArea);
-  //char bufStr[25];
-  //snprintf(bufStr, 25, "L %6d, R%6d", left, right);
-  //AmpDisp.displayMessage(bufStr);
-
 }
 
-// Also for debugging - Turning an LED on while in MiniDSP.task() provides a nice indicator of activity
+// Prep the blue LED for use in debugging
 void ledSetup() {
   pinMode(LED_BLUE, OUTPUT);
 }
@@ -162,7 +134,10 @@ void setup() {
       //Serial.print(F("\r\nOSC did not start"));
     #endif
     //displog.println("OSC did not start");
+    AmpDisp.displayMessage("USB did not start");
     while(1); // Halt
+
+  //lastTime = millis() + INTERVAL;
   }
 
   // Register callbacks.
@@ -181,12 +156,8 @@ void setup() {
 
 bool buttonCPrev = false;     // For button debounce
 
-// Support periodic requests in the main loop
-uint32_t lastTime;
-#define INTERVAL 100          // Interval between signal level requests. If shorter, automatic status updates may be missed.
-
 // Enable a guard against starting requests too soon after connecting
-bool MiniDSPConnected = false;
+//bool MiniDSPConnected = false;
 
 // DEBUG: for USB state reporting
 uint16_t lastUSBState = 0xFFFF;
@@ -200,8 +171,7 @@ void loop() {
   thisUSB.Task();
   //ledOff(LED_BLUE);
 
-  // DEBUG: Report the USB state
-
+  // DEBUG: Report the USB state in the message area
   uint8_t taskState = thisUSB.getUsbTaskState();
   uint8_t vbusState = thisUSB.getVbusState();
   uint16_t USBState = taskState | (vbusState << 8);
@@ -215,23 +185,47 @@ void loop() {
   //if (vbusState == 0x00) thisUSB.Init();
 
   if (!ourMiniDSP.connected()) {
-    MiniDSPConnected = false;
+    //MiniDSPConnected = false;
     return;
-  }
+    }
 
   // Periodic requests, such as input signal levels
   #ifdef INTERVAL
 
   // Upon initial connection, the MiniDSP class issues a status request. When first connecting, allow time for response before issuing further requests.
-  if (!MiniDSPConnected) {
-    MiniDSPConnected = true;
-    lastTime = millis();    // Schedule the periodic request for later
-    return;
-  } 
+  // Superceded by setting lastTime in the connection callback
+  // if (!MiniDSPConnected) {
+  //   MiniDSPConnected = true;
+  //   lastTime = millis();    // Schedule the periodic request for later
+  //   return;
+  // } 
+
+  //#define SHOWFRAMEINTERVAL
+
+  #ifdef SHOWFRAMEINTERVAL
+  // Assess the frame rate by showing it in the source area
+  constexpr uint32_t frameReportInterval = 2000;
+  static uint16_t intervalAccum = 0;
+  static uint16_t intervalCount = 0;
+  static uint32_t lastFrameReport = millis();
+  #endif
 
   uint32_t currentTime = millis();
-  if ((currentTime - lastTime) > INTERVAL)
+  if ((currentTime - lastTime) >= INTERVAL)
   {
+    #ifdef SHOWFRAMEINTERVAL
+    intervalAccum += currentTime - lastTime;
+    intervalCount ++;
+
+    if ((currentTime - lastFrameReport) >= frameReportInterval) {
+      snprintf(strBuf, sizeof(strBuf), "Int %d", intervalAccum / intervalCount);
+      AmpDisp.displayMessage(strBuf, sourceArea);
+      intervalAccum = 0;
+      intervalCount = 0;
+      lastFrameReport = currentTime;
+    }
+    #endif
+    
     if (levelsLast)
     {
       ourMiniDSP.RequestStatus();
@@ -256,5 +250,4 @@ void loop() {
 
   checkDim();  // Dimming timer
 
-  //delay(1000);
 }

@@ -119,11 +119,17 @@
     }
 
 
-    // @brief Displays a message in the message area
+    // @brief Displays a message in the message area.
     // Does not wake up the display from a dimmed state
     void AmpDisplay::displayMessage(const char * message) {
-    displayText(message, MSG_FONT, messageArea, true);
-    display->updateDisplay();   // Calling this directly avoids restoring full contrast
+        displayText(message, MSG_FONT, messageArea, true);
+        display->updateDisplay();   // Calling this directly avoids restoring full contrast
+    }
+
+    // @brief Displays a message in the specified area.
+    void AmpDisplay::displayMessage(const char * message, areaSpec_t area) {
+        displayText(message, MSG_FONT, area, true);
+        display->updateDisplay();
     }
 
     void AmpDisplay::dim() {

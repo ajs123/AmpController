@@ -122,17 +122,20 @@ public:
     void setMaxVolume(float max);
 
     // @brief See if anything needs to be done (dim, return to default, etc.)
-    // NOT IMPLEMENTED - CURRENTLY, THINGS LIKE DIMMING NEED TO BE DONE BY THE APPLICATION
+    // NOT IMPLEMENTED - CURRENTLY, THINGS LIKE DIMMING ARE DONE BY THE APPLICATION
     void task();
 
     // @brief Draw the display background
     // Draws any dividers, etc. that persist
     void drawFrame();
 
-    // @brief Display a text string in the message area
+    // @brief Display a text string in the default message area
     void displayMessage(const char * message);
 
-    // @brief Bar graph in the specified message area
+    // @brief Display a text string in the selected area
+    void displayMessage(const char * message, areaSpec_t area);
+
+    // @brief Bar graph in the specified area
     // Levels are integer percent of full width
     void displayLRBarGraph(uint8_t leftLevel, uint8_t rightLevel, areaSpec_t area);
 
