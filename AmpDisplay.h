@@ -82,7 +82,7 @@ protected:
     uint8_t muteState = 3;              // Muted? 0 = no; 1 = yes; 3 = undetermined
     float volumeState = -129;           // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
     source_t sourceState = Unset;       // Current source. 
-    uint32_t dimTimer;
+    bool dimState;                      // True if dimmed.
     bool volumeShown = false;           // Enables selective re-draw of volume in display wakeup 
 
 public:
@@ -142,6 +142,9 @@ public:
     // @brief Dim the display
     void dim();
 
+    // @brief Check if the display is dimmed
+    bool dimmed();
+
     // @brief Wake up the display
     void wakeup();
 
@@ -154,8 +157,11 @@ private:
     // erase causes the field to be erased instead of redrawn
     void drawVolume();
 
-    // @brief Erease the volume indicator
+    // @brief Erase the volume indicator
     void eraseVolume();
+
+    // @brief Erase a text area
+    void eraseArea(areaSpec_t area);
 
     // Draw the input indicator
     void drawSource();

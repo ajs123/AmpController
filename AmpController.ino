@@ -26,7 +26,7 @@ AmpDisplay AmpDisp(&display);                                 // Abstracts the d
 // Interval (ms) between queries to the dsp.
 // The update rate is mostly limited by display updates.
 // 
-#define INTERVAL 50          // Interval between signal level requests. 
+constexpr uint32_t INTERVAL = 30;   
 
 // Persistent state
 uint32_t lastTime;
@@ -62,6 +62,7 @@ void scheduleDim() {
 }
 
 void checkDim() {
+  if (AmpDisp.dimmed()) return;
   uint32_t currentTime = millis();
   if ((currentTime - brightTime) > DIM_TIME) {
     AmpDisp.dim();
@@ -156,12 +157,39 @@ void setup() {
 
 bool buttonCPrev = false;     // For button debounce
 
-// Enable a guard against starting requests too soon after connecting
-//bool MiniDSPConnected = false;
-
 // DEBUG: for USB state reporting
-uint16_t lastUSBState = 0xFFFF;
-char strBuf[20];
+void showTaskState() {
+  static uint16_t lastUSBState = 0xFFFF;
+  char strBuf[20];
+  uint8_t taskState = thisUSB.getUsbTaskState();
+  uint8_t vbusState = thisUSB.getVbusState();
+  uint16_t USBState = taskState | (vbusState << 8);
+  if (USBState != lastUSBState) {
+    snprintf(strBuf, sizeof(strBuf), "TASK %02x   VBUS %02x", taskState, vbusState);
+    AmpDisp.displayMessage(strBuf);
+    lastUSBState = USBState;
+  }
+}
+
+// DEBUG: for showing the update interval
+void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
+  constexpr uint32_t frameReportInterval = 1000;
+  char strBuf[24];
+  static uint16_t intervalAccum = 0;
+  static uint16_t intervalCount = 0;
+  static uint32_t lastFrameReport = millis();
+
+  intervalAccum += currentTime - lastTime;
+  intervalCount ++;
+
+  if ((currentTime - lastFrameReport) >= frameReportInterval) {
+    snprintf(strBuf, sizeof(strBuf), "Int %d", intervalAccum / intervalCount);
+    AmpDisp.displayMessage(strBuf, sourceArea);
+    intervalAccum = 0;
+    intervalCount = 0;
+    lastFrameReport = currentTime;
+  }
+}
 
 bool levelsLast;
 
@@ -171,74 +199,28 @@ void loop() {
   thisUSB.Task();
   //ledOff(LED_BLUE);
 
-  // DEBUG: Report the USB state in the message area
-  uint8_t taskState = thisUSB.getUsbTaskState();
-  uint8_t vbusState = thisUSB.getVbusState();
-  uint16_t USBState = taskState | (vbusState << 8);
-  if (USBState != lastUSBState) {
-    snprintf(strBuf, sizeof(strBuf), "TASK %02x   VBUS %02x", taskState, vbusState);
-    AmpDisp.displayMessage(strBuf);
-    lastUSBState = USBState;
-  }
+  showTaskState();      // Report the USB state in the message area. Useful in testing. May be useful in production with good messages.
 
   //if (taskState == 0xa0) thisUSB.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE); // If error, try reset
   //if (vbusState == 0x00) thisUSB.Init();
 
-  if (!ourMiniDSP.connected()) {
-    //MiniDSPConnected = false;
-    return;
-    }
-
   // Periodic requests, such as input signal levels
-  #ifdef INTERVAL
+  if (INTERVAL) {
 
-  // Upon initial connection, the MiniDSP class issues a status request. When first connecting, allow time for response before issuing further requests.
-  // Superceded by setting lastTime in the connection callback
-  // if (!MiniDSPConnected) {
-  //   MiniDSPConnected = true;
-  //   lastTime = millis();    // Schedule the periodic request for later
-  //   return;
-  // } 
+    uint32_t currentTime = millis();
+    if ((currentTime - lastTime) >= INTERVAL) {
+      //showFrameInterval(currentTime, lastTime); // DEBUG: Show the update interval in
 
-  //#define SHOWFRAMEINTERVAL
-
-  #ifdef SHOWFRAMEINTERVAL
-  // Assess the frame rate by showing it in the source area
-  constexpr uint32_t frameReportInterval = 2000;
-  static uint16_t intervalAccum = 0;
-  static uint16_t intervalCount = 0;
-  static uint32_t lastFrameReport = millis();
-  #endif
-
-  uint32_t currentTime = millis();
-  if ((currentTime - lastTime) >= INTERVAL)
-  {
-    #ifdef SHOWFRAMEINTERVAL
-    intervalAccum += currentTime - lastTime;
-    intervalCount ++;
-
-    if ((currentTime - lastFrameReport) >= frameReportInterval) {
-      snprintf(strBuf, sizeof(strBuf), "Int %d", intervalAccum / intervalCount);
-      AmpDisp.displayMessage(strBuf, sourceArea);
-      intervalAccum = 0;
-      intervalCount = 0;
-      lastFrameReport = currentTime;
+      if (levelsLast) {
+        ourMiniDSP.RequestStatus();
+      }
+      else {
+        ourMiniDSP.RequestOutputLevels();
+      }
+      levelsLast = !levelsLast;
+      lastTime = currentTime;
     }
-    #endif
-    
-    if (levelsLast)
-    {
-      ourMiniDSP.RequestStatus();
-    }
-    else
-    {
-      ourMiniDSP.RequestOutputLevels();
-    }
-    levelsLast = !levelsLast;
-    lastTime = currentTime;
   }
-
-#endif
 
   // Button C - manual status request, for testing only
   bool buttonC = !digitalRead(5);
@@ -249,5 +231,4 @@ void loop() {
   buttonCPrev = buttonC;
 
   checkDim();  // Dimming timer
-
 }

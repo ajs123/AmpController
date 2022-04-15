@@ -61,7 +61,8 @@
     {
         if (muteState) return;
         // To keep any details in displayText, use it with a blank string to clear
-        displayText("", VOL_DB_FONT, wholeVolumeArea, true);  
+        //displayText("", VOL_DB_FONT, wholeVolumeArea, true);  
+        eraseArea(wholeVolumeArea);
         volumeShown = false;
         display->updateDisplay();  // Just redraw (no)
     }
@@ -133,10 +134,16 @@
     }
 
     void AmpDisplay::dim() {
+        if (dimState) return;
         display->setContrast(CONTRAST_DIM);
+        dimState = true;
     #ifdef TRANSIENTVOLUME
         if (!muteState) eraseVolume();
     #endif
+    }
+
+    bool AmpDisplay::dimmed() {
+        return dimState;
     }
 
     void AmpDisplay::wakeup() {
@@ -144,6 +151,7 @@
         if (!volumeShown) drawVolume();
     #endif
         display->setContrast(CONTRAST_FULL);
+        dimState = false;
     }
 
     void AmpDisplay::volumeMode(bool dB)
@@ -192,12 +200,16 @@
         wakeup();
     }
 
+    void AmpDisplay::eraseArea(areaSpec_t area) {
+        display->setDrawColor(0);
+        display->drawBox(area.XL, area.YT, area.XR - area.XL, area.YB - area.YT);
+    }
+
     void AmpDisplay::displayText(const char *text, const uint8_t *font, areaSpec_t area, const bool erase)
     {
         if (erase)
         {
-            display->setDrawColor(0);
-            display->drawBox(area.XL, area.YT, area.XR - area.XL, area.YB - area.YT);
+            eraseArea(area);
         }
 
         if (!text[0]) return;
