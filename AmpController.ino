@@ -75,9 +75,6 @@ void analogSetup() {
 }
 
 void OnMiniDSPConnected() {
-  //Serial.println("MiniDSP connected");
-  //Serial.flush();
-  //displog.println("MiniDSP connected.");
   AmpDisp.displayMessage("CONNECTED");
   lastTime = millis() + INTERVAL;
 }
@@ -125,6 +122,7 @@ void ledSetup() {
 void setup() {
   DisplaySetup();
   ledSetup();
+  //Serial.begin(115200);
   #if (ENABLE_UHS_DEBUGGING == 1)  // From settings.h in the UHS library
     Serial.begin(115200);
     while(!Serial) delay(10);
@@ -154,8 +152,6 @@ void setup() {
   pinMode(BUTTON_C, INPUT_PULLUP);
 
 }
-
-bool buttonCPrev = false;     // For button debounce
 
 // DEBUG: for USB state reporting
 void showTaskState() {
@@ -191,8 +187,6 @@ void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
   }
 }
 
-bool levelsLast;
-
 void loop() {
 
   //ledOn(LED_BLUE);
@@ -201,9 +195,6 @@ void loop() {
 
   showTaskState();      // Report the USB state in the message area. Useful in testing. May be useful in production with good messages.
 
-  //if (taskState == 0xa0) thisUSB.setUsbTaskState(USB_ATTACHED_SUBSTATE_RESET_DEVICE); // If error, try reset
-  //if (vbusState == 0x00) thisUSB.Init();
-
   // Periodic requests, such as input signal levels
   if (INTERVAL) {
 
@@ -211,6 +202,7 @@ void loop() {
     if ((currentTime - lastTime) >= INTERVAL) {
       //showFrameInterval(currentTime, lastTime); // DEBUG: Show the update interval in
 
+      static bool levelsLast;
       if (levelsLast) {
         ourMiniDSP.RequestStatus();
       }
@@ -222,13 +214,14 @@ void loop() {
     }
   }
 
+  checkDim();  // Dimming timer
+
   // Button C - manual status request, for testing only
+  static bool buttonCPrev = false;     // For button debounce
   bool buttonC = !digitalRead(5);
   if (buttonC && !buttonCPrev) {
     delay(100); // Simple debounce - needs to stay down for 100 ms
     if (!digitalRead(5)) ourMiniDSP.RequestStatus();
   }
   buttonCPrev = buttonC;
-
-  checkDim();  // Dimming timer
 }
