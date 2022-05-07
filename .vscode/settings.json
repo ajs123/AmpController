@@ -4,6 +4,8 @@
         "*.ino": "cpp",
         "samd21_host.h": "c",
         "cmath": "cpp",
-        "arduino.h": "c"
+        "arduino.h": "c",
+        "atomic": "cpp",
+        "cstdint": "cpp"
     }
 }

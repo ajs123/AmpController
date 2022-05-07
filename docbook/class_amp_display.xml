@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_class_amp_display" xml:lang="en-US">
+<title>AmpDisplay Class Reference</title>
+<indexterm><primary>AmpDisplay</primary></indexterm>
+<para>
+<computeroutput>#include &lt;AmpDisplay.h&gt;</computeroutput>
+</para>
+<simplesect>
+    <title>Public Member Functions    </title>
+        <itemizedlist>
+            <listitem><para><link linkend="_class_amp_display_1a68031143e1a168791b95a239d0388380">AmpDisplay</link> (U8G2 *u8g2)</para>
+</listitem>
+            <listitem><para><link linkend="_class_amp_display_1a1d3cb36729c4a12602b9816936663efe">AmpDisplay</link> (U8G2 *u8g2, float vol, bool <link linkend="_class_amp_display_1a21a4a9d8520b93e84ecc8ed02a49b494">mute</link>, <link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link> input, bool dB)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1abde56490fad2c789f26fce7eca6e9ba7">volume</link> (float vol)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a80b45a90d9bd2f84de9d009c23512803">volumeMode</link> (bool dB)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a2a77dd425cc88658652d7ac72ebc0a87">volumeMode</link> ()</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a21a4a9d8520b93e84ecc8ed02a49b494">mute</link> (bool isMuted)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1aa4499881714ceecd51274398f5dafa95">source</link> (<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link> thesource)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a7ae2554ad7ae5f965cf6f293d1cefc2e">setMaxVolume</link> (float max)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a52170f4dfacff6ce87aa423601f02bb9">task</link> ()</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a364f9ee4db9d7c5661351d78582fabda">drawFrame</link> ()</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1afe0859db9865dd483c625124dde25acb">displayMessage</link> (const char *message)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a60f2d0c229b50dc39e3477b966a40240">displayMessage</link> (const char *message, <link linkend="_structarea_spec__t">areaSpec_t</link> area)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1a6d0255f07b3c37927e024688a27f51c8">displayLRBarGraph</link> (uint8_t leftLevel, uint8_t rightLevel, <link linkend="_structarea_spec__t">areaSpec_t</link> area)</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1aaf2d26e0961780215b167721d93c354d">dim</link> ()</para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_amp_display_1af0b8aee04997e2b6757616de63d4cf1d">dimmed</link> ()</para>
+</listitem>
+            <listitem><para>void <link linkend="_class_amp_display_1aee74d69e14edc35d0304b3bb86311be9">wakeup</link> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Protected Attributes    </title>
+        <itemizedlist>
+            <listitem><para>U8G2 * <link linkend="_class_amp_display_1a7240f6cda66df9801517c8484ba54b8c">display</link></para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_amp_display_1a4da0bc745e8ec35e918c43cccaa0ae7c">dBDisplay</link> = <link linkend="__amp_display_8h_1afc637b5118dc56fb16c0b16c91fc384d">DBDISPLAY</link></para>
+</listitem>
+            <listitem><para>uint8_t <link linkend="_class_amp_display_1a60ecff4996971218121ede43466dda05">muteState</link> = 3</para>
+</listitem>
+            <listitem><para>float <link linkend="_class_amp_display_1aa3312e034bcfc300c2c52735005e7b30">volumeState</link> = -129</para>
+</listitem>
+            <listitem><para><link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link> <link linkend="_class_amp_display_1a8a5ba490a926fb63407ca9ec73038f85">sourceState</link> = <link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6">Unset</link></para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_amp_display_1aae85e85b5e540760deb9a6704ff7bdf8">dimState</link></para>
+</listitem>
+            <listitem><para>bool <link linkend="_class_amp_display_1a56bad2be314d2881acc3ba0dcab264f0">volumeShown</link> = false</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Constructor &amp; Destructor Documentation</title>
+<anchor xml:id="_class_amp_display_1a68031143e1a168791b95a239d0388380"/><section>
+    <title>AmpDisplay()<computeroutput>[1/2]</computeroutput></title>
+<indexterm><primary>AmpDisplay</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>AmpDisplay</secondary></indexterm>
+<para><computeroutput>AmpDisplay::AmpDisplay (U8G2 * u8g2)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a1d3cb36729c4a12602b9816936663efe"/><section>
+    <title>AmpDisplay()<computeroutput>[2/2]</computeroutput></title>
+<indexterm><primary>AmpDisplay</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>AmpDisplay</secondary></indexterm>
+<para><computeroutput>AmpDisplay::AmpDisplay (U8G2 * u8g2, float vol, bool mute, <link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link> input, bool dB)<computeroutput>[inline]</computeroutput></computeroutput></para></section>
+</section>
+<section>
+<title>Member Function Documentation</title>
+<anchor xml:id="_class_amp_display_1aaf2d26e0961780215b167721d93c354d"/><section>
+    <title>dim()</title>
+<indexterm><primary>dim</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>dim</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::dim ( )</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1af0b8aee04997e2b6757616de63d4cf1d"/><section>
+    <title>dimmed()</title>
+<indexterm><primary>dimmed</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>dimmed</secondary></indexterm>
+<para><computeroutput>bool AmpDisplay::dimmed ( )</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a6d0255f07b3c37927e024688a27f51c8"/><section>
+    <title>displayLRBarGraph()</title>
+<indexterm><primary>displayLRBarGraph</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>displayLRBarGraph</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::displayLRBarGraph (uint8_t leftLevel, uint8_t rightLevel, <link linkend="_structarea_spec__t">areaSpec_t</link> area)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1afe0859db9865dd483c625124dde25acb"/><section>
+    <title>displayMessage()<computeroutput>[1/2]</computeroutput></title>
+<indexterm><primary>displayMessage</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>displayMessage</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::displayMessage (const char * message)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a60f2d0c229b50dc39e3477b966a40240"/><section>
+    <title>displayMessage()<computeroutput>[2/2]</computeroutput></title>
+<indexterm><primary>displayMessage</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>displayMessage</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::displayMessage (const char * message, <link linkend="_structarea_spec__t">areaSpec_t</link> area)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a364f9ee4db9d7c5661351d78582fabda"/><section>
+    <title>drawFrame()</title>
+<indexterm><primary>drawFrame</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>drawFrame</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::drawFrame ( )</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a21a4a9d8520b93e84ecc8ed02a49b494"/><section>
+    <title>mute()</title>
+<indexterm><primary>mute</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>mute</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::mute (bool isMuted)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a7ae2554ad7ae5f965cf6f293d1cefc2e"/><section>
+    <title>setMaxVolume()</title>
+<indexterm><primary>setMaxVolume</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>setMaxVolume</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::setMaxVolume (float max)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1aa4499881714ceecd51274398f5dafa95"/><section>
+    <title>source()</title>
+<indexterm><primary>source</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>source</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::source (<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link> thesource)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a52170f4dfacff6ce87aa423601f02bb9"/><section>
+    <title>task()</title>
+<indexterm><primary>task</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>task</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::task ( )</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1abde56490fad2c789f26fce7eca6e9ba7"/><section>
+    <title>volume()</title>
+<indexterm><primary>volume</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>volume</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::volume (float vol)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a2a77dd425cc88658652d7ac72ebc0a87"/><section>
+    <title>volumeMode()<computeroutput>[1/2]</computeroutput></title>
+<indexterm><primary>volumeMode</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>volumeMode</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::volumeMode ( )</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a80b45a90d9bd2f84de9d009c23512803"/><section>
+    <title>volumeMode()<computeroutput>[2/2]</computeroutput></title>
+<indexterm><primary>volumeMode</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>volumeMode</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::volumeMode (bool dB)</computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1aee74d69e14edc35d0304b3bb86311be9"/><section>
+    <title>wakeup()</title>
+<indexterm><primary>wakeup</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>wakeup</secondary></indexterm>
+<para><computeroutput>void AmpDisplay::wakeup ( )</computeroutput></para></section>
+</section>
+<section>
+<title>Member Data Documentation</title>
+<anchor xml:id="_class_amp_display_1a4da0bc745e8ec35e918c43cccaa0ae7c"/><section>
+    <title>dBDisplay</title>
+<indexterm><primary>dBDisplay</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>dBDisplay</secondary></indexterm>
+<para><computeroutput>bool AmpDisplay::dBDisplay = <link linkend="__amp_display_8h_1afc637b5118dc56fb16c0b16c91fc384d">DBDISPLAY</link><computeroutput>[protected]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1aae85e85b5e540760deb9a6704ff7bdf8"/><section>
+    <title>dimState</title>
+<indexterm><primary>dimState</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>dimState</secondary></indexterm>
+<para><computeroutput>bool AmpDisplay::dimState<computeroutput>[protected]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a7240f6cda66df9801517c8484ba54b8c"/><section>
+    <title>display</title>
+<indexterm><primary>display</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>display</secondary></indexterm>
+<para><computeroutput>U8G2* AmpDisplay::display<computeroutput>[protected]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a60ecff4996971218121ede43466dda05"/><section>
+    <title>muteState</title>
+<indexterm><primary>muteState</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>muteState</secondary></indexterm>
+<para><computeroutput>uint8_t AmpDisplay::muteState = 3<computeroutput>[protected]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a8a5ba490a926fb63407ca9ec73038f85"/><section>
+    <title>sourceState</title>
+<indexterm><primary>sourceState</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>sourceState</secondary></indexterm>
+<para><computeroutput><link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link> AmpDisplay::sourceState = <link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6">Unset</link><computeroutput>[protected]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1a56bad2be314d2881acc3ba0dcab264f0"/><section>
+    <title>volumeShown</title>
+<indexterm><primary>volumeShown</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>volumeShown</secondary></indexterm>
+<para><computeroutput>bool AmpDisplay::volumeShown = false<computeroutput>[protected]</computeroutput></computeroutput></para></section>
+<anchor xml:id="_class_amp_display_1aa3312e034bcfc300c2c52735005e7b30"/><section>
+    <title>volumeState</title>
+<indexterm><primary>volumeState</primary><secondary>AmpDisplay</secondary></indexterm>
+<indexterm><primary>AmpDisplay</primary><secondary>volumeState</secondary></indexterm>
+<para><computeroutput>float AmpDisplay::volumeState = -129<computeroutput>[protected]</computeroutput></computeroutput></para></section>
+<para>
+The documentation for this class was generated from the following files:</para>
+<link linkend="__amp_display_8h">AmpDisplay.h</link><link linkend="__amp_display_8cpp">AmpDisplay.cpp</link></section>
+</section>

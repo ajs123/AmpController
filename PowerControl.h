@@ -13,7 +13,10 @@ extern MiniDSP ourMiniDSP;      // This may be better as a pointer provided to t
 
 class PowerControl {
 
-    // Constructor
+    /**
+     * @brief Construct a new PowerControl object
+     * 
+     */
     PowerControl() {
         Init();
     }

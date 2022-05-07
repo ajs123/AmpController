@@ -1,0 +1,177 @@
+\hypertarget{_amp_display_8h_source}{}\doxysection{Amp\+Display.\+h}
+\mbox{\hyperlink{_amp_display_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{// Display for the amp controller}}
+\DoxyCodeLine{2 \textcolor{comment}{// Simple layout: Volume in dB or \%, or MUTE, in a large font, and source indicator (line or toslink)}}
+\DoxyCodeLine{3 \textcolor{comment}{// The display should dim shortly after a volume or source change}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{comment}{// The U8G2 display driver is declared and initialized in the .ino and a pointer to it is used here.}}
+\DoxyCodeLine{6 \textcolor{comment}{// That's the same as is done with U8G2Log, but it may make more sense to full encapsulate the display here.}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#include <U8g2lib.h>}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{comment}{// Display settings of most interest to the user}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#define BRIGHT\_TIME (10 * 1000) }\textcolor{comment}{// 10 seconds}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#define CONTRAST\_FULL 128}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#define CONTRAST\_DIM 0}}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{comment}{// Options}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#define DBDISPLAY true  }\textcolor{comment}{// Display volume in dB (instead of \%). Potentially a live option.}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#define TRANSIENTVOLUME }\textcolor{comment}{// Display volume only transient, when changed}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{comment}{// Display settings relating to layout and other detail}}
+\DoxyCodeLine{22 \textcolor{preprocessor}{\#define MAX\_VOLUME 0 }\textcolor{comment}{// These are the max and min in dB that can be set in the minidsp}}
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#define MIN\_VOLUME -\/128}}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{25 \textcolor{comment}{// Font choices}}
+\DoxyCodeLine{26 \textcolor{preprocessor}{\#define VOL\_PCT\_FONT    u8g2\_font\_helvR24\_tr}}
+\DoxyCodeLine{27 \textcolor{preprocessor}{\#define PCT\_FONT        u8g2\_font\_helvR18\_tr}}
+\DoxyCodeLine{28 \textcolor{preprocessor}{\#define VOL\_DB\_FONT     u8g2\_font\_helvR24\_tr}}
+\DoxyCodeLine{29 \textcolor{preprocessor}{\#define DB\_FONT         u8g2\_font\_helvR14\_tf}}
+\DoxyCodeLine{30 \textcolor{preprocessor}{\#define MUTE\_FONT       u8g2\_font\_helvR24\_tr}}
+\DoxyCodeLine{31 \textcolor{preprocessor}{\#define MSG\_FONT        u8g2\_font\_helvR08\_tf}}
+\DoxyCodeLine{32 \textcolor{preprocessor}{\#define SOURCE\_FONT     u8g2\_font\_helvB12\_tf}}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{34 \textcolor{comment}{// Display zones}}
+\DoxyCodeLine{35 \textcolor{keyword}{struct }\mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} \{}
+\DoxyCodeLine{36   uint8\_t \mbox{\hyperlink{structarea_spec__t_a0f9a2d170eb639e5d8ec01b17056bc69}{XL}};   \textcolor{comment}{// X left and right}}
+\DoxyCodeLine{37   uint8\_t \mbox{\hyperlink{structarea_spec__t_aa295f06101c26252d3b520216189f867}{XR}};}
+\DoxyCodeLine{38   uint8\_t \mbox{\hyperlink{structarea_spec__t_ab0a1d2a2e565501ed955001f4afb7477}{YT}};   \textcolor{comment}{// Y top and bottom (top of screen is 0)}}
+\DoxyCodeLine{39   uint8\_t \mbox{\hyperlink{structarea_spec__t_a290942dee9b3808f7c6e271f438de339}{YB}};}
+\DoxyCodeLine{40   \textcolor{keywordtype}{bool} \mbox{\hyperlink{structarea_spec__t_a2d022a615085ff8e7bf852317047c188}{rJust}};   \textcolor{comment}{// Right justify? -\/ This could be an enum for left, right, center...}}
+\DoxyCodeLine{41 \} ;}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{43 \textcolor{comment}{// Text areas \{XLeft, XRight, YTop, YBottom, rightJustify\}}}
+\DoxyCodeLine{44 \textcolor{keyword}{constexpr} \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} \mbox{\hyperlink{_amp_display_8h_a71ecd81ff0d9c8774fa3cc824a639c8c}{sourceArea}} = \{0, 127, 0, 15, \textcolor{keyword}{false}\};}
+\DoxyCodeLine{45 \textcolor{keyword}{constexpr} \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} \mbox{\hyperlink{_amp_display_8h_a2a690c9f3c9785bff5f82604495d5aa9}{messageArea}} = \{0, 127, 50, 63, \textcolor{keyword}{false}\};}
+\DoxyCodeLine{46 \textcolor{keyword}{constexpr} \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} \mbox{\hyperlink{_amp_display_8h_ad3e03f4e55376fb932020c8f75b54949}{volumeArea}} = \{0, 100, 21, 47, \textcolor{keyword}{true}\};}
+\DoxyCodeLine{47 \textcolor{keyword}{constexpr} \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} \mbox{\hyperlink{_amp_display_8h_a71010f0f0435448497656a0802187d35}{volLabArea}} = \{101, 127, 21, 47, \textcolor{keyword}{false}\};}
+\DoxyCodeLine{48 \textcolor{keyword}{constexpr} \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} \mbox{\hyperlink{_amp_display_8h_aa2cfaa07d8553bb8be581c4ef1475884}{wholeVolumeArea}} = \{0, 127, 22, 48, \textcolor{keyword}{false}\};}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50 \textcolor{comment}{// Input icons}}
+\DoxyCodeLine{51 \textcolor{preprocessor}{\#define icons\_binary\_width 32}}
+\DoxyCodeLine{52 \textcolor{preprocessor}{\#define icons\_binary\_height 32}}
+\DoxyCodeLine{53 \textcolor{keyword}{static} \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{char} icons\_binary[] = \{}
+\DoxyCodeLine{54    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,}
+\DoxyCodeLine{55    0x00, 0x00, 0x00, 0x00, 0x70, 0x30, 0x70, 0x30, 0xfc, 0x70, 0xfc, 0x70,}
+\DoxyCodeLine{56    0xfc, 0x71, 0xfc, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71,}
+\DoxyCodeLine{57    0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0xce, 0x71, 0xce, 0x71,}
+\DoxyCodeLine{58    0xfc, 0x71, 0xfc, 0x71, 0xf8, 0x70, 0xf8, 0x70, 0x30, 0x20, 0x30, 0x20,}
+\DoxyCodeLine{59    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x80, 0x81, 0x21,}
+\DoxyCodeLine{60    0xf8, 0xe0, 0x87, 0x71, 0xfc, 0xe1, 0x87, 0x71, 0xce, 0x71, 0x8e, 0x71,}
+\DoxyCodeLine{61    0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71,}
+\DoxyCodeLine{62    0x8e, 0x71, 0x8e, 0x71, 0xfc, 0xf1, 0x8f, 0x71, 0xfc, 0xe0, 0x87, 0x71,}
+\DoxyCodeLine{63    0x70, 0xc0, 0x83, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,}
+\DoxyCodeLine{64    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 \};}
+\DoxyCodeLine{65 }
+\DoxyCodeLine{66 \textcolor{comment}{// Inputs}}
+\DoxyCodeLine{67 \textcolor{keyword}{enum} \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\_t}} \{ }
+\DoxyCodeLine{68     \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95a749a01fa0da23da5c8ea8b7ce0e00aa3}{Analog}} = 0,}
+\DoxyCodeLine{69     \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95a83f9aea5fb5be35fd29415f5bc365633}{Toslink}} = 1,}
+\DoxyCodeLine{70     \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6}{Unset}} = 3\};}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72 \textcolor{keyword}{class }\mbox{\hyperlink{class_amp_display}{AmpDisplay}}}
+\DoxyCodeLine{73 \{}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{76     U8G2 * \mbox{\hyperlink{class_amp_display_a7240f6cda66df9801517c8484ba54b8c}{display}};}
+\DoxyCodeLine{77 }
+\DoxyCodeLine{78     \textcolor{comment}{// Potentially live options}}
+\DoxyCodeLine{79     \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_amp_display_a4da0bc745e8ec35e918c43cccaa0ae7c}{dBDisplay}} = \mbox{\hyperlink{_amp_display_8h_afc637b5118dc56fb16c0b16c91fc384d}{DBDISPLAY}};      \textcolor{comment}{// Show dB (true) or \%}}
+\DoxyCodeLine{80 }
+\DoxyCodeLine{81     \textcolor{comment}{// State -\/ supports updates only when necessary}}
+\DoxyCodeLine{82     uint8\_t \mbox{\hyperlink{class_amp_display_a60ecff4996971218121ede43466dda05}{muteState}} = 3;              \textcolor{comment}{// Muted? 0 = no; 1 = yes; 3 = undetermined}}
+\DoxyCodeLine{83     \textcolor{keywordtype}{float} \mbox{\hyperlink{class_amp_display_aa3312e034bcfc300c2c52735005e7b30}{volumeState}} = -\/129;           \textcolor{comment}{// dB.  Can be set below MIN\_VOLUME to denote as-\/yet-\/undetermined.}}
+\DoxyCodeLine{84     \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\_t}} \mbox{\hyperlink{class_amp_display_a8a5ba490a926fb63407ca9ec73038f85}{sourceState}} = \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6}{Unset}};       \textcolor{comment}{// Current source. }}
+\DoxyCodeLine{85     \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_amp_display_aae85e85b5e540760deb9a6704ff7bdf8}{dimState}};                      \textcolor{comment}{// True if dimmed.}}
+\DoxyCodeLine{86     \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_amp_display_a56bad2be314d2881acc3ba0dcab264f0}{volumeShown}} = \textcolor{keyword}{false};           \textcolor{comment}{// Enables selective re-\/draw of volume in display wakeup }}
+\DoxyCodeLine{87 }
+\DoxyCodeLine{88 \textcolor{keyword}{public}:}
+\DoxyCodeLine{89 }
+\DoxyCodeLine{90     \textcolor{comment}{// Constructor}}
+\DoxyCodeLine{91     \mbox{\hyperlink{class_amp_display_a68031143e1a168791b95a239d0388380}{AmpDisplay}}(U8G2 * u8g2)}
+\DoxyCodeLine{92     \{}
+\DoxyCodeLine{93         \mbox{\hyperlink{class_amp_display_a7240f6cda66df9801517c8484ba54b8c}{display}} = u8g2;}
+\DoxyCodeLine{94     \}}
+\DoxyCodeLine{95 }
+\DoxyCodeLine{96     \mbox{\hyperlink{class_amp_display_a1d3cb36729c4a12602b9816936663efe}{AmpDisplay}}(U8G2 * u8g2, \textcolor{keywordtype}{float} vol, \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_amp_display_a21a4a9d8520b93e84ecc8ed02a49b494}{mute}}, \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\_t}} input, \textcolor{keywordtype}{bool} dB)}
+\DoxyCodeLine{97     \{}
+\DoxyCodeLine{98         \mbox{\hyperlink{class_amp_display_a7240f6cda66df9801517c8484ba54b8c}{display}} = u8g2;}
+\DoxyCodeLine{99         \mbox{\hyperlink{class_amp_display_a4da0bc745e8ec35e918c43cccaa0ae7c}{dBDisplay}} = dB;}
+\DoxyCodeLine{100         \mbox{\hyperlink{class_amp_display_a8a5ba490a926fb63407ca9ec73038f85}{sourceState}} = input;}
+\DoxyCodeLine{101         \mbox{\hyperlink{class_amp_display_a60ecff4996971218121ede43466dda05}{muteState}} = \mbox{\hyperlink{class_amp_display_a21a4a9d8520b93e84ecc8ed02a49b494}{mute}};}
+\DoxyCodeLine{102         \mbox{\hyperlink{class_amp_display_aa3312e034bcfc300c2c52735005e7b30}{volumeState}} = vol;}
+\DoxyCodeLine{103     \}}
+\DoxyCodeLine{104     }
+\DoxyCodeLine{105     \textcolor{comment}{// @brief Display volume, in \% or dB.}}
+\DoxyCodeLine{106     \textcolor{comment}{// This updates the volume state and as needed updates and wakes the display}}
+\DoxyCodeLine{107     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_abde56490fad2c789f26fce7eca6e9ba7}{volume}}(\textcolor{keywordtype}{float} vol);}
+\DoxyCodeLine{108 }
+\DoxyCodeLine{109     \textcolor{comment}{// @brief Display mode -\/ sets volume display for \% or dB}}
+\DoxyCodeLine{110     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_a2a77dd425cc88658652d7ac72ebc0a87}{volumeMode}}(\textcolor{keywordtype}{bool} dB);}
+\DoxyCodeLine{111     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_a2a77dd425cc88658652d7ac72ebc0a87}{volumeMode}}(); \textcolor{comment}{// toggles dB/\% mode}}
+\DoxyCodeLine{112 }
+\DoxyCodeLine{113     \textcolor{comment}{// @brief Display mute}}
+\DoxyCodeLine{114     \textcolor{comment}{// This sets the mute state and as needed updates and wakes the display}}
+\DoxyCodeLine{115     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_a21a4a9d8520b93e84ecc8ed02a49b494}{mute}}(\textcolor{keywordtype}{bool} isMuted);}
+\DoxyCodeLine{116 }
+\DoxyCodeLine{117     \textcolor{comment}{// @brief Display source -\/ 0 = analog, 1 = toslink}}
+\DoxyCodeLine{118     \textcolor{comment}{// This sets the source state and as needed updates and wakes the display}}
+\DoxyCodeLine{119     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_aa4499881714ceecd51274398f5dafa95}{source}}(\mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\_t}} thesource);}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{121     \textcolor{comment}{// @brief Set max volume for \% mode}}
+\DoxyCodeLine{122     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_a7ae2554ad7ae5f965cf6f293d1cefc2e}{setMaxVolume}}(\textcolor{keywordtype}{float} max);}
+\DoxyCodeLine{123 }
+\DoxyCodeLine{124     \textcolor{comment}{// @brief See if anything needs to be done (dim, return to default, etc.)}}
+\DoxyCodeLine{125     \textcolor{comment}{// NOT IMPLEMENTED -\/ CURRENTLY, THINGS LIKE DIMMING ARE DONE BY THE APPLICATION}}
+\DoxyCodeLine{126     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_a52170f4dfacff6ce87aa423601f02bb9}{task}}();}
+\DoxyCodeLine{127 }
+\DoxyCodeLine{128     \textcolor{comment}{// @brief Draw the display background}}
+\DoxyCodeLine{129     \textcolor{comment}{// Draws any dividers, etc. that persist}}
+\DoxyCodeLine{130     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_a364f9ee4db9d7c5661351d78582fabda}{drawFrame}}();}
+\DoxyCodeLine{131 }
+\DoxyCodeLine{132     \textcolor{comment}{// @brief Display a text string in the default message area}}
+\DoxyCodeLine{133     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_afe0859db9865dd483c625124dde25acb}{displayMessage}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char} * message);}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135     \textcolor{comment}{// @brief Display a text string in the selected area}}
+\DoxyCodeLine{136     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_afe0859db9865dd483c625124dde25acb}{displayMessage}}(\textcolor{keyword}{const} \textcolor{keywordtype}{char} * message, \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} area);}
+\DoxyCodeLine{137 }
+\DoxyCodeLine{138     \textcolor{comment}{// @brief Bar graph in the specified area}}
+\DoxyCodeLine{139     \textcolor{comment}{// Levels are integer percent of full width}}
+\DoxyCodeLine{140     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_a6d0255f07b3c37927e024688a27f51c8}{displayLRBarGraph}}(uint8\_t leftLevel, uint8\_t rightLevel, \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} area);}
+\DoxyCodeLine{141 }
+\DoxyCodeLine{142     \textcolor{comment}{// @brief Dim the display}}
+\DoxyCodeLine{143     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_aaf2d26e0961780215b167721d93c354d}{dim}}();}
+\DoxyCodeLine{144 }
+\DoxyCodeLine{145     \textcolor{comment}{// @brief Check if the display is dimmed}}
+\DoxyCodeLine{146     \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_amp_display_af0b8aee04997e2b6757616de63d4cf1d}{dimmed}}();}
+\DoxyCodeLine{147 }
+\DoxyCodeLine{148     \textcolor{comment}{// @brief Wake up the display}}
+\DoxyCodeLine{149     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_amp_display_aee74d69e14edc35d0304b3bb86311be9}{wakeup}}();}
+\DoxyCodeLine{150 }
+\DoxyCodeLine{151 \textcolor{keyword}{private}:}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153     \textcolor{comment}{// @brief Display a text string in a specified area}}
+\DoxyCodeLine{154     \textcolor{keywordtype}{void} displayText(\textcolor{keyword}{const} \textcolor{keywordtype}{char} * text, \textcolor{keyword}{const} uint8\_t * font,  \mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} area, \textcolor{keyword}{const} \textcolor{keywordtype}{bool} erase);}
+\DoxyCodeLine{155 }
+\DoxyCodeLine{156     \textcolor{comment}{// @brief Draw the volume indicator (including mute)}}
+\DoxyCodeLine{157     \textcolor{comment}{// erase causes the field to be erased instead of redrawn}}
+\DoxyCodeLine{158     \textcolor{keywordtype}{void} drawVolume();}
+\DoxyCodeLine{159 }
+\DoxyCodeLine{160     \textcolor{comment}{// @brief Erase the volume indicator}}
+\DoxyCodeLine{161     \textcolor{keywordtype}{void} eraseVolume();}
+\DoxyCodeLine{162 }
+\DoxyCodeLine{163     \textcolor{comment}{// @brief Erase a text area}}
+\DoxyCodeLine{164     \textcolor{keywordtype}{void} eraseArea(\mbox{\hyperlink{structarea_spec__t}{areaSpec\_t}} area);}
+\DoxyCodeLine{165 }
+\DoxyCodeLine{166     \textcolor{comment}{// Draw the input indicator}}
+\DoxyCodeLine{167     \textcolor{keywordtype}{void} drawSource();}
+\DoxyCodeLine{168 }
+\DoxyCodeLine{169     \textcolor{comment}{// Update the display}}
+\DoxyCodeLine{170     \textcolor{keywordtype}{void} displayUpdate();}
+\DoxyCodeLine{171 }
+\DoxyCodeLine{172 \};}
+
+\end{DoxyCode}

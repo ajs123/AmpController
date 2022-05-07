@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__power_control_8h" xml:lang="en-US">
+<title>PowerControl.h File Reference</title>
+<indexterm><primary>PowerControl.h</primary></indexterm>
+<programlisting linenumbering="unnumbered">#include &lt;Arduino.h&gt;
+#include &lt;MiniDSP.h&gt;
+</programlisting><simplesect>
+    <title>Classes    </title>
+        <itemizedlist>
+            <listitem><para>class <link linkend="_class_power_control">PowerControl</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Macros    </title>
+        <itemizedlist>
+            <listitem><para>#define <link linkend="__power_control_8h_1a654247286b2a6dcf1ea546330d758bdc">PIN_DSP_RELAY</link>   10</para>
+</listitem>
+            <listitem><para>#define <link linkend="__power_control_8h_1ac421d54fc77b2895650febe563777f4f">PIN_AMP_RELAY</link>   11</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Variables    </title>
+        <itemizedlist>
+            <listitem><para>MiniDSP <link linkend="__power_control_8h_1a5c2a8a280a7812e79f5af4eb44610842">ourMiniDSP</link></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Macro Definition Documentation</title>
+<anchor xml:id="__power_control_8h_1ac421d54fc77b2895650febe563777f4f"/><section>
+    <title>PIN_AMP_RELAY</title>
+<indexterm><primary>PIN_AMP_RELAY</primary><secondary>PowerControl.h</secondary></indexterm>
+<indexterm><primary>PowerControl.h</primary><secondary>PIN_AMP_RELAY</secondary></indexterm>
+<para><computeroutput>#define PIN_AMP_RELAY   11</computeroutput></para></section>
+<anchor xml:id="__power_control_8h_1a654247286b2a6dcf1ea546330d758bdc"/><section>
+    <title>PIN_DSP_RELAY</title>
+<indexterm><primary>PIN_DSP_RELAY</primary><secondary>PowerControl.h</secondary></indexterm>
+<indexterm><primary>PowerControl.h</primary><secondary>PIN_DSP_RELAY</secondary></indexterm>
+<para><computeroutput>#define PIN_DSP_RELAY   10</computeroutput></para></section>
+</section>
+<section>
+<title>Variable Documentation</title>
+<anchor xml:id="__power_control_8h_1a5c2a8a280a7812e79f5af4eb44610842"/><section>
+    <title>ourMiniDSP</title>
+<indexterm><primary>ourMiniDSP</primary><secondary>PowerControl.h</secondary></indexterm>
+<indexterm><primary>PowerControl.h</primary><secondary>ourMiniDSP</secondary></indexterm>
+<para><computeroutput>MiniDSP ourMiniDSP<computeroutput>[extern]</computeroutput></computeroutput></para></section>
+</section>
+</section>

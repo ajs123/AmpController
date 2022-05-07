@@ -1,0 +1,354 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_md__encapsulations" xml:lang="en-US">
+<section xml:id="_md__encapsulations_1autotoc_md1">
+<title>Hardware</title>
+<section xml:id="_md__encapsulations_1autotoc_md2">
+<title>MiniDSP (UHS lib, with mods)</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Read state from MiniDSP</para>
+</listitem><listitem>
+<para>Set DSP input and volume</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md3">
+<title>PowerControl</title>
+
+<para><itemizedlist>
+<listitem>
+<para>Control of power to dsp and amps via relays and (if used) EN lines</para>
+</listitem><listitem>
+<para>Read back status of each</para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md4">
+<title>Input and power rules</title>
+<section xml:id="_md__encapsulations_1autotoc_md5">
+<title>Input detection</title>
+<section xml:id="_md__encapsulations_1autotoc_md6">
+<title>Direct measures</title>
+
+<para>These are read directly (no persistent state unless there&apos;s filtering on the analog inputs)<itemizedlist>
+<listitem>
+<para>Trigger input corresponding to a signal input</para>
+</listitem><listitem>
+<para>For analog, detection of signal, which means<itemizedlist>
+<listitem>
+<para>Signal present</para>
+</listitem><listitem>
+<para>In absence of signal, optional detection of low impedance</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md7">
+<title>Input sense states: InputSense</title>
+
+<para>The triggers are just copies of the direct measures. AnalogSignal has a persistent state to allow a timeout.</para>
+
+<para><itemizedlist>
+<listitem>
+<para>DTrigger (direct read)<itemizedlist>
+<listitem>
+<para>ABSENT</para>
+</listitem><listitem>
+<para>PRESENT</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>ATrigger (direct read)<itemizedlist>
+<listitem>
+<para>ABSENT</para>
+</listitem><listitem>
+<para>PRESENT</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>AnalogSignal (state machine)<itemizedlist>
+<listitem>
+<para>ABSENT<itemizedlist>
+<listitem>
+<para>Signal --&gt; PRESENT</para>
+</listitem><listitem>
+<para>LowImpedance --&gt; PRESENT</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>PRESENT<itemizedlist>
+<listitem>
+<para>!Signal --&gt; SILENT</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>SILENT<itemizedlist>
+<listitem>
+<para>HoldupTime expired --&gt; ABSENT</para>
+</listitem><listitem>
+<para>!LowImpedance --&gt; ABSENT</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>AnalogActive = ATrigger == PRESENT || AnalogSignal != ABSENT</para>
+</listitem><listitem>
+<para>DigitalActive = DTrigger</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md8">
+<title>Input state - ANALOG, DIGITAL, NA</title>
+
+<para><itemizedlist>
+<listitem>
+<para>CurrentInput: current from MiniDSP - ANALOG, DIGITAL, NA</para>
+</listitem><listitem>
+<para>PriorInput: last from MiniDSP</para>
+</listitem><listitem>
+<para>ChosenInput: from inputs/state machine(s) - ANALOG, DIGITAL, NA</para>
+</listitem></itemizedlist>
+</para>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md9">
+<title>Input/Power state machine: PowerState</title>
+
+<para>Determination of whether the amp should be on or off based on InputSense, the input selected by the DSP (may be changed by the remote), and the panel buttons<itemizedlist>
+<listitem>
+<para>OFF // Respond to any source or panel activity<itemizedlist>
+<listitem>
+<para>if DigitalButton || DigitalActive<itemizedlist>
+<listitem>
+<para>ChosenInput = DIGITAL // Input activity determines the input</para>
+</listitem><listitem>
+<para>--&gt; ON</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>elseif AnalogButton || AnalogActive<itemizedlist>
+<listitem>
+<para>ChosenInput = ANALOG</para>
+</listitem><listitem>
+<para>--&gt; ON</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>elseif PowerButton<itemizedlist>
+<listitem>
+<para>ChosenInput = NA</para>
+</listitem><listitem>
+<para>--&gt; ON</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>ON // Accept any input change from the remote, and monitor the chosen input<itemizedlist>
+<listitem>
+<para>if ChosenInput == CurrentInput<itemizedlist>
+<listitem>
+<para>ChosenInput = NA</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>if CurrentInput DIGITAL<itemizedlist>
+<listitem>
+<para>if !DigitalActive --&gt; WAIT</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>elseif CurrentInput ANALOG<itemizedlist>
+<listitem>
+<para>if !AnalogActive --&gt; WAIT</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>WAIT // Shutdown in the extended absence of signal or buttons<itemizedlist>
+<listitem>
+<para>if DigitalButton || DigitalActive<itemizedlist>
+<listitem>
+<para>ChosenInput = DIGITAL</para>
+</listitem><listitem>
+<para>--&gt; ON</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>elseif AnalogButton || AnalogActive<itemizedlist>
+<listitem>
+<para>ChosenInput = ANALOG</para>
+</listitem><listitem>
+<para>--&gt; ON</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>elseif PowerButton || WaitTime expired --&gt; OFF</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md10">
+<title>Top-level state machine</title>
+<section xml:id="_md__encapsulations_1autotoc_md11">
+<title>On Sequence</title>
+
+<para><orderedlist>
+<listitem>
+<para>DSP power</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Suppress output meter</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Wait for DSP connected to USB stack</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>(optional) volume limit</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Set input if scheduled</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Amp power</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Enable output meter</para>
+</listitem></orderedlist>
+</para>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md12">
+<title>State machine</title>
+
+<para>This is the main state machine that takes the dsp through its startup and controls the amp power.<itemizedlist>
+<listitem>
+<para>OFF<itemizedlist>
+<listitem>
+<para>if PowerState != OFF --&gt; DSP_START</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>DSP_START<itemizedlist>
+<listitem>
+<para>DSP relay on</para>
+</listitem><listitem>
+<para>--&gt; DSP_WAIT</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>DSP_WAIT<itemizedlist>
+<listitem>
+<para>if DSP connected() --&gt; DSP_INITIAL_STATE</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>DSP_INITIAL_STATE<itemizedlist>
+<listitem>
+<para>be sure we have input and volume</para>
+</listitem><listitem>
+<para>--&gt; DSP_INIT_INPUT</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>DSP_INIT_INPUT<itemizedlist>
+<listitem>
+<para>if ChosenInput != NA, Set input to ChosenInput</para>
+</listitem><listitem>
+<para>--&gt; DSP_INIT_VOLUME</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>DSP_INIT_VOLUME<itemizedlist>
+<listitem>
+<para>if CurrentVolume &gt; MaxInitialVolume, set volume</para>
+</listitem><listitem>
+<para>--&gt; AMP_ON</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>AMP_ON<itemizedlist>
+<listitem>
+<para>Amp power on</para>
+</listitem><listitem>
+<para>--&gt; ON</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>ON<itemizedlist>
+<listitem>
+<para>if PowerState == OFF --&gt; TURN_OFF</para>
+</listitem><listitem>
+<para>if ChosenInput != NA &amp;&amp; ChosenInput != CurrentInput set input</para>
+</listitem></itemizedlist>
+</para>
+</listitem><listitem>
+<para>TURN_OFF<itemizedlist>
+<listitem>
+<para>Amp power off</para>
+</listitem><listitem>
+<para>DSP relay off</para>
+</listitem><listitem>
+<para>--&gt; OFF</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</section>
+</section>
+<section xml:id="_md__encapsulations_1autotoc_md13">
+<title>Summary - PowerInputControl Task()</title>
+
+<para><orderedlist>
+<listitem>
+<para>Direct read inputs</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Input sense state machines<itemizedlist>
+<listitem>
+<para>Determines the input state, including persistence in case of silence on the analog input</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Power/input select state machine<itemizedlist>
+<listitem>
+<para>Based on the input states, determines whether power should be on/off and whether the dsp should be told to use a particular input</para>
+</listitem><listitem>
+<para>Provides a period during which the unit will stay on even with inputs inactive. Useful, e.g., when turning off the TV with intent to turn on the turntable.</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+<orderedlist>
+<listitem>
+<para>Power/input control state machine<itemizedlist>
+<listitem>
+<para>Based on the Power/input select, provides<itemizedlist>
+<listitem>
+<para>A proper startup sequence for the dsp and amps</para>
+</listitem><listitem>
+<para>Input selection</para>
+</listitem></itemizedlist>
+</para>
+</listitem></itemizedlist>
+</para>
+</listitem></orderedlist>
+</para>
+
+<para>NOTE: The output meter shouldn&apos;t operate until the amps are on, so wherever the meter update is called should check the power state. </para>
+</section>
+</section>
+</section>

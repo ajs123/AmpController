@@ -2,12 +2,15 @@
 #include <MiniDSP.h>
 #include "AmpDisplay.h"
 #include "PowerControl.h"
+#include <IRLibRecvPCI.h>   
+#include "RemoteReceive.h"
 #include "Options.h"
 
 #ifdef U8X8_HAVE_HW_I2C // For this hardware (nrf52840) should just be able to include Wire.h
 #include <Wire.h>
 #endif
 
+//remoteReceiver::IRCommand_t 
 //#include <SPI.h> // This doesn't seem to matter, at least not for the Adafruit nrf52840
 
 // Hardware

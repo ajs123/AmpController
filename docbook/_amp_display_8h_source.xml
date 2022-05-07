@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__amp_display_8h_source" xml:lang="en-US">
+<title>AmpDisplay.h</title>
+Go to the documentation of this file.<programlisting linenumbering="unnumbered">1 <emphasis role="comment">//&#32;Display&#32;for&#32;the&#32;amp&#32;controller</emphasis>
+2 <emphasis role="comment">//&#32;Simple&#32;layout:&#32;Volume&#32;in&#32;dB&#32;or&#32;%,&#32;or&#32;MUTE,&#32;in&#32;a&#32;large&#32;font,&#32;and&#32;source&#32;indicator&#32;(line&#32;or&#32;toslink)</emphasis>
+3 <emphasis role="comment">//&#32;The&#32;display&#32;should&#32;dim&#32;shortly&#32;after&#32;a&#32;volume&#32;or&#32;source&#32;change</emphasis>
+4 
+5 <emphasis role="comment">//&#32;The&#32;U8G2&#32;display&#32;driver&#32;is&#32;declared&#32;and&#32;initialized&#32;in&#32;the&#32;.ino&#32;and&#32;a&#32;pointer&#32;to&#32;it&#32;is&#32;used&#32;here.</emphasis>
+6 <emphasis role="comment">//&#32;That&apos;s&#32;the&#32;same&#32;as&#32;is&#32;done&#32;with&#32;U8G2Log,&#32;but&#32;it&#32;may&#32;make&#32;more&#32;sense&#32;to&#32;full&#32;encapsulate&#32;the&#32;display&#32;here.</emphasis>
+7 
+8 <emphasis role="preprocessor">#pragma&#32;once</emphasis>
+9 
+10 <emphasis role="preprocessor">#include&#32;&lt;U8g2lib.h&gt;</emphasis>
+11 
+12 <emphasis role="comment">//&#32;Display&#32;settings&#32;of&#32;most&#32;interest&#32;to&#32;the&#32;user</emphasis>
+13 <emphasis role="preprocessor">#define&#32;BRIGHT_TIME&#32;(10&#32;*&#32;1000)&#32;</emphasis><emphasis role="comment">//&#32;10&#32;seconds</emphasis>
+14 <emphasis role="preprocessor">#define&#32;CONTRAST_FULL&#32;128</emphasis>
+15 <emphasis role="preprocessor">#define&#32;CONTRAST_DIM&#32;0</emphasis>
+16 
+17 <emphasis role="comment">//&#32;Options</emphasis>
+18 <emphasis role="preprocessor">#define&#32;DBDISPLAY&#32;true&#32;&#32;</emphasis><emphasis role="comment">//&#32;Display&#32;volume&#32;in&#32;dB&#32;(instead&#32;of&#32;%).&#32;Potentially&#32;a&#32;live&#32;option.</emphasis>
+19 <emphasis role="preprocessor">#define&#32;TRANSIENTVOLUME&#32;</emphasis><emphasis role="comment">//&#32;Display&#32;volume&#32;only&#32;transient,&#32;when&#32;changed</emphasis>
+20 
+21 <emphasis role="comment">//&#32;Display&#32;settings&#32;relating&#32;to&#32;layout&#32;and&#32;other&#32;detail</emphasis>
+22 <emphasis role="preprocessor">#define&#32;MAX_VOLUME&#32;0&#32;</emphasis><emphasis role="comment">//&#32;These&#32;are&#32;the&#32;max&#32;and&#32;min&#32;in&#32;dB&#32;that&#32;can&#32;be&#32;set&#32;in&#32;the&#32;minidsp</emphasis>
+23 <emphasis role="preprocessor">#define&#32;MIN_VOLUME&#32;-128</emphasis>
+24 
+25 <emphasis role="comment">//&#32;Font&#32;choices</emphasis>
+26 <emphasis role="preprocessor">#define&#32;VOL_PCT_FONT&#32;&#32;&#32;&#32;u8g2_font_helvR24_tr</emphasis>
+27 <emphasis role="preprocessor">#define&#32;PCT_FONT&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;u8g2_font_helvR18_tr</emphasis>
+28 <emphasis role="preprocessor">#define&#32;VOL_DB_FONT&#32;&#32;&#32;&#32;&#32;u8g2_font_helvR24_tr</emphasis>
+29 <emphasis role="preprocessor">#define&#32;DB_FONT&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;u8g2_font_helvR14_tf</emphasis>
+30 <emphasis role="preprocessor">#define&#32;MUTE_FONT&#32;&#32;&#32;&#32;&#32;&#32;&#32;u8g2_font_helvR24_tr</emphasis>
+31 <emphasis role="preprocessor">#define&#32;MSG_FONT&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;u8g2_font_helvR08_tf</emphasis>
+32 <emphasis role="preprocessor">#define&#32;SOURCE_FONT&#32;&#32;&#32;&#32;&#32;u8g2_font_helvB12_tf</emphasis>
+33 
+34 <emphasis role="comment">//&#32;Display&#32;zones</emphasis>
+35 <emphasis role="keyword">struct&#32;</emphasis><link linkend="_structarea_spec__t">areaSpec_t</link>&#32;{
+36 &#32;&#32;uint8_t&#32;<link linkend="_structarea_spec__t_1a0f9a2d170eb639e5d8ec01b17056bc69">XL</link>;&#32;&#32;&#32;<emphasis role="comment">//&#32;X&#32;left&#32;and&#32;right</emphasis>
+37 &#32;&#32;uint8_t&#32;<link linkend="_structarea_spec__t_1aa295f06101c26252d3b520216189f867">XR</link>;
+38 &#32;&#32;uint8_t&#32;<link linkend="_structarea_spec__t_1ab0a1d2a2e565501ed955001f4afb7477">YT</link>;&#32;&#32;&#32;<emphasis role="comment">//&#32;Y&#32;top&#32;and&#32;bottom&#32;(top&#32;of&#32;screen&#32;is&#32;0)</emphasis>
+39 &#32;&#32;uint8_t&#32;<link linkend="_structarea_spec__t_1a290942dee9b3808f7c6e271f438de339">YB</link>;
+40 &#32;&#32;<emphasis role="keywordtype">bool</emphasis>&#32;<link linkend="_structarea_spec__t_1a2d022a615085ff8e7bf852317047c188">rJust</link>;&#32;&#32;&#32;<emphasis role="comment">//&#32;Right&#32;justify?&#32;-&#32;This&#32;could&#32;be&#32;an&#32;enum&#32;for&#32;left,&#32;right,&#32;center...</emphasis>
+41 }&#32;;
+42 
+43 <emphasis role="comment">//&#32;Text&#32;areas&#32;{XLeft,&#32;XRight,&#32;YTop,&#32;YBottom,&#32;rightJustify}</emphasis>
+44 <emphasis role="keyword">constexpr</emphasis>&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;<link linkend="__amp_display_8h_1a71ecd81ff0d9c8774fa3cc824a639c8c">sourceArea</link>&#32;=&#32;{0,&#32;127,&#32;0,&#32;15,&#32;<emphasis role="keyword">false</emphasis>};
+45 <emphasis role="keyword">constexpr</emphasis>&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;<link linkend="__amp_display_8h_1a2a690c9f3c9785bff5f82604495d5aa9">messageArea</link>&#32;=&#32;{0,&#32;127,&#32;50,&#32;63,&#32;<emphasis role="keyword">false</emphasis>};
+46 <emphasis role="keyword">constexpr</emphasis>&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;<link linkend="__amp_display_8h_1ad3e03f4e55376fb932020c8f75b54949">volumeArea</link>&#32;=&#32;{0,&#32;100,&#32;21,&#32;47,&#32;<emphasis role="keyword">true</emphasis>};
+47 <emphasis role="keyword">constexpr</emphasis>&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;<link linkend="__amp_display_8h_1a71010f0f0435448497656a0802187d35">volLabArea</link>&#32;=&#32;{101,&#32;127,&#32;21,&#32;47,&#32;<emphasis role="keyword">false</emphasis>};
+48 <emphasis role="keyword">constexpr</emphasis>&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;<link linkend="__amp_display_8h_1aa2cfaa07d8553bb8be581c4ef1475884">wholeVolumeArea</link>&#32;=&#32;{0,&#32;127,&#32;22,&#32;48,&#32;<emphasis role="keyword">false</emphasis>};
+49 
+50 <emphasis role="comment">//&#32;Input&#32;icons</emphasis>
+51 <emphasis role="preprocessor">#define&#32;icons_binary_width&#32;32</emphasis>
+52 <emphasis role="preprocessor">#define&#32;icons_binary_height&#32;32</emphasis>
+53 <emphasis role="keyword">static</emphasis>&#32;<emphasis role="keywordtype">unsigned</emphasis>&#32;<emphasis role="keywordtype">char</emphasis>&#32;icons_binary[]&#32;=&#32;{
+54 &#32;&#32;&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,
+55 &#32;&#32;&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x70,&#32;0x30,&#32;0x70,&#32;0x30,&#32;0xfc,&#32;0x70,&#32;0xfc,&#32;0x70,
+56 &#32;&#32;&#32;0xfc,&#32;0x71,&#32;0xfc,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,
+57 &#32;&#32;&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0xce,&#32;0x71,&#32;0xce,&#32;0x71,
+58 &#32;&#32;&#32;0xfc,&#32;0x71,&#32;0xfc,&#32;0x71,&#32;0xf8,&#32;0x70,&#32;0xf8,&#32;0x70,&#32;0x30,&#32;0x20,&#32;0x30,&#32;0x20,
+59 &#32;&#32;&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x30,&#32;0x80,&#32;0x81,&#32;0x21,
+60 &#32;&#32;&#32;0xf8,&#32;0xe0,&#32;0x87,&#32;0x71,&#32;0xfc,&#32;0xe1,&#32;0x87,&#32;0x71,&#32;0xce,&#32;0x71,&#32;0x8e,&#32;0x71,
+61 &#32;&#32;&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,
+62 &#32;&#32;&#32;0x8e,&#32;0x71,&#32;0x8e,&#32;0x71,&#32;0xfc,&#32;0xf1,&#32;0x8f,&#32;0x71,&#32;0xfc,&#32;0xe0,&#32;0x87,&#32;0x71,
+63 &#32;&#32;&#32;0x70,&#32;0xc0,&#32;0x83,&#32;0x31,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,
+64 &#32;&#32;&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00,&#32;0x00&#32;};
+65 
+66 <emphasis role="comment">//&#32;Inputs</emphasis>
+67 <emphasis role="keyword">enum</emphasis>&#32;<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link>&#32;{&#32;
+68 &#32;&#32;&#32;&#32;<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95a749a01fa0da23da5c8ea8b7ce0e00aa3">Analog</link>&#32;=&#32;0,
+69 &#32;&#32;&#32;&#32;<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95a83f9aea5fb5be35fd29415f5bc365633">Toslink</link>&#32;=&#32;1,
+70 &#32;&#32;&#32;&#32;<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6">Unset</link>&#32;=&#32;3};
+71 
+72 <emphasis role="keyword">class&#32;</emphasis><link linkend="_class_amp_display">AmpDisplay</link>
+73 {
+74 
+75 <emphasis role="keyword">protected</emphasis>:
+76 &#32;&#32;&#32;&#32;U8G2&#32;*&#32;<link linkend="_class_amp_display_1a7240f6cda66df9801517c8484ba54b8c">display</link>;
+77 
+78 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Potentially&#32;live&#32;options</emphasis>
+79 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">bool</emphasis>&#32;<link linkend="_class_amp_display_1a4da0bc745e8ec35e918c43cccaa0ae7c">dBDisplay</link>&#32;=&#32;<link linkend="__amp_display_8h_1afc637b5118dc56fb16c0b16c91fc384d">DBDISPLAY</link>;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Show&#32;dB&#32;(true)&#32;or&#32;%</emphasis>
+80 
+81 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;State&#32;-&#32;supports&#32;updates&#32;only&#32;when&#32;necessary</emphasis>
+82 &#32;&#32;&#32;&#32;uint8_t&#32;<link linkend="_class_amp_display_1a60ecff4996971218121ede43466dda05">muteState</link>&#32;=&#32;3;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Muted?&#32;0&#32;=&#32;no;&#32;1&#32;=&#32;yes;&#32;3&#32;=&#32;undetermined</emphasis>
+83 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">float</emphasis>&#32;<link linkend="_class_amp_display_1aa3312e034bcfc300c2c52735005e7b30">volumeState</link>&#32;=&#32;-129;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;dB.&#32;&#32;Can&#32;be&#32;set&#32;below&#32;MIN_VOLUME&#32;to&#32;denote&#32;as-yet-undetermined.</emphasis>
+84 &#32;&#32;&#32;&#32;<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link>&#32;<link linkend="_class_amp_display_1a8a5ba490a926fb63407ca9ec73038f85">sourceState</link>&#32;=&#32;<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6">Unset</link>;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Current&#32;source.&#32;</emphasis>
+85 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">bool</emphasis>&#32;<link linkend="_class_amp_display_1aae85e85b5e540760deb9a6704ff7bdf8">dimState</link>;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;True&#32;if&#32;dimmed.</emphasis>
+86 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">bool</emphasis>&#32;<link linkend="_class_amp_display_1a56bad2be314d2881acc3ba0dcab264f0">volumeShown</link>&#32;=&#32;<emphasis role="keyword">false</emphasis>;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Enables&#32;selective&#32;re-draw&#32;of&#32;volume&#32;in&#32;display&#32;wakeup&#32;</emphasis>
+87 
+88 <emphasis role="keyword">public</emphasis>:
+89 
+90 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Constructor</emphasis>
+91 &#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1a68031143e1a168791b95a239d0388380">AmpDisplay</link>(U8G2&#32;*&#32;u8g2)
+92 &#32;&#32;&#32;&#32;{
+93 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1a7240f6cda66df9801517c8484ba54b8c">display</link>&#32;=&#32;u8g2;
+94 &#32;&#32;&#32;&#32;}
+95 
+96 &#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1a1d3cb36729c4a12602b9816936663efe">AmpDisplay</link>(U8G2&#32;*&#32;u8g2,&#32;<emphasis role="keywordtype">float</emphasis>&#32;vol,&#32;<emphasis role="keywordtype">bool</emphasis>&#32;<link linkend="_class_amp_display_1a21a4a9d8520b93e84ecc8ed02a49b494">mute</link>,&#32;<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link>&#32;input,&#32;<emphasis role="keywordtype">bool</emphasis>&#32;dB)
+97 &#32;&#32;&#32;&#32;{
+98 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1a7240f6cda66df9801517c8484ba54b8c">display</link>&#32;=&#32;u8g2;
+99 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1a4da0bc745e8ec35e918c43cccaa0ae7c">dBDisplay</link>&#32;=&#32;dB;
+100 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1a8a5ba490a926fb63407ca9ec73038f85">sourceState</link>&#32;=&#32;input;
+101 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1a60ecff4996971218121ede43466dda05">muteState</link>&#32;=&#32;<link linkend="_class_amp_display_1a21a4a9d8520b93e84ecc8ed02a49b494">mute</link>;
+102 &#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;<link linkend="_class_amp_display_1aa3312e034bcfc300c2c52735005e7b30">volumeState</link>&#32;=&#32;vol;
+103 &#32;&#32;&#32;&#32;}
+104 &#32;&#32;&#32;&#32;
+105 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Display&#32;volume,&#32;in&#32;%&#32;or&#32;dB.</emphasis>
+106 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;This&#32;updates&#32;the&#32;volume&#32;state&#32;and&#32;as&#32;needed&#32;updates&#32;and&#32;wakes&#32;the&#32;display</emphasis>
+107 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1abde56490fad2c789f26fce7eca6e9ba7">volume</link>(<emphasis role="keywordtype">float</emphasis>&#32;vol);
+108 
+109 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Display&#32;mode&#32;-&#32;sets&#32;volume&#32;display&#32;for&#32;%&#32;or&#32;dB</emphasis>
+110 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1a2a77dd425cc88658652d7ac72ebc0a87">volumeMode</link>(<emphasis role="keywordtype">bool</emphasis>&#32;dB);
+111 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1a2a77dd425cc88658652d7ac72ebc0a87">volumeMode</link>();&#32;<emphasis role="comment">//&#32;toggles&#32;dB/%&#32;mode</emphasis>
+112 
+113 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Display&#32;mute</emphasis>
+114 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;This&#32;sets&#32;the&#32;mute&#32;state&#32;and&#32;as&#32;needed&#32;updates&#32;and&#32;wakes&#32;the&#32;display</emphasis>
+115 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1a21a4a9d8520b93e84ecc8ed02a49b494">mute</link>(<emphasis role="keywordtype">bool</emphasis>&#32;isMuted);
+116 
+117 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Display&#32;source&#32;-&#32;0&#32;=&#32;analog,&#32;1&#32;=&#32;toslink</emphasis>
+118 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;This&#32;sets&#32;the&#32;source&#32;state&#32;and&#32;as&#32;needed&#32;updates&#32;and&#32;wakes&#32;the&#32;display</emphasis>
+119 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1aa4499881714ceecd51274398f5dafa95">source</link>(<link linkend="__amp_display_8h_1a68a545a3c23609598d9bf398fc14de95">source_t</link>&#32;thesource);
+120 
+121 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Set&#32;max&#32;volume&#32;for&#32;%&#32;mode</emphasis>
+122 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1a7ae2554ad7ae5f965cf6f293d1cefc2e">setMaxVolume</link>(<emphasis role="keywordtype">float</emphasis>&#32;max);
+123 
+124 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;See&#32;if&#32;anything&#32;needs&#32;to&#32;be&#32;done&#32;(dim,&#32;return&#32;to&#32;default,&#32;etc.)</emphasis>
+125 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;NOT&#32;IMPLEMENTED&#32;-&#32;CURRENTLY,&#32;THINGS&#32;LIKE&#32;DIMMING&#32;ARE&#32;DONE&#32;BY&#32;THE&#32;APPLICATION</emphasis>
+126 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1a52170f4dfacff6ce87aa423601f02bb9">task</link>();
+127 
+128 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Draw&#32;the&#32;display&#32;background</emphasis>
+129 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Draws&#32;any&#32;dividers,&#32;etc.&#32;that&#32;persist</emphasis>
+130 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1a364f9ee4db9d7c5661351d78582fabda">drawFrame</link>();
+131 
+132 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Display&#32;a&#32;text&#32;string&#32;in&#32;the&#32;default&#32;message&#32;area</emphasis>
+133 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1afe0859db9865dd483c625124dde25acb">displayMessage</link>(<emphasis role="keyword">const</emphasis>&#32;<emphasis role="keywordtype">char</emphasis>&#32;*&#32;message);
+134 
+135 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Display&#32;a&#32;text&#32;string&#32;in&#32;the&#32;selected&#32;area</emphasis>
+136 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1afe0859db9865dd483c625124dde25acb">displayMessage</link>(<emphasis role="keyword">const</emphasis>&#32;<emphasis role="keywordtype">char</emphasis>&#32;*&#32;message,&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;area);
+137 
+138 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Bar&#32;graph&#32;in&#32;the&#32;specified&#32;area</emphasis>
+139 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Levels&#32;are&#32;integer&#32;percent&#32;of&#32;full&#32;width</emphasis>
+140 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1a6d0255f07b3c37927e024688a27f51c8">displayLRBarGraph</link>(uint8_t&#32;leftLevel,&#32;uint8_t&#32;rightLevel,&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;area);
+141 
+142 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Dim&#32;the&#32;display</emphasis>
+143 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1aaf2d26e0961780215b167721d93c354d">dim</link>();
+144 
+145 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Check&#32;if&#32;the&#32;display&#32;is&#32;dimmed</emphasis>
+146 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">bool</emphasis>&#32;<link linkend="_class_amp_display_1af0b8aee04997e2b6757616de63d4cf1d">dimmed</link>();
+147 
+148 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Wake&#32;up&#32;the&#32;display</emphasis>
+149 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;<link linkend="_class_amp_display_1aee74d69e14edc35d0304b3bb86311be9">wakeup</link>();
+150 
+151 <emphasis role="keyword">private</emphasis>:
+152 
+153 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Display&#32;a&#32;text&#32;string&#32;in&#32;a&#32;specified&#32;area</emphasis>
+154 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;displayText(<emphasis role="keyword">const</emphasis>&#32;<emphasis role="keywordtype">char</emphasis>&#32;*&#32;text,&#32;<emphasis role="keyword">const</emphasis>&#32;uint8_t&#32;*&#32;font,&#32;&#32;<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;area,&#32;<emphasis role="keyword">const</emphasis>&#32;<emphasis role="keywordtype">bool</emphasis>&#32;erase);
+155 
+156 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Draw&#32;the&#32;volume&#32;indicator&#32;(including&#32;mute)</emphasis>
+157 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;erase&#32;causes&#32;the&#32;field&#32;to&#32;be&#32;erased&#32;instead&#32;of&#32;redrawn</emphasis>
+158 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;drawVolume();
+159 
+160 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Erase&#32;the&#32;volume&#32;indicator</emphasis>
+161 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;eraseVolume();
+162 
+163 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;@brief&#32;Erase&#32;a&#32;text&#32;area</emphasis>
+164 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;eraseArea(<link linkend="_structarea_spec__t">areaSpec_t</link>&#32;area);
+165 
+166 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Draw&#32;the&#32;input&#32;indicator</emphasis>
+167 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;drawSource();
+168 
+169 &#32;&#32;&#32;&#32;<emphasis role="comment">//&#32;Update&#32;the&#32;display</emphasis>
+170 &#32;&#32;&#32;&#32;<emphasis role="keywordtype">void</emphasis>&#32;displayUpdate();
+171 
+172 };
+</programlisting></section>

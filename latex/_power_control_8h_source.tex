@@ -1,0 +1,41 @@
+\hypertarget{_power_control_8h_source}{}\doxysection{Power\+Control.\+h}
+\mbox{\hyperlink{_power_control_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{// Relay control of power to DSP and amps}}
+\DoxyCodeLine{2 \textcolor{comment}{// Includes input detection}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <Arduino.h>}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <MiniDSP.h>}}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#define PIN\_DSP\_RELAY 10}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#define PIN\_AMP\_RELAY 11}}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{keyword}{extern} MiniDSP \mbox{\hyperlink{_power_control_8h_a5c2a8a280a7812e79f5af4eb44610842}{ourMiniDSP}};      \textcolor{comment}{// This may be better as a pointer provided to the constructor.}}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 \textcolor{keyword}{class }\mbox{\hyperlink{class_power_control}{PowerControl}} \{}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16     \textcolor{comment}{// Constructor}}
+\DoxyCodeLine{17     \mbox{\hyperlink{class_power_control}{PowerControl}}() \{}
+\DoxyCodeLine{18         \mbox{\hyperlink{class_power_control_a701e6372590bc4bffff3b0b41a165ffa}{Init}}();}
+\DoxyCodeLine{19     \}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21     \textcolor{keyword}{public}:}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{24         \textcolor{keywordtype}{void} \mbox{\hyperlink{class_power_control_a3e3c0c21e82a7c2442cc83fca2a002b2}{dspOn}}(\textcolor{keywordtype}{bool} on);}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{32         uint8\_t \mbox{\hyperlink{class_power_control_a6d3a8f36cbfb65afb2876c36bdf70552}{ampsOn}}(\textcolor{keywordtype}{bool} on);}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{41         uint8\_t \mbox{\hyperlink{class_power_control_af28576d19abf7f72e5ee291577ad7bab}{ampsOn}}(\textcolor{keywordtype}{bool} on, \textcolor{keywordtype}{bool} schedule);}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{43     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{45         \textcolor{comment}{//MiniDSP * dsp;}}
+\DoxyCodeLine{46         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_power_control_a45bc7b03eae0baadcf26d7f79fe382db}{ampsOnScheduled}};}
+\DoxyCodeLine{47         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_power_control_adfebc96aa72723ed6de8c139f276cb9f}{dspPowerOn}};}
+\DoxyCodeLine{48         \textcolor{keywordtype}{void} \mbox{\hyperlink{class_power_control_a701e6372590bc4bffff3b0b41a165ffa}{Init}}();}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50 \};}
+
+\end{DoxyCode}

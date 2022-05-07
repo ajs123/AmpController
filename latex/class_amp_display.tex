@@ -1,0 +1,211 @@
+\hypertarget{class_amp_display}{}\doxysection{Amp\+Display Class Reference}
+\label{class_amp_display}\index{AmpDisplay@{AmpDisplay}}
+
+
+{\ttfamily \#include $<$Amp\+Display.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_amp_display_a68031143e1a168791b95a239d0388380}{Amp\+Display}} (U8\+G2 $\ast$u8g2)
+\item 
+\mbox{\hyperlink{class_amp_display_a1d3cb36729c4a12602b9816936663efe}{Amp\+Display}} (U8\+G2 $\ast$u8g2, float vol, bool \mbox{\hyperlink{class_amp_display_a21a4a9d8520b93e84ecc8ed02a49b494}{mute}}, \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\+\_\+t}} input, bool dB)
+\item 
+void \mbox{\hyperlink{class_amp_display_abde56490fad2c789f26fce7eca6e9ba7}{volume}} (float vol)
+\item 
+void \mbox{\hyperlink{class_amp_display_a80b45a90d9bd2f84de9d009c23512803}{volume\+Mode}} (bool dB)
+\item 
+void \mbox{\hyperlink{class_amp_display_a2a77dd425cc88658652d7ac72ebc0a87}{volume\+Mode}} ()
+\item 
+void \mbox{\hyperlink{class_amp_display_a21a4a9d8520b93e84ecc8ed02a49b494}{mute}} (bool is\+Muted)
+\item 
+void \mbox{\hyperlink{class_amp_display_aa4499881714ceecd51274398f5dafa95}{source}} (\mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\+\_\+t}} thesource)
+\item 
+void \mbox{\hyperlink{class_amp_display_a7ae2554ad7ae5f965cf6f293d1cefc2e}{set\+Max\+Volume}} (float max)
+\item 
+void \mbox{\hyperlink{class_amp_display_a52170f4dfacff6ce87aa423601f02bb9}{task}} ()
+\item 
+void \mbox{\hyperlink{class_amp_display_a364f9ee4db9d7c5661351d78582fabda}{draw\+Frame}} ()
+\item 
+void \mbox{\hyperlink{class_amp_display_afe0859db9865dd483c625124dde25acb}{display\+Message}} (const char $\ast$message)
+\item 
+void \mbox{\hyperlink{class_amp_display_a60f2d0c229b50dc39e3477b966a40240}{display\+Message}} (const char $\ast$message, \mbox{\hyperlink{structarea_spec__t}{area\+Spec\+\_\+t}} area)
+\item 
+void \mbox{\hyperlink{class_amp_display_a6d0255f07b3c37927e024688a27f51c8}{display\+LRBar\+Graph}} (uint8\+\_\+t left\+Level, uint8\+\_\+t right\+Level, \mbox{\hyperlink{structarea_spec__t}{area\+Spec\+\_\+t}} area)
+\item 
+void \mbox{\hyperlink{class_amp_display_aaf2d26e0961780215b167721d93c354d}{dim}} ()
+\item 
+bool \mbox{\hyperlink{class_amp_display_af0b8aee04997e2b6757616de63d4cf1d}{dimmed}} ()
+\item 
+void \mbox{\hyperlink{class_amp_display_aee74d69e14edc35d0304b3bb86311be9}{wakeup}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+U8\+G2 $\ast$ \mbox{\hyperlink{class_amp_display_a7240f6cda66df9801517c8484ba54b8c}{display}}
+\item 
+bool \mbox{\hyperlink{class_amp_display_a4da0bc745e8ec35e918c43cccaa0ae7c}{d\+BDisplay}} = \mbox{\hyperlink{_amp_display_8h_afc637b5118dc56fb16c0b16c91fc384d}{DBDISPLAY}}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{class_amp_display_a60ecff4996971218121ede43466dda05}{mute\+State}} = 3
+\item 
+float \mbox{\hyperlink{class_amp_display_aa3312e034bcfc300c2c52735005e7b30}{volume\+State}} = -\/129
+\item 
+\mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\+\_\+t}} \mbox{\hyperlink{class_amp_display_a8a5ba490a926fb63407ca9ec73038f85}{source\+State}} = \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6}{Unset}}
+\item 
+bool \mbox{\hyperlink{class_amp_display_aae85e85b5e540760deb9a6704ff7bdf8}{dim\+State}}
+\item 
+bool \mbox{\hyperlink{class_amp_display_a56bad2be314d2881acc3ba0dcab264f0}{volume\+Shown}} = false
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_amp_display_a68031143e1a168791b95a239d0388380}\label{class_amp_display_a68031143e1a168791b95a239d0388380}} 
+\index{AmpDisplay@{AmpDisplay}!AmpDisplay@{AmpDisplay}}
+\index{AmpDisplay@{AmpDisplay}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{AmpDisplay()}{AmpDisplay()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Amp\+Display\+::\+Amp\+Display (\begin{DoxyParamCaption}\item[{U8\+G2 $\ast$}]{u8g2 }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{class_amp_display_a1d3cb36729c4a12602b9816936663efe}\label{class_amp_display_a1d3cb36729c4a12602b9816936663efe}} 
+\index{AmpDisplay@{AmpDisplay}!AmpDisplay@{AmpDisplay}}
+\index{AmpDisplay@{AmpDisplay}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{AmpDisplay()}{AmpDisplay()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Amp\+Display\+::\+Amp\+Display (\begin{DoxyParamCaption}\item[{U8\+G2 $\ast$}]{u8g2,  }\item[{float}]{vol,  }\item[{bool}]{mute,  }\item[{\mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\+\_\+t}}}]{input,  }\item[{bool}]{dB }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_amp_display_aaf2d26e0961780215b167721d93c354d}\label{class_amp_display_aaf2d26e0961780215b167721d93c354d}} 
+\index{AmpDisplay@{AmpDisplay}!dim@{dim}}
+\index{dim@{dim}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{dim()}{dim()}}
+{\footnotesize\ttfamily void Amp\+Display\+::dim (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_af0b8aee04997e2b6757616de63d4cf1d}\label{class_amp_display_af0b8aee04997e2b6757616de63d4cf1d}} 
+\index{AmpDisplay@{AmpDisplay}!dimmed@{dimmed}}
+\index{dimmed@{dimmed}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{dimmed()}{dimmed()}}
+{\footnotesize\ttfamily bool Amp\+Display\+::dimmed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a6d0255f07b3c37927e024688a27f51c8}\label{class_amp_display_a6d0255f07b3c37927e024688a27f51c8}} 
+\index{AmpDisplay@{AmpDisplay}!displayLRBarGraph@{displayLRBarGraph}}
+\index{displayLRBarGraph@{displayLRBarGraph}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{displayLRBarGraph()}{displayLRBarGraph()}}
+{\footnotesize\ttfamily void Amp\+Display\+::display\+LRBar\+Graph (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{left\+Level,  }\item[{uint8\+\_\+t}]{right\+Level,  }\item[{\mbox{\hyperlink{structarea_spec__t}{area\+Spec\+\_\+t}}}]{area }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_afe0859db9865dd483c625124dde25acb}\label{class_amp_display_afe0859db9865dd483c625124dde25acb}} 
+\index{AmpDisplay@{AmpDisplay}!displayMessage@{displayMessage}}
+\index{displayMessage@{displayMessage}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{displayMessage()}{displayMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Amp\+Display\+::display\+Message (\begin{DoxyParamCaption}\item[{const char $\ast$}]{message }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a60f2d0c229b50dc39e3477b966a40240}\label{class_amp_display_a60f2d0c229b50dc39e3477b966a40240}} 
+\index{AmpDisplay@{AmpDisplay}!displayMessage@{displayMessage}}
+\index{displayMessage@{displayMessage}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{displayMessage()}{displayMessage()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Amp\+Display\+::display\+Message (\begin{DoxyParamCaption}\item[{const char $\ast$}]{message,  }\item[{\mbox{\hyperlink{structarea_spec__t}{area\+Spec\+\_\+t}}}]{area }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a364f9ee4db9d7c5661351d78582fabda}\label{class_amp_display_a364f9ee4db9d7c5661351d78582fabda}} 
+\index{AmpDisplay@{AmpDisplay}!drawFrame@{drawFrame}}
+\index{drawFrame@{drawFrame}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{drawFrame()}{drawFrame()}}
+{\footnotesize\ttfamily void Amp\+Display\+::draw\+Frame (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a21a4a9d8520b93e84ecc8ed02a49b494}\label{class_amp_display_a21a4a9d8520b93e84ecc8ed02a49b494}} 
+\index{AmpDisplay@{AmpDisplay}!mute@{mute}}
+\index{mute@{mute}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{mute()}{mute()}}
+{\footnotesize\ttfamily void Amp\+Display\+::mute (\begin{DoxyParamCaption}\item[{bool}]{is\+Muted }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a7ae2554ad7ae5f965cf6f293d1cefc2e}\label{class_amp_display_a7ae2554ad7ae5f965cf6f293d1cefc2e}} 
+\index{AmpDisplay@{AmpDisplay}!setMaxVolume@{setMaxVolume}}
+\index{setMaxVolume@{setMaxVolume}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{setMaxVolume()}{setMaxVolume()}}
+{\footnotesize\ttfamily void Amp\+Display\+::set\+Max\+Volume (\begin{DoxyParamCaption}\item[{float}]{max }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_aa4499881714ceecd51274398f5dafa95}\label{class_amp_display_aa4499881714ceecd51274398f5dafa95}} 
+\index{AmpDisplay@{AmpDisplay}!source@{source}}
+\index{source@{source}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{source()}{source()}}
+{\footnotesize\ttfamily void Amp\+Display\+::source (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\+\_\+t}}}]{thesource }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a52170f4dfacff6ce87aa423601f02bb9}\label{class_amp_display_a52170f4dfacff6ce87aa423601f02bb9}} 
+\index{AmpDisplay@{AmpDisplay}!task@{task}}
+\index{task@{task}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{task()}{task()}}
+{\footnotesize\ttfamily void Amp\+Display\+::task (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_abde56490fad2c789f26fce7eca6e9ba7}\label{class_amp_display_abde56490fad2c789f26fce7eca6e9ba7}} 
+\index{AmpDisplay@{AmpDisplay}!volume@{volume}}
+\index{volume@{volume}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{volume()}{volume()}}
+{\footnotesize\ttfamily void Amp\+Display\+::volume (\begin{DoxyParamCaption}\item[{float}]{vol }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a2a77dd425cc88658652d7ac72ebc0a87}\label{class_amp_display_a2a77dd425cc88658652d7ac72ebc0a87}} 
+\index{AmpDisplay@{AmpDisplay}!volumeMode@{volumeMode}}
+\index{volumeMode@{volumeMode}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{volumeMode()}{volumeMode()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Amp\+Display\+::volume\+Mode (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_a80b45a90d9bd2f84de9d009c23512803}\label{class_amp_display_a80b45a90d9bd2f84de9d009c23512803}} 
+\index{AmpDisplay@{AmpDisplay}!volumeMode@{volumeMode}}
+\index{volumeMode@{volumeMode}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{volumeMode()}{volumeMode()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Amp\+Display\+::volume\+Mode (\begin{DoxyParamCaption}\item[{bool}]{dB }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{class_amp_display_aee74d69e14edc35d0304b3bb86311be9}\label{class_amp_display_aee74d69e14edc35d0304b3bb86311be9}} 
+\index{AmpDisplay@{AmpDisplay}!wakeup@{wakeup}}
+\index{wakeup@{wakeup}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{wakeup()}{wakeup()}}
+{\footnotesize\ttfamily void Amp\+Display\+::wakeup (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_amp_display_a4da0bc745e8ec35e918c43cccaa0ae7c}\label{class_amp_display_a4da0bc745e8ec35e918c43cccaa0ae7c}} 
+\index{AmpDisplay@{AmpDisplay}!dBDisplay@{dBDisplay}}
+\index{dBDisplay@{dBDisplay}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{dBDisplay}{dBDisplay}}
+{\footnotesize\ttfamily bool Amp\+Display\+::d\+BDisplay = \mbox{\hyperlink{_amp_display_8h_afc637b5118dc56fb16c0b16c91fc384d}{DBDISPLAY}}\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_amp_display_aae85e85b5e540760deb9a6704ff7bdf8}\label{class_amp_display_aae85e85b5e540760deb9a6704ff7bdf8}} 
+\index{AmpDisplay@{AmpDisplay}!dimState@{dimState}}
+\index{dimState@{dimState}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{dimState}{dimState}}
+{\footnotesize\ttfamily bool Amp\+Display\+::dim\+State\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_amp_display_a7240f6cda66df9801517c8484ba54b8c}\label{class_amp_display_a7240f6cda66df9801517c8484ba54b8c}} 
+\index{AmpDisplay@{AmpDisplay}!display@{display}}
+\index{display@{display}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{display}{display}}
+{\footnotesize\ttfamily U8\+G2$\ast$ Amp\+Display\+::display\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_amp_display_a60ecff4996971218121ede43466dda05}\label{class_amp_display_a60ecff4996971218121ede43466dda05}} 
+\index{AmpDisplay@{AmpDisplay}!muteState@{muteState}}
+\index{muteState@{muteState}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{muteState}{muteState}}
+{\footnotesize\ttfamily uint8\+\_\+t Amp\+Display\+::mute\+State = 3\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_amp_display_a8a5ba490a926fb63407ca9ec73038f85}\label{class_amp_display_a8a5ba490a926fb63407ca9ec73038f85}} 
+\index{AmpDisplay@{AmpDisplay}!sourceState@{sourceState}}
+\index{sourceState@{sourceState}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{sourceState}{sourceState}}
+{\footnotesize\ttfamily \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95}{source\+\_\+t}} Amp\+Display\+::source\+State = \mbox{\hyperlink{_amp_display_8h_a68a545a3c23609598d9bf398fc14de95a898aea727daa99808e62b0520cbef9b6}{Unset}}\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_amp_display_a56bad2be314d2881acc3ba0dcab264f0}\label{class_amp_display_a56bad2be314d2881acc3ba0dcab264f0}} 
+\index{AmpDisplay@{AmpDisplay}!volumeShown@{volumeShown}}
+\index{volumeShown@{volumeShown}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{volumeShown}{volumeShown}}
+{\footnotesize\ttfamily bool Amp\+Display\+::volume\+Shown = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{class_amp_display_aa3312e034bcfc300c2c52735005e7b30}\label{class_amp_display_aa3312e034bcfc300c2c52735005e7b30}} 
+\index{AmpDisplay@{AmpDisplay}!volumeState@{volumeState}}
+\index{volumeState@{volumeState}!AmpDisplay@{AmpDisplay}}
+\doxysubsubsection{\texorpdfstring{volumeState}{volumeState}}
+{\footnotesize\ttfamily float Amp\+Display\+::volume\+State = -\/129\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_amp_display_8h}{Amp\+Display.\+h}}\item 
+\mbox{\hyperlink{_amp_display_8cpp}{Amp\+Display.\+cpp}}\end{DoxyCompactItemize}

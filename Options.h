@@ -1,6 +1,7 @@
 // Major options
 
 #pragma once
+#include <Arduino.h>
 
 /** Maximum volume. 
  *  This may be used to simply limit the volume. 

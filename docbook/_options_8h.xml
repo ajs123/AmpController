@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__options_8h" xml:lang="en-US">
+<title>Options.h File Reference</title>
+<indexterm><primary>Options.h</primary></indexterm>
+<simplesect>
+    <title>Macros    </title>
+        <itemizedlist>
+            <listitem><para>#define <link linkend="__options_8h_1a7240ab9ea0ed66225ab9b54fcd32d06a">MINBARLEVEL</link>   -90</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Variables    </title>
+        <itemizedlist>
+            <listitem><para>constexpr uint8_t <link linkend="__options_8h_1a15fbe001b7b77c9f6a0236f855861541">MAXIMUM_VOLUME</link> = -1.0 / -0.5</para>
+</listitem>
+            <listitem><para>constexpr uint16_t <link linkend="__options_8h_1a46d23885cbf2bcb255f7e7598c1e6158">DIM_TIME</link> = 5 * 1000</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Macro Definition Documentation</title>
+<anchor xml:id="__options_8h_1a7240ab9ea0ed66225ab9b54fcd32d06a"/><section>
+    <title>MINBARLEVEL</title>
+<indexterm><primary>MINBARLEVEL</primary><secondary>Options.h</secondary></indexterm>
+<indexterm><primary>Options.h</primary><secondary>MINBARLEVEL</secondary></indexterm>
+<para><computeroutput>#define MINBARLEVEL   -90</computeroutput></para>
+<para>Minimum level in dB for the animated level display </para>
+</section>
+</section>
+<section>
+<title>Variable Documentation</title>
+<anchor xml:id="__options_8h_1a46d23885cbf2bcb255f7e7598c1e6158"/><section>
+    <title>DIM_TIME</title>
+<indexterm><primary>DIM_TIME</primary><secondary>Options.h</secondary></indexterm>
+<indexterm><primary>Options.h</primary><secondary>DIM_TIME</secondary></indexterm>
+<para><computeroutput>constexpr uint16_t DIM_TIME = 5 * 1000<computeroutput>[constexpr]</computeroutput></computeroutput></para>
+<para>Time (ms) after waking up that the display will dim and the volume indicator will go away. </para>
+</section>
+<anchor xml:id="__options_8h_1a15fbe001b7b77c9f6a0236f855861541"/><section>
+    <title>MAXIMUM_VOLUME</title>
+<indexterm><primary>MAXIMUM_VOLUME</primary><secondary>Options.h</secondary></indexterm>
+<indexterm><primary>Options.h</primary><secondary>MAXIMUM_VOLUME</secondary></indexterm>
+<para><computeroutput>constexpr uint8_t MAXIMUM_VOLUME = -1.0 / -0.5<computeroutput>[constexpr]</computeroutput></computeroutput></para>
+<para>Maximum volume. This may be used to simply limit the volume. If 0, volume can go all the way to 0 dB, and once there, the Vol+ button on the remote won&apos;t wake up the display. </para>
+</section>
+</section>
+</section>

@@ -1,0 +1,65 @@
+\hypertarget{_input_sensing_8h_source}{}\doxysection{Input\+Sensing.\+h}
+\mbox{\hyperlink{_input_sensing_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{// Input sensing}}
+\DoxyCodeLine{2 }
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <Arduino.h>}}
+\DoxyCodeLine{6 \textcolor{comment}{//\#include <MiniDSP.h>}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#define PIN\_DIGITAL\_TRIGGER A3}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#define PIN\_ANALOG\_TRIGGER A4}}
+\DoxyCodeLine{10 \textcolor{preprocessor}{\#define PIN\_ANALOG\_L A1}}
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#define PIN\_ANALOG\_R A2}}
+\DoxyCodeLine{12 }
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#define ANALOG\_SIGNAL\_THRESHOLD         10      }\textcolor{comment}{// 8.8 mV}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#define ANALOG\_SIGNAL\_HOLDUP            10000   }\textcolor{comment}{// 10 seconds}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#define ANALOG\_IMPEDANCE\_THRESHOLD      0.9     }\textcolor{comment}{// of full scale}}
+\DoxyCodeLine{16 }
+\DoxyCodeLine{17 \textcolor{comment}{//extern MiniDSP ourMiniDSP;      // This may be better as a pointer provided to the constructor.}}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{keyword}{class }\mbox{\hyperlink{class_input_sensing}{InputSensing}} \{}
+\DoxyCodeLine{20     }
+\DoxyCodeLine{21     \textcolor{comment}{// Constructor}}
+\DoxyCodeLine{22     \mbox{\hyperlink{class_input_sensing}{InputSensing}}() \{}
+\DoxyCodeLine{23         \mbox{\hyperlink{class_input_sensing_a1ce46cd3a52a686e5590ad655371a78c}{Init}}();}
+\DoxyCodeLine{24     \};}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26     \textcolor{keyword}{public}:}
+\DoxyCodeLine{27 }
+\DoxyCodeLine{28         \textcolor{comment}{// @brief True if the digital trigger is present}}
+\DoxyCodeLine{29         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_ae0274696b7a36a8405fe5615c7afae04}{digitalTrigger}}() \{\textcolor{keywordflow}{return} \mbox{\hyperlink{class_input_sensing_ab0fa35ec20be3d45a33aea10d95a542c}{digitalTriggerPresent}};\};}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{31         \textcolor{comment}{// @brief True if the analog trigger is present}}
+\DoxyCodeLine{32         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_ab8637f6fe900272b7a907a79886b451c}{analogTrigger}}() \{\textcolor{keywordflow}{return} \mbox{\hyperlink{class_input_sensing_a1406355e6ecaae16bfedea3725ee0b0d}{analogTriggerPresent}};\};}
+\DoxyCodeLine{33 }
+\DoxyCodeLine{34         \textcolor{comment}{// @brief True if the analog impedance measures low}}
+\DoxyCodeLine{35         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_a4b25b8cef472f8dfe329159fac76a0f5}{analogImpedance}}() \{\textcolor{keywordflow}{return} \mbox{\hyperlink{class_input_sensing_a5ee7b0c2b4857c97eea2cff82fbe2a24}{analogImpedanceLow}};\};}
+\DoxyCodeLine{36 }
+\DoxyCodeLine{37         \textcolor{comment}{// @brief True if there has been recent analog signal activity}}
+\DoxyCodeLine{38         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_adb38b54d4c1f51f627dfdf603f041830}{analogSignal}}() \{\textcolor{keywordflow}{return} \mbox{\hyperlink{class_input_sensing_a8638d7839322eff10c4b7d82217ca2bb}{analogSignalPresent}};\};}
+\DoxyCodeLine{39 }
+\DoxyCodeLine{40         \textcolor{comment}{// Does all checks }}
+\DoxyCodeLine{41         \textcolor{keywordtype}{void} \mbox{\hyperlink{class_input_sensing_a5a36c1811b90b5f6a5c6b4587d138292}{signalChecks}}();}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{43     \textcolor{keyword}{protected}:}
+\DoxyCodeLine{44 }
+\DoxyCodeLine{45         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_ab0fa35ec20be3d45a33aea10d95a542c}{digitalTriggerPresent}};}
+\DoxyCodeLine{46         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_a1406355e6ecaae16bfedea3725ee0b0d}{analogTriggerPresent}};}
+\DoxyCodeLine{47         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_a5ee7b0c2b4857c97eea2cff82fbe2a24}{analogImpedanceLow}};}
+\DoxyCodeLine{48         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_a8638d7839322eff10c4b7d82217ca2bb}{analogSignalPresent}};  \textcolor{comment}{// True if a signal is, or recently was, present}}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50         \textcolor{comment}{// @brief True if the analog source impedance appears to be low}}
+\DoxyCodeLine{51         \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_a2a041de6410815bf42be507d50e1d5b2}{analogImpedanceTest}}();}
+\DoxyCodeLine{52 }
+\DoxyCodeLine{53         \textcolor{keywordtype}{void} \mbox{\hyperlink{class_input_sensing_a1ce46cd3a52a686e5590ad655371a78c}{Init}}();}
+\DoxyCodeLine{54 }
+\DoxyCodeLine{55     \textcolor{keyword}{private}:}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{57         uint16\_t analogLastL;}
+\DoxyCodeLine{58         uint16\_t analogLastR;}
+\DoxyCodeLine{59         uint32\_t lastSignalTime;}
+\DoxyCodeLine{60 \};}
+
+\end{DoxyCode}
