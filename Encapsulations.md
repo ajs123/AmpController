@@ -10,6 +10,24 @@
 * Control of power to dsp and amps via relays and (if used) EN lines
 * Read back status of each
 
+## Knob
+* Quadrature decoder
+* Sample or time-based debounce for the button
+* Button event detector - probably with sample time = loop tick time
+    * Short press: release after being down < SHORT counts or < SHORT_PRESS ms
+    * Long press: release after count in [SHORT, LONG] or t in [SHORT_PRESS, LONG_PRESS] ms
+    * Hold: down for > HOLD counts or > HOLD_PRESS ms
+
+
+### Button press functions
+#### While on
+* Short = Mute
+* Long = Change input
+* Hold = Power off
+#### While off
+* Short = Power on
+* Hold = Menu
+
 # Input and power rules
 
 ## Input detection
@@ -119,8 +137,8 @@ This is the main state machine that takes the dsp through its startup and contro
 
 ## Summary - PowerInputControl Task()
 1. Direct read inputs
-1. Input sense state machines
-    * Determines the input state, including persistence in case of silence on the analog input
+1. Input sense state machine
+    * Determines the input state, including persistence in case of silence on the selected input as indicated by the DSP
 1. Power/input select state machine
     * Based on the input states, determines whether power should be on/off and whether the dsp should be told to use a particular input
     * Provides a period during which the unit will stay on even with inputs inactive. Useful, e.g., when turning off the TV with intent to turn on the turntable.
@@ -132,4 +150,52 @@ This is the main state machine that takes the dsp through its startup and contro
 
 NOTE: The output meter shouldn't operate until the amps are on, so wherever the meter update is called should check the power state.
 
+
+## Off state (setup) menu
+Navigation
+* Rotate (up/down) to choose (discrete options) or set (numeric)
+    * Choice n is BACK
+* Push to select
+* Timeout is back to ground state
+
+Menu heirarchy
+* Signal timeout
+    * Never
+    * 1 min
+    * 5 min
+* Max volume
+    * Numeric -30..0
+* Max startup volume
+    * Numeric -30..0 (not above Max volume)
+* Volume comp (digital-analog diff)
+    * Numeric -20..0
+* IR Learn (for each, grab code or timeout)
+    * Vol+
+    * Vol-
+    * Mute
+    * Source
+    * Power
+* Save settings *- is this needed?*
+    * SAVE
+
+Discrete option menu behavior
+* Menu function gets array of item names
+* Rotate: present next name
+* Select: return item number 0..(n-1)
+* Back: return n
+* Timeout: needs to reset to ground state
+
+Numeric option menu behavior
+* Menu function gets min, max, increment
+* Rotate: present number
+* Select: return number
+* Timeout: needs to reset to ground state
+
+**Discrete and numeric are very similar**
+
+IRLearn menu behavior
+* Rotate: present command
+* Select: prompt to press
+    * Code: confirm
+    * Timeout: say so
 

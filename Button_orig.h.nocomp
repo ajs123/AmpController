@@ -1,0 +1,68 @@
+// Button debounce and event detection
+
+#include <Arduino.h>
+#include "Configuration.h"
+
+#pragma once
+
+enum buttonEvent_t {
+    NONE,
+    SHORT_PRESS,
+    LONG_PRESS_PENDING,
+    LONG_PRESS,
+    FULL_HOLD
+};
+
+extern void shortPress();
+extern void longPressPending();
+extern void longPress();
+extern void fullHold();
+
+// Monitor a switch closure input and report any events. Events are
+//  Short press - reported upon release if down without interruption for a minimum time
+//  Long press - reported upon release if down without interruption for a specified time
+//  Full hold - reported upon occurrence if down for a specified (longer) time
+class Button {
+
+const uint8_t MIN_PRESS_T = 50;     // ms
+const uint8_t MIN_RELEASE_T = 100;
+const uint16_t LONG_PRESS_T = 750;
+const uint16_t FULL_HOLD_T = 4000;
+
+
+public:
+    /**
+     * @brief Constructor
+     */
+    Button(uint32_t pin_) {
+        pin = pin_;
+        pinMode(pin, INPUT_PULLUP);
+        validatedState = HIGH;
+        rawValue = HIGH;
+        lastChangeTime = millis();
+        fullHoldLock = false;
+    };
+
+    /**
+     * @brief Check the button and return any event. Full hold is reported whenever the timing
+     * criterion is met. Short press and long press are reported upon release.
+     * 
+     * @return buttonEvent_t event
+     */
+    buttonEvent_t update();
+
+    /**
+     * @brief Invoke functions according to button events
+     * @return Event type
+     */
+    buttonEvent_t Task();
+
+private:
+
+    uint32_t pin;
+    int buttonState;
+    int rawValue;
+    uint32_t lastChangeTime;
+    uint32_t currentTime;
+    bool fullHoldLock;
+};

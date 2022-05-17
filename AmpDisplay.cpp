@@ -83,6 +83,9 @@
                 break;
             case Toslink:
                 displayText("DIGITAL", SOURCE_FONT, sourceArea, true);
+                break;
+            default:
+                displayText("", SOURCE_FONT, sourceArea, true);
         }
         display->updateDisplay();
     }
@@ -146,12 +149,25 @@
         return dimState;
     }
 
+    void AmpDisplay::scheduleDim() {
+    brightTime = millis();
+    }
+
+    void AmpDisplay::checkDim() {
+    if (dimState) return;
+    uint32_t currentTime = millis();
+    if ((currentTime - brightTime) > DIM_TIME) {
+        dim();
+        }
+    }
+
     void AmpDisplay::wakeup() {
     #ifdef TRANSIENTVOLUME
         if (!volumeShown) drawVolume();
     #endif
         display->setContrast(CONTRAST_FULL);
         dimState = false;
+        scheduleDim();
     }
 
     void AmpDisplay::volumeMode(bool dB)
@@ -190,14 +206,17 @@
 
     void AmpDisplay::source(source_t source)
     {
-        // Ignore if not 0 or 1
-        if ((uint8_t) source > 1) return;
         if (sourceState != source)
         {
             sourceState = source;
             drawSource();
         }
         wakeup();
+    }
+
+    void AmpDisplay::cueLongPress()
+    {
+        eraseArea(sourceArea);
     }
 
     void AmpDisplay::eraseArea(areaSpec_t area) {
@@ -229,7 +248,7 @@
     }
 
     void AmpDisplay::displayLRBarGraph(uint8_t left, uint8_t right, areaSpec_t area)
-    {
+    {        
         // Erase the area
         display->setDrawColor(0);
         display->drawBox(area.XL, area.YT, area.XR - area.XL, area.YB - area.YT);
@@ -241,16 +260,11 @@
         uint8_t leftAreaXR = area.XL + barWidth  - 2; 
         uint8_t rightAreaXL = leftAreaXR + 2;
 
-        // Get bar widths
         uint8_t leftWidth = max( ( (int) left * (int) (barWidth) ) / 100, 1);
         uint8_t rightWidth = max( ( (int) right * (int) (barWidth) ) / 100, 1);
 
-        // Draw the bars
         display->setDrawColor(1);
         display->drawBox(leftAreaXR - leftWidth, area.YT + 2, leftWidth, area.YB - area.YT - 2);
         display->drawBox(rightAreaXL, area.YT + 2, rightWidth, area.YB - area.YT - 2);
         display->updateDisplay();  // Re-draw only, without full refresh and wakeup
-        //char bufStr[25];
-        //snprintf(bufStr, 25, "L %6d, R%6d", leftWidth, rightWidth);
-        //displayMessage(bufStr);
     }

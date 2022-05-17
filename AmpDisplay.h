@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Options.h"
 #include <U8g2lib.h>
 
 // Display settings of most interest to the user
@@ -17,10 +18,6 @@
 // Options
 #define DBDISPLAY true  // Display volume in dB (instead of %). Potentially a live option.
 #define TRANSIENTVOLUME // Display volume only transient, when changed
-
-// Display settings relating to layout and other detail
-#define MAX_VOLUME 0 // These are the max and min in dB that can be set in the minidsp
-#define MIN_VOLUME -128
 
 // Font choices
 #define VOL_PCT_FONT    u8g2_font_helvR24_tr
@@ -67,7 +64,7 @@ static unsigned char icons_binary[] = {
 enum source_t { 
     Analog = 0,
     Toslink = 1,
-    Unset = 3};
+    Unset = 2};
 
 class AmpDisplay
 {
@@ -83,6 +80,7 @@ protected:
     float volumeState = -129;           // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
     source_t sourceState = Unset;       // Current source. 
     bool dimState;                      // True if dimmed.
+    uint32_t brightTime;                // Time when dim timer was reset
     bool volumeShown = false;           // Enables selective re-draw of volume in display wakeup 
 
 public:
@@ -114,7 +112,7 @@ public:
     // This sets the mute state and as needed updates and wakes the display
     void mute(bool isMuted);
 
-    // @brief Display source - 0 = analog, 1 = toslink
+    // @brief Display source
     // This sets the source state and as needed updates and wakes the display
     void source(source_t thesource);
 
@@ -139,6 +137,12 @@ public:
     // Levels are integer percent of full width
     void displayLRBarGraph(uint8_t leftLevel, uint8_t rightLevel, areaSpec_t area);
 
+    // @brief Reset the dimming timer
+    void scheduleDim();
+
+    // @brief Check the dimming timer and dim if needed
+    void checkDim();
+
     // @brief Dim the display
     void dim();
 
@@ -148,7 +152,16 @@ public:
     // @brief Wake up the display
     void wakeup();
 
+    // @brief Cue a pending long press
+    void cueLongPress();
+
+
+
 private:
+
+    // These are the max and min in dB that can be set in the minidsp
+    const uint8_t MAX_VOLUME = 0; 
+    const uint8_t MIN_VOLUME = -128;
 
     // @brief Display a text string in a specified area
     void displayText(const char * text, const uint8_t * font,  areaSpec_t area, const bool erase);

@@ -6,6 +6,7 @@
         "cmath": "cpp",
         "arduino.h": "c",
         "atomic": "cpp",
-        "cstdint": "cpp"
+        "cstdint": "cpp",
+        "nrf.h": "c"
     }
 }

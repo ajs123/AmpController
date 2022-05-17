@@ -1,0 +1,71 @@
+    
+#include "Button.h"
+
+buttonEvent_t Button::update() {
+    
+    currentTime = millis();
+    rawValue = digitalRead(pin);
+    uint32_t howLong = currentTime - lastChangeTime;
+
+    if (rawValue == buttonState) {               // Unchanged
+        if (buttonState == HIGH) return NONE;        // Sitting released
+        if (fullHoldLock) return NONE;                  // Sitting pressed
+        if (howLong > FULL_HOLD_T) { 
+            fullHoldLock = true;
+            return FULL_HOLD;
+        }
+        if (howLong > LONG_PRESS_T) return LONG_PRESS_PENDING;
+        return NONE;
+    }
+
+    else {                                          // Changed
+        if (buttonState == LOW) {                    // Was pressed, now open...
+
+            if (fullHoldLock) {                             // ...and already reported a FULL_HOLD?
+                buttonState = HIGH;
+                fullHoldLock = false;
+                return NONE;
+            }
+            if (howLong > LONG_PRESS_T) {                   // If not, closed time qualifies as LONG_PRESS?
+                buttonState = HIGH;                      
+                lastChangeTime = currentTime;
+                return LONG_PRESS;
+            }
+            if (howLong > MIN_PRESS_T) {                    // If not, closed time qualifies as legitimate SHORT_PRESS?
+                buttonState = HIGH;
+                lastChangeTime = currentTime;
+                return SHORT_PRESS;
+            }
+            return NONE;                                    // Otherwise, contact closure was too brief
+        } 
+        else {         
+                                                        // Was open, now pressed...
+            if (howLong > MIN_RELEASE_T) {                  // ...and open time qualifies as released?
+                buttonState = LOW;
+                lastChangeTime = currentTime;   
+                fullHoldLock = false; 
+                return NONE;  
+            }
+        }  
+    }
+    return NONE;
+}
+
+buttonEvent_t Button::Task() {
+    buttonEvent_t event = update();
+    switch (event) {
+        case SHORT_PRESS:
+            shortPress();
+            break;
+        case LONG_PRESS_PENDING:
+            longPressPending();
+            break;
+        case LONG_PRESS:
+            longPress();
+            break;
+        case FULL_HOLD:
+            fullHold();
+            break;
+    };
+    return event;
+}

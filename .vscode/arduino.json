@@ -3,5 +3,5 @@
     "board": "adafruit:nrf52:feather52840",
     "sketch": "AmpController.ino",
     "output": "/tmp/build/",
-    "port": "/dev/tty.usbmodem141301"
+    "port": "/dev/tty.usbmodem141101"
 }
