@@ -132,7 +132,7 @@ void shortPress() {
 
 // Cue the user re a long press, which changes the source.
 void longPressPending() {
-  AmpDisp.displayMessage("SHORT PRESS PENDING");
+  AmpDisp.displayMessage("LONG PRESS PENDING");
   AmpDisp.cueLongPress();
 }
 
@@ -143,6 +143,7 @@ void longPress() {
 
 void fullHold() {
   AmpDisp.displayMessage("FULL HOLD");
+  AmpDisp.cancelLongPress();
 }
 
 // Prep the blue LED for use in debugging

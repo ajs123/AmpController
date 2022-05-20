@@ -155,6 +155,9 @@ public:
     // @brief Cue a pending long press
     void cueLongPress();
 
+    // @brief Never mind the long press
+    void cancelLongPress();
+
 
 
 private:
@@ -177,7 +180,7 @@ private:
     void eraseArea(areaSpec_t area);
 
     // Draw the input indicator
-    void drawSource();
+    void drawSource(bool changeInd = false);
 
     // Update the display
     void displayUpdate();

@@ -74,19 +74,27 @@
         // Call displayUpdate to refresh, set to full brightness, and reset the timer
     }
 
-    void AmpDisplay::drawSource()
+    const char sourceLabels[2][8] = {
+        "ANALOG",
+        "DIGITAL"
+    };
+
+    void AmpDisplay::drawSource(bool changeInd)
     {
-        switch (sourceState)
-        {
-            case Analog:
-                displayText("ANALOG", SOURCE_FONT, sourceArea, true);
-                break;
-            case Toslink:
-                displayText("DIGITAL", SOURCE_FONT, sourceArea, true);
-                break;
-            default:
-                displayText("", SOURCE_FONT, sourceArea, true);
-        }
+        char label[12];
+        snprintf(label, 12, "%s%s", sourceLabels[sourceState], changeInd ? "-->" : "");
+        displayText(label, SOURCE_FONT, sourceArea, true);
+        // switch (sourceState)
+        // {
+        //     case Analog:
+        //         displayText("ANALOG", SOURCE_FONT, sourceArea, true);
+        //         break;
+        //     case Toslink:
+        //         displayText("DIGITAL", SOURCE_FONT, sourceArea, true);
+        //         break;
+        //     default:
+        //         displayText("", SOURCE_FONT, sourceArea, true);
+        // }
         display->updateDisplay();
     }
 
@@ -216,7 +224,14 @@
 
     void AmpDisplay::cueLongPress()
     {
-        eraseArea(sourceArea);
+        //eraseArea(sourceArea);
+        drawSource(true);
+        wakeup();
+    }
+
+    void AmpDisplay::cancelLongPress()
+    {
+        drawSource(false);
     }
 
     void AmpDisplay::eraseArea(areaSpec_t area) {
