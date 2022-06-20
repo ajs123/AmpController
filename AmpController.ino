@@ -4,8 +4,10 @@
 #include "PowerControl.h"
 #include "RemoteHandler.h"
 #include "Button.h"
+#include "OptionsMenu.h"
 #include <Wire.h>   // For the I2C display. Also provides Serial.
-//#include <SPI.h> // This doesn't seem to matter, at least not for the Adafruit nrf52840
+#include <SPI.h>    // This doesn't seem to matter, at least not for the Adafruit nrf52840
+#include <bluefruit.h>  // Experimental - for OTA updates
 
 #include "Options.h"
 #include "Configuration.h"
@@ -18,9 +20,11 @@ U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE);  // Adafruit OLED F
 AmpDisplay AmpDisp(&display);                                 // Live display on the OLED
 
 Remote ourRemote(IR_PIN);                                     // IR receiver
-Button goButton(ENCODER_BUTTON);                              // Encoder switches
+Button goButton(ENCODER_BUTTON);                              // Encoder action button
 
-// Display stuff
+Options & ampOptions = Options::instance();                      // Options store
+
+// For the display log, if used
 #define LOG_FONT u8g2_font_5x7_tr //u8g2_font_7x14_tf
 #define LOG_WIDTH 25 
 #define LOG_HEIGHT 9
@@ -31,11 +35,32 @@ constexpr uint32_t INTERVAL = 30;
 
 // Persistent state
 uint32_t lastTime;
-uint32_t brightTime;
 
 // U8G2 log can be used at startup
 //uint8_t u8log_buffer[LOG_WIDTH * LOG_HEIGHT];
 //U8G2LOG displog;
+
+// Experimental - enable OTA updates
+BLEDfu bledfu;
+BLEDis bledis;
+
+void BLESetup() {
+  Bluefruit.begin();
+  Bluefruit.setName("LXMini");
+
+  bledfu.begin();
+
+  bledis.setManufacturer("BistroDad");
+  bledis.setModel("LXMini Amp");
+  bledis.begin();
+
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addService(bledfu);
+  Bluefruit.Advertising.restartOnDisconnect(true);
+  Bluefruit.Advertising.setInterval(32, 244);
+  Bluefruit.Advertising.setFastTimeout(30);
+  Bluefruit.Advertising.start(300);
+}
 
 void DisplaySetup() {
   
@@ -53,10 +78,13 @@ void DisplaySetup() {
   //displog.println("Startup");
 }
 
+// This needs to move to the input sensing handler
 void analogSetup() {
   analogReadResolution(12);
   analogReference(AR_DEFAULT);  // 3.6 V
 }
+
+// Callbacks - MiniDSP
 
 void OnMiniDSPConnected() {
   AmpDisp.displayMessage("CONNECTED");
@@ -64,6 +92,7 @@ void OnMiniDSPConnected() {
 }
 
 void OnVolumeChange(uint8_t volume) {
+  //if (volume < options.maxVolume);
   if (volume < MAXIMUM_VOLUME) {
     ourMiniDSP.setVolume((uint8_t) MAXIMUM_VOLUME); 
     AmpDisp.volume(-MAXIMUM_VOLUME/2.0);
@@ -90,6 +119,7 @@ void OnParse(uint8_t * buf) {
   AmpDisp.displayMessage(bufStr);
 }
 
+// VUMeter should move to AmpDisplay. Then a callback from MiniDSP can call that.
 void VUMeter(float * levels ) {
   int leftSum = ((int) levels[0] + (int) levels[1]) / 2;    // On L and R, sum the woofer and tweeter levels
   int rightSum = ((int) levels[2] + (int) levels[3]) / 2;
@@ -97,6 +127,8 @@ void VUMeter(float * levels ) {
   uint8_t right = max( rightSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
   AmpDisp.displayLRBarGraph(left, right, messageArea);
 }
+
+// Callbacks - remote and knob.
 
 void volPlus() {
   AmpDisp.displayMessage("VOL +");
@@ -125,6 +157,8 @@ void input() {
   ourMiniDSP.setSource(ourMiniDSP.getSource() ? 0 : 1);
 }
 
+// Action button callbacks.
+// Some of these might go away when no longer needed for debugging, as they just display a message and invoke the actual action callback.
 void shortPress() {
   AmpDisp.displayMessage("SHORT PRESS");
   mute();
@@ -151,11 +185,32 @@ void ledSetup() {
   pinMode(LED_BLUE, OUTPUT);
 }
 
+void menuCheck() {
+  goButton.switchClosed();      // Returning a validated "closed" requires two samples
+  delay(200);
+  if (!goButton.switchClosed()) return;
+
+  AmpDisp.displayMessage("Settings...", sourceArea);
+  while (goButton.switchClosed()) delay(100);
+  AmpDisp.displayMessage("", sourceArea);
+
+  OptionsMenu::menu(&display);
+}
+
 void setup() {
-  DisplaySetup();
-  ledSetup();
   Serial.begin(115200);
   //while(!Serial) delay(10);
+
+  // These could probably be done in the private constructor, as long as 
+  // dependencies such as (when debugging) Serial are initialized first.
+  ampOptions.begin();
+  ampOptions.load();
+  //options.save(); // For testing. No normal reason to do this here.
+
+  DisplaySetup();
+  ledSetup();
+
+  BLESetup();
 
   #if (ENABLE_UHS_DEBUGGING == 1)  // From settings.h in the UHS library
     Serial.begin(115200);
@@ -173,6 +228,8 @@ void setup() {
   //lastTime = millis() + INTERVAL;
   }
 
+  menuCheck();
+
   // Register callbacks.
   ourMiniDSP.attachOnInit(&OnMiniDSPConnected);
   ourMiniDSP.attachOnVolumeChange(&OnVolumeChange);
@@ -181,9 +238,7 @@ void setup() {
   //ourMiniDSP.attachOnParse(&OnParse);
   ourMiniDSP.attachOnNewLevels(&VUMeter);
 
-  //pinMode(BUTTON_A, INPUT_PULLUP); 
-  //pinMode(BUTTON_B, INPUT_PULLUP);
-  //pinMode(BUTTON_C, INPUT_PULLUP);
+  // Remote and knob callbacks have fixed names so they don't need to be registered.
 
   ourRemote.listen();
 }
@@ -234,6 +289,12 @@ void loop() {
   if (INTERVAL) {
 
     uint32_t currentTime = millis();
+
+    // Should be able to just do 
+    //uint32_t sinceLast = currentTime - lastTime;
+    //if (sinceLast >= INTERVAL) delay(sinceLast - INTERVAL);
+    // ...or do we want top-of-loop tasks to happen more often?
+    
     if ((currentTime - lastTime) >= INTERVAL) {
       //showFrameInterval(currentTime, lastTime); // DEBUG: Show the update interval in
 
@@ -251,12 +312,4 @@ void loop() {
 
   AmpDisp.checkDim(); 
 
-  // Button C - manual status request, for testing only
-  // static bool buttonCPrev = false;     // For button debounce
-  // bool buttonC = !digitalRead(5);
-  // if (buttonC && !buttonCPrev) {
-  //   delay(100); // Simple debounce - needs to stay down for 100 ms
-  //   if (!digitalRead(5)) ourMiniDSP.RequestStatus();
-  // }
-  // buttonCPrev = buttonC;
 }

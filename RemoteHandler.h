@@ -3,6 +3,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "Configuration.h"
 #include <IRLibRecvPCI.h>         // Use the pin change interrupt receiver
 #include <IRLibDecodeBase.h>      // Base class for the decoder
                                   // Decoder protocols
@@ -20,12 +21,6 @@
 // #include <IRLib_P12_CYKM.h>
 //#include <IRLib_HashRaw.h>       // If all we want is a unique code for each key
 #include <IRLibCombo.h>            // Uses the first protocol that appears to match
-
-// Default remote codes
-#define VOLPLUS_CMD     0x77E1507C // Apple remote UP
-#define VOLMINUS_CMD    0x77E1307C //              DOWN
-#define MUTE_CMD        0x77E1A07C //              PLAY/PAUSE
-#define INPUT_CMD       0x77E1C07C //              INPUT
 
 // How long after a full code is a repeat taken to be valid
 constexpr int maxDelayBeforeRepeat = 1000;
@@ -72,10 +67,10 @@ private:
 
     static const uint8_t tableLength = 4;
     cmdEntry_t cmdTable[tableLength] = {
-        {VOLPLUS_CMD, true, "Vol+", volPlus},
-        {VOLMINUS_CMD, true, "Vol-", volMinus},
-        {MUTE_CMD, false, "Mute", mute},
-        {INPUT_CMD, false, "Input", input}
+        {DEFAULT_VOLPLUS_CMD, true, "Vol+", volPlus},
+        {DEFAULT_VOLMINUS_CMD, true, "Vol-", volMinus},
+        {DEFAULT_MUTE_CMD, false, "Mute", mute},
+        {DEFAULT_INPUT_CMD, false, "Input", input}
         };
 
     uint32_t receivedTime;

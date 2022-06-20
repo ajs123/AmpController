@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: Options.h Source File</title>
+<title>Amp Controller: Options.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,8 +25,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">Amp Controller
    </div>
+   <div id="projectbrief">Controller for the LXMini integrated amp</div>
   </td>
  </tr>
  </tbody>
@@ -88,14 +89,16 @@ $(document).ready(function(){initNavTree('_options_8h_source.html',''); initResi
 <a href="_options_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// Major options</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">    9</a></span><span class="keyword">constexpr</span> uint8_t <a class="code hl_variable" href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">MAXIMUM_VOLUME</a> = -1.0 / -0.5;</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;Arduino.h&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">    8</a></span><span class="keyword">constexpr</span> uint8_t <a class="code hl_variable" href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">MAXIMUM_VOLUME</a> = 0;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//constexpr uint8_t MAXIMUM_VOLUME = -1.0 / -0.5;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="_options_8h.html#a46d23885cbf2bcb255f7e7598c1e6158">   13</a></span><span class="keyword">constexpr</span> uint16_t <a class="code hl_variable" href="_options_8h.html#a46d23885cbf2bcb255f7e7598c1e6158">DIM_TIME</a> = 5 * 1000;   </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a">   16</a></span><span class="preprocessor">#define MINBARLEVEL -90</span></div>
-<div class="ttc" id="a_options_8h_html_a15fbe001b7b77c9f6a0236f855861541"><div class="ttname"><a href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">MAXIMUM_VOLUME</a></div><div class="ttdeci">constexpr uint8_t MAXIMUM_VOLUME</div><div class="ttdef"><b>Definition:</b> Options.h:9</div></div>
-<div class="ttc" id="a_options_8h_html_a46d23885cbf2bcb255f7e7598c1e6158"><div class="ttname"><a href="_options_8h.html#a46d23885cbf2bcb255f7e7598c1e6158">DIM_TIME</a></div><div class="ttdeci">constexpr uint16_t DIM_TIME</div><div class="ttdef"><b>Definition:</b> Options.h:13</div></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a">   16</a></span><span class="preprocessor">#define MINBARLEVEL -60</span></div>
+<div class="ttc" id="a_options_8h_html_a15fbe001b7b77c9f6a0236f855861541"><div class="ttname"><a href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">MAXIMUM_VOLUME</a></div><div class="ttdeci">constexpr uint8_t MAXIMUM_VOLUME</div><div class="ttdef"><b>Definition:</b> <a href="_options_8h_source.html#l00008">Options.h:8</a></div></div>
+<div class="ttc" id="a_options_8h_html_a46d23885cbf2bcb255f7e7598c1e6158"><div class="ttname"><a href="_options_8h.html#a46d23885cbf2bcb255f7e7598c1e6158">DIM_TIME</a></div><div class="ttdeci">constexpr uint16_t DIM_TIME</div><div class="ttdef"><b>Definition:</b> <a href="_options_8h_source.html#l00013">Options.h:13</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

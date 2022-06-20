@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: Options.h File Reference</title>
+<title>Amp Controller: Options.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,8 +25,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">Amp Controller
    </div>
+   <div id="projectbrief">Controller for the LXMini integrated amp</div>
   </td>
  </tr>
  </tbody>
@@ -88,17 +89,28 @@ $(document).ready(function(){initNavTree('_options_8h.html',''); initResizable()
   <div class="headertitle"><div class="title">Options.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-
+<div class="textblock"><code>#include &lt;Arduino.h&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for Options.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="_options_8h__incl.png" border="0" usemap="#a_options_8h" alt=""/></div>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="_options_8h__dep__incl.png" border="0" usemap="#a_options_8hdep" alt=""/></div>
+</div>
+</div>
 <p><a href="_options_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a7240ab9ea0ed66225ab9b54fcd32d06a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a">MINBARLEVEL</a>&#160;&#160;&#160;-90</td></tr>
+<tr class="memitem:a7240ab9ea0ed66225ab9b54fcd32d06a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a">MINBARLEVEL</a>&#160;&#160;&#160;-60</td></tr>
 <tr class="separator:a7240ab9ea0ed66225ab9b54fcd32d06a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a15fbe001b7b77c9f6a0236f855861541"><td class="memItemLeft" align="right" valign="top">constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">MAXIMUM_VOLUME</a> = -1.0 / -0.5</td></tr>
+<tr class="memitem:a15fbe001b7b77c9f6a0236f855861541"><td class="memItemLeft" align="right" valign="top">constexpr uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a15fbe001b7b77c9f6a0236f855861541">MAXIMUM_VOLUME</a> = 0</td></tr>
 <tr class="separator:a15fbe001b7b77c9f6a0236f855861541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46d23885cbf2bcb255f7e7598c1e6158"><td class="memItemLeft" align="right" valign="top">constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a46d23885cbf2bcb255f7e7598c1e6158">DIM_TIME</a> = 5 * 1000</td></tr>
 <tr class="separator:a46d23885cbf2bcb255f7e7598c1e6158"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -111,11 +123,13 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define MINBARLEVEL&#160;&#160;&#160;-90</td>
+          <td class="memname">#define MINBARLEVEL&#160;&#160;&#160;-60</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Minimum level in dB for the animated level display </p>
+<p >Minimum level in dB for the VU meter </p>
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00016">16</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
 
 </div>
 </div>
@@ -141,6 +155,8 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p >Time (ms) after waking up that the display will dim and the volume indicator will go away. </p>
 
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00013">13</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
 </div>
 </div>
 <a id="a15fbe001b7b77c9f6a0236f855861541" name="a15fbe001b7b77c9f6a0236f855861541"></a>
@@ -153,7 +169,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr uint8_t MAXIMUM_VOLUME = -1.0 / -0.5</td>
+          <td class="memname">constexpr uint8_t MAXIMUM_VOLUME = 0</td>
         </tr>
       </table>
   </td>
@@ -162,7 +178,9 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Maximum volume. This may be used to simply limit the volume. If 0, volume can go all the way to 0 dB, and once there, the Vol+ button on the remote won't wake up the display. </p>
+<p >Maximum volume. </p>
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00008">8</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
 
 </div>
 </div>

@@ -1,0 +1,130 @@
+\hypertarget{classremote_receiver}{}\doxysection{remote\+Receiver Class Reference}
+\label{classremote_receiver}\index{remoteReceiver@{remoteReceiver}}
+
+
+{\ttfamily \#include $<$Remote\+Receive.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classremote_receiver_a5727c6d5298bc840c985206890149183}{Task}} ()
+\begin{DoxyCompactList}\small\item\em IR command type -\/ protocol, command, address. \end{DoxyCompactList}\item 
+IRCommand\+\_\+t \mbox{\hyperlink{classremote_receiver_aa2f2e79b3961c79c7980ea7c724d74ba}{get\+Raw\+Command}} (uint16\+\_\+t wait)
+\begin{DoxyCompactList}\small\item\em Ensures that there is nothing in the input buffer, waits for a fresh command (button press), and identifies the command received. Does not handle repeat codes. Used when learning a new remote. \end{DoxyCompactList}\item 
+IRCommand\+\_\+t \mbox{\hyperlink{classremote_receiver_a22b8b3e3c803dd149f4a44c1b20ca740}{get\+Command}} ()
+\begin{DoxyCompactList}\small\item\em Checks for anything received, handles any special repeat codes, and re-\/enables the input. Used in normal \char`\"{}always listening\char`\"{} operation. \end{DoxyCompactList}\item 
+IRCommand\+\_\+t \mbox{\hyperlink{classremote_receiver_a501488bcd706b92980607ed63e906bf8}{learn}} (uint8\+\_\+t item, uint16\+\_\+t wait)
+\begin{DoxyCompactList}\small\item\em Learns an IR code. Waits to see a button press, then loads the first code seen into the dispatch table. \end{DoxyCompactList}\item 
+uint8\+\_\+t \mbox{\hyperlink{classremote_receiver_a9b8080970fb15f9bbb84231929e72b11}{next\+Cmd}} (bool forward, bool wrap)
+\begin{DoxyCompactList}\small\item\em Go to the next or previous item in the dispatch table. \end{DoxyCompactList}\item 
+char $\ast$ \mbox{\hyperlink{classremote_receiver_af9e01d2436fab5356d281f2da49052af}{current\+Cmd}} ()
+\begin{DoxyCompactList}\small\item\em Provide the name of the current item in the command table. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line \mbox{\hyperlink{_remote_receive_8h_source_l00030}{30}} of file \mbox{\hyperlink{_remote_receive_8h_source}{Remote\+Receive.\+h}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classremote_receiver_af9e01d2436fab5356d281f2da49052af}\label{classremote_receiver_af9e01d2436fab5356d281f2da49052af}} 
+\index{remoteReceiver@{remoteReceiver}!currentCmd@{currentCmd}}
+\index{currentCmd@{currentCmd}!remoteReceiver@{remoteReceiver}}
+\doxysubsubsection{\texorpdfstring{currentCmd()}{currentCmd()}}
+{\footnotesize\ttfamily char $\ast$ remote\+Receiver\+::current\+Cmd (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Provide the name of the current item in the command table. 
+
+\begin{DoxyReturn}{Returns}
+The item name 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classremote_receiver_a22b8b3e3c803dd149f4a44c1b20ca740}\label{classremote_receiver_a22b8b3e3c803dd149f4a44c1b20ca740}} 
+\index{remoteReceiver@{remoteReceiver}!getCommand@{getCommand}}
+\index{getCommand@{getCommand}!remoteReceiver@{remoteReceiver}}
+\doxysubsubsection{\texorpdfstring{getCommand()}{getCommand()}}
+{\footnotesize\ttfamily IRCommand\+\_\+t remote\+Receiver\+::get\+Command (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Checks for anything received, handles any special repeat codes, and re-\/enables the input. Used in normal \char`\"{}always listening\char`\"{} operation. 
+
+\begin{DoxyReturn}{Returns}
+command received. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classremote_receiver_aa2f2e79b3961c79c7980ea7c724d74ba}\label{classremote_receiver_aa2f2e79b3961c79c7980ea7c724d74ba}} 
+\index{remoteReceiver@{remoteReceiver}!getRawCommand@{getRawCommand}}
+\index{getRawCommand@{getRawCommand}!remoteReceiver@{remoteReceiver}}
+\doxysubsubsection{\texorpdfstring{getRawCommand()}{getRawCommand()}}
+{\footnotesize\ttfamily IRCommand\+\_\+t remote\+Receiver\+::get\+Raw\+Command (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{wait }\end{DoxyParamCaption})}
+
+
+
+Ensures that there is nothing in the input buffer, waits for a fresh command (button press), and identifies the command received. Does not handle repeat codes. Used when learning a new remote. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em wait} & (ms) -\/ how long to wait for the initial button press \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+command received. Protocol 0, command 0, address 0 denotes nothing received 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classremote_receiver_a501488bcd706b92980607ed63e906bf8}\label{classremote_receiver_a501488bcd706b92980607ed63e906bf8}} 
+\index{remoteReceiver@{remoteReceiver}!learn@{learn}}
+\index{learn@{learn}!remoteReceiver@{remoteReceiver}}
+\doxysubsubsection{\texorpdfstring{learn()}{learn()}}
+{\footnotesize\ttfamily IRCommand\+\_\+t remote\+Receiver\+::learn (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{item,  }\item[{uint16\+\_\+t}]{wait }\end{DoxyParamCaption})}
+
+
+
+Learns an IR code. Waits to see a button press, then loads the first code seen into the dispatch table. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em item} & the item number in the dispatch table \\
+\hline
+{\em wait} & how long to wait (md) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+command received. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classremote_receiver_a9b8080970fb15f9bbb84231929e72b11}\label{classremote_receiver_a9b8080970fb15f9bbb84231929e72b11}} 
+\index{remoteReceiver@{remoteReceiver}!nextCmd@{nextCmd}}
+\index{nextCmd@{nextCmd}!remoteReceiver@{remoteReceiver}}
+\doxysubsubsection{\texorpdfstring{nextCmd()}{nextCmd()}}
+{\footnotesize\ttfamily uint8\+\_\+t remote\+Receiver\+::next\+Cmd (\begin{DoxyParamCaption}\item[{bool}]{forward,  }\item[{bool}]{wrap }\end{DoxyParamCaption})}
+
+
+
+Go to the next or previous item in the dispatch table. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em forward} & true means next. \\
+\hline
+{\em wrap} & wrap around at either end of the list \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the now-\/current item number 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classremote_receiver_a5727c6d5298bc840c985206890149183}\label{classremote_receiver_a5727c6d5298bc840c985206890149183}} 
+\index{remoteReceiver@{remoteReceiver}!Task@{Task}}
+\index{Task@{Task}!remoteReceiver@{remoteReceiver}}
+\doxysubsubsection{\texorpdfstring{Task()}{Task()}}
+{\footnotesize\ttfamily void remote\+Receiver\+::\+Task (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+IR command type -\/ protocol, command, address. 
+
+Checks for any command received and invokes the corresponding handler. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_remote_receive_8h}{Remote\+Receive.\+h}}\end{DoxyCompactItemize}

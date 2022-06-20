@@ -1,0 +1,16 @@
+digraph "Switch::checkPin"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="RL";
+  Node1 [label="Switch::checkPin",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Update the switch state."];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="Switch::closedFor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_switch.html#a88d52f9ced73780a6f1e313eb311043b",tooltip="Check if the switch is closed, and for how long."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="Switch::switchClosed",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_switch.html#a391eb436c0e0361b0adfe2ddad2ebce1",tooltip="Get the switch state."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="Button::update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_button.html#a475aa75a856bb8f8e95a860c23713a97",tooltip="The button handler state machine."];
+  Node4 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="Button::Task",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_button.html#ab30555050caa816d24ded1f8278003b2",tooltip="Invoke functions according to button events."];
+}

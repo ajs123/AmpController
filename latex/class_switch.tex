@@ -1,0 +1,170 @@
+\hypertarget{class_switch}{}\doxysection{Switch Class Reference}
+\label{class_switch}\index{Switch@{Switch}}
+
+
+Provides a simple debounced switch.  
+
+
+
+
+{\ttfamily \#include $<$Button.\+h$>$}
+
+
+
+Inheritance diagram for Switch\+:
+% FIG 0
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_switch_ad445bd55441eb3891682a5c978cdbd6a}{Switch}} (uint32\+\_\+t pin\+\_\+)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_switch_a391eb436c0e0361b0adfe2ddad2ebce1}{switch\+Closed}} ()
+\begin{DoxyCompactList}\small\item\em Get the switch state. \end{DoxyCompactList}\item 
+uint32\+\_\+t \mbox{\hyperlink{class_switch_a88d52f9ced73780a6f1e313eb311043b}{closed\+For}} ()
+\begin{DoxyCompactList}\small\item\em Check if the switch is closed, and for how long. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}{check\+Pin}} ()
+\begin{DoxyCompactList}\small\item\em Update the switch state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validated\+State}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{current\+Time}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{class_switch_ade62246047d535b87e56c392c0ff1779}{last\+State\+Change\+Time}}
+\item 
+uint32\+\_\+t \mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{time\+In\+Validated\+State}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Provides a simple debounced switch. 
+
+Definition at line \mbox{\hyperlink{_button_8h_source_l00019}{19}} of file \mbox{\hyperlink{_button_8h_source}{Button.\+h}}.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_switch_ad445bd55441eb3891682a5c978cdbd6a}\label{class_switch_ad445bd55441eb3891682a5c978cdbd6a}} 
+\index{Switch@{Switch}!Switch@{Switch}}
+\index{Switch@{Switch}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{Switch()}{Switch()}}
+{\footnotesize\ttfamily Switch\+::\+Switch (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{pin\+\_\+ }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+
+Definition at line \mbox{\hyperlink{_button_8cpp_source_l00006}{6}} of file \mbox{\hyperlink{_button_8cpp_source}{Button.\+cpp}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}\label{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}} 
+\index{Switch@{Switch}!checkPin@{checkPin}}
+\index{checkPin@{checkPin}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{checkPin()}{checkPin()}}
+{\footnotesize\ttfamily void Switch\+::check\+Pin (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Update the switch state. 
+
+
+
+Definition at line \mbox{\hyperlink{_button_8cpp_source_l00016}{16}} of file \mbox{\hyperlink{_button_8cpp_source}{Button.\+cpp}}.
+
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{class_switch_a88d52f9ced73780a6f1e313eb311043b}\label{class_switch_a88d52f9ced73780a6f1e313eb311043b}} 
+\index{Switch@{Switch}!closedFor@{closedFor}}
+\index{closedFor@{closedFor}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{closedFor()}{closedFor()}}
+{\footnotesize\ttfamily uint32\+\_\+t Switch\+::closed\+For (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Check if the switch is closed, and for how long. 
+
+\begin{DoxyReturn}{Returns}
+number of ms closed, or 0 for open 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{_button_8cpp_source_l00059}{59}} of file \mbox{\hyperlink{_button_8cpp_source}{Button.\+cpp}}.
+
+Here is the call graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{class_switch_a391eb436c0e0361b0adfe2ddad2ebce1}\label{class_switch_a391eb436c0e0361b0adfe2ddad2ebce1}} 
+\index{Switch@{Switch}!switchClosed@{switchClosed}}
+\index{switchClosed@{switchClosed}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{switchClosed()}{switchClosed()}}
+{\footnotesize\ttfamily bool Switch\+::switch\+Closed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get the switch state. 
+
+\begin{DoxyReturn}{Returns}
+true for closed or false for open 
+\end{DoxyReturn}
+
+
+Definition at line \mbox{\hyperlink{_button_8cpp_source_l00054}{54}} of file \mbox{\hyperlink{_button_8cpp_source}{Button.\+cpp}}.
+
+Here is the call graph for this function\+:
+% FIG 3
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{class_switch_a6764682de280ba289f0d47410fe675d1}\label{class_switch_a6764682de280ba289f0d47410fe675d1}} 
+\index{Switch@{Switch}!currentTime@{currentTime}}
+\index{currentTime@{currentTime}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{currentTime}{currentTime}}
+{\footnotesize\ttfamily uint32\+\_\+t Switch\+::current\+Time\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{_button_8h_source_l00046}{46}} of file \mbox{\hyperlink{_button_8h_source}{Button.\+h}}.
+
+\mbox{\Hypertarget{class_switch_ade62246047d535b87e56c392c0ff1779}\label{class_switch_ade62246047d535b87e56c392c0ff1779}} 
+\index{Switch@{Switch}!lastStateChangeTime@{lastStateChangeTime}}
+\index{lastStateChangeTime@{lastStateChangeTime}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{lastStateChangeTime}{lastStateChangeTime}}
+{\footnotesize\ttfamily uint32\+\_\+t Switch\+::last\+State\+Change\+Time\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{_button_8h_source_l00047}{47}} of file \mbox{\hyperlink{_button_8h_source}{Button.\+h}}.
+
+\mbox{\Hypertarget{class_switch_ac467012dd4cb48a113a6f5744ffdd840}\label{class_switch_ac467012dd4cb48a113a6f5744ffdd840}} 
+\index{Switch@{Switch}!timeInValidatedState@{timeInValidatedState}}
+\index{timeInValidatedState@{timeInValidatedState}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{timeInValidatedState}{timeInValidatedState}}
+{\footnotesize\ttfamily uint32\+\_\+t Switch\+::time\+In\+Validated\+State\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{_button_8h_source_l00048}{48}} of file \mbox{\hyperlink{_button_8h_source}{Button.\+h}}.
+
+\mbox{\Hypertarget{class_switch_adc991447c6f2557bc641082bbf96cc79}\label{class_switch_adc991447c6f2557bc641082bbf96cc79}} 
+\index{Switch@{Switch}!validatedState@{validatedState}}
+\index{validatedState@{validatedState}!Switch@{Switch}}
+\doxysubsubsection{\texorpdfstring{validatedState}{validatedState}}
+{\footnotesize\ttfamily bool Switch\+::validated\+State\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \mbox{\hyperlink{_button_8h_source_l00045}{45}} of file \mbox{\hyperlink{_button_8h_source}{Button.\+h}}.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{_button_8h}{Button.\+h}}\item 
+\mbox{\hyperlink{_button_8cpp}{Button.\+cpp}}\end{DoxyCompactItemize}

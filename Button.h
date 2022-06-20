@@ -5,9 +5,7 @@
 
 #pragma once
 
-/**
- * Callbacks
- */
+// Callbacks for button events
 extern void shortPress();
 extern void longPressPending();
 extern void longPress();
@@ -90,6 +88,7 @@ public:
      * @return buttonEvent_t event
      */
     buttonEvent_t update();
+
     enum buttonState_t {
         RELEASED, 
         PRESSED,
@@ -108,7 +107,7 @@ private:
 
     buttonState_t buttonState;
     uint32_t lastChangeTime;
-    bool fullHoldLock;
+    //bool fullHoldLock;
 
     //Dispatch table - must be in the same order as the buttonEvent_t enum
     typedef void cmdHandler_t();    // Command handlers take nothing and return nothing

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.3"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: Encapsulations</title>
+<title>Amp Controller: Encapsulations</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -25,8 +25,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">Amp Controller
    </div>
+   <div id="projectbrief">Controller for the LXMini integrated amp</div>
   </td>
  </tr>
  </tbody>
@@ -100,10 +101,37 @@ PowerControl</h2>
 <li>Read back status of each</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md4"></a>
-Input and power rules</h1>
+Knob</h1>
+<ul>
+<li>Quadrature decoder</li>
+<li>Sample or time-based debounce for the button</li>
+<li><a class="el" href="class_button.html">Button</a> event detector - probably with sample time = loop tick time<ul>
+<li>Short press: release after being down &lt; SHORT counts or &lt; SHORT_PRESS ms</li>
+<li>Long press: release after count in [SHORT, LONG] or t in [SHORT_PRESS, LONG_PRESS] ms</li>
+<li>Hold: down for &gt; HOLD counts or &gt; HOLD_PRESS ms</li>
+</ul>
+</li>
+</ul>
 <h2><a class="anchor" id="autotoc_md5"></a>
-Input detection</h2>
+Button press functions</h2>
 <h3><a class="anchor" id="autotoc_md6"></a>
+While on</h3>
+<ul>
+<li>Short = Mute</li>
+<li>Long = Change input</li>
+<li>Hold = Power off </li>
+</ul>
+<h3><a class="anchor" id="autotoc_md7"></a>
+While off</h3>
+<ul>
+<li>Short = Power on</li>
+<li>Hold = Menu</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md8"></a>
+Input and power rules</h1>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Input detection</h2>
+<h3><a class="anchor" id="autotoc_md10"></a>
 Direct measures</h3>
 <p >These are read directly (no persistent state unless there's filtering on the analog inputs)</p><ul>
 <li>Trigger input corresponding to a signal input</li>
@@ -113,7 +141,7 @@ Direct measures</h3>
 </ul>
 </li>
 </ul>
-<h3><a class="anchor" id="autotoc_md7"></a>
+<h3><a class="anchor" id="autotoc_md11"></a>
 Input sense states: InputSense</h3>
 <p >The triggers are just copies of the direct measures. AnalogSignal has a persistent state to allow a timeout.</p>
 <ul>
@@ -147,14 +175,14 @@ Input sense states: InputSense</h3>
 <li>AnalogActive = ATrigger == PRESENT || AnalogSignal != ABSENT</li>
 <li>DigitalActive = DTrigger</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md8"></a>
+<h3><a class="anchor" id="autotoc_md12"></a>
 Input state - ANALOG, DIGITAL, NA</h3>
 <ul>
 <li>CurrentInput: current from MiniDSP - ANALOG, DIGITAL, NA</li>
 <li>PriorInput: last from MiniDSP</li>
 <li>ChosenInput: from inputs/state machine(s) - ANALOG, DIGITAL, NA</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md9"></a>
+<h3><a class="anchor" id="autotoc_md13"></a>
 Input/Power state machine: PowerState</h3>
 <p >Determination of whether the amp should be on or off based on InputSense, the input selected by the DSP (may be changed by the remote), and the panel buttons</p><ul>
 <li>OFF // Respond to any source or panel activity<ul>
@@ -205,9 +233,9 @@ Input/Power state machine: PowerState</h3>
 </ul>
 </li>
 </ul>
-<h2><a class="anchor" id="autotoc_md10"></a>
+<h2><a class="anchor" id="autotoc_md14"></a>
 Top-level state machine</h2>
-<h3><a class="anchor" id="autotoc_md11"></a>
+<h3><a class="anchor" id="autotoc_md15"></a>
 On Sequence</h3>
 <ol type="1">
 <li>DSP power</li>
@@ -230,7 +258,7 @@ On Sequence</h3>
 <ol type="1">
 <li>Enable output meter</li>
 </ol>
-<h3><a class="anchor" id="autotoc_md12"></a>
+<h3><a class="anchor" id="autotoc_md16"></a>
 State machine</h3>
 <p >This is the main state machine that takes the dsp through its startup and controls the amp power.</p><ul>
 <li>OFF<ul>
@@ -278,14 +306,14 @@ State machine</h3>
 </ul>
 </li>
 </ul>
-<h2><a class="anchor" id="autotoc_md13"></a>
+<h2><a class="anchor" id="autotoc_md17"></a>
 Summary - PowerInputControl Task()</h2>
 <ol type="1">
 <li>Direct read inputs</li>
 </ol>
 <ol type="1">
-<li>Input sense state machines<ul>
-<li>Determines the input state, including persistence in case of silence on the analog input</li>
+<li>Input sense state machine<ul>
+<li>Determines the input state, including persistence in case of silence on the selected input as indicated by the DSP</li>
 </ul>
 </li>
 </ol>
@@ -306,7 +334,71 @@ Summary - PowerInputControl Task()</h2>
 </ul>
 </li>
 </ol>
-<p >NOTE: The output meter shouldn't operate until the amps are on, so wherever the meter update is called should check the power state. </p>
+<p >NOTE: The output meter shouldn't operate until the amps are on, so wherever the meter update is called should check the power state.</p>
+<h2><a class="anchor" id="autotoc_md18"></a>
+Off state (setup) menu</h2>
+<p >Navigation</p><ul>
+<li>Rotate (up/down) to choose (discrete options) or set (numeric)<ul>
+<li>Choice n is BACK</li>
+</ul>
+</li>
+<li>Push to select</li>
+<li>Timeout is back to ground state</li>
+</ul>
+<p >Menu heirarchy</p><ul>
+<li>Signal timeout<ul>
+<li>Never</li>
+<li>1 min</li>
+<li>5 min</li>
+</ul>
+</li>
+<li>Max volume<ul>
+<li>Numeric -30..0</li>
+</ul>
+</li>
+<li>Max startup volume<ul>
+<li>Numeric -30..0 (not above Max volume)</li>
+</ul>
+</li>
+<li>Volume comp (digital-analog diff)<ul>
+<li>Numeric -20..0</li>
+</ul>
+</li>
+<li>IR Learn (for each, grab code or timeout)<ul>
+<li>Vol+</li>
+<li>Vol-</li>
+<li>Mute</li>
+<li>Source</li>
+<li>Power</li>
+</ul>
+</li>
+<li>Save settings <em>- is this needed?</em><ul>
+<li>SAVE</li>
+</ul>
+</li>
+</ul>
+<p >Discrete option menu behavior</p><ul>
+<li>Menu function gets array of item names</li>
+<li>Rotate: present next name</li>
+<li>Select: return item number 0..(n-1)</li>
+<li>Back: return n</li>
+<li>Timeout: needs to reset to ground state</li>
+</ul>
+<p >Numeric option menu behavior</p><ul>
+<li>Menu function gets min, max, increment</li>
+<li>Rotate: present number</li>
+<li>Select: return number</li>
+<li>Timeout: needs to reset to ground state</li>
+</ul>
+<p ><b>Discrete and numeric are very similar</b></p>
+<p >IRLearn menu behavior</p><ul>
+<li>Rotate: present command</li>
+<li>Select: prompt to press<ul>
+<li>Code: confirm</li>
+<li>Timeout: say so </li>
+</ul>
+</li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

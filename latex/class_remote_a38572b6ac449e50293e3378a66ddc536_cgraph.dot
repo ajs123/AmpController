@@ -1,0 +1,10 @@
+digraph "Remote::learn"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Remote::learn",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="Learns an IR code. Waits to see a button press, then loads the first code seen into the dispatch tabl..."];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid"];
+  Node2 [label="Remote::getRawCommand",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_remote.html#aac7f0952c351f22b90a91fc05fa3ab2a",tooltip="Ensures that there is nothing in the input buffer, waits for a fresh command (button press),..."];
+}

@@ -5,9 +5,9 @@
 #define IR_PIN          2   // Requires having run code to enable GPIO on D2
 
 // Quadrature rotary encoder with pushbutton
-#define ENCODER_BUTTON  5
-#define ENCODER_A       6
-#define ENCODER_B       9
+#define ENCODER_BUTTON  5   
+#define ENCODER_A       11
+#define ENCODER_B       10
 
 // Amp controls: power relay and ICEPower EN pins
 #define AMP_ENABLE_PIN  13
@@ -17,4 +17,16 @@
 #define BUTTON_A 9
 #define BUTTON_B 6
 #define BUTTON_C 5
+
+// USB host shield 
+// NOTE: At present, these are specified directly in the UHS library, in Usbcore.h line 57
+//       Usbcore.h should use these
+#define UHS_SS  1   // Labeled RX
+#define UHS_INT 0   // Labeled TX
+
+// Default remote codes
+#define DEFAULT_VOLPLUS_CMD     0x77E1507C // Apple remote UP
+#define DEFAULT_VOLMINUS_CMD    0x77E1307C //              DOWN
+#define DEFAULT_MUTE_CMD        0x77E1A07C //              PLAY/PAUSE
+#define DEFAULT_INPUT_CMD       0x77E1C07C //              INPUT
 

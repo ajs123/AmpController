@@ -1,0 +1,86 @@
+\hypertarget{_input_sensing_8cpp_source}{}\doxysection{Input\+Sensing.\+cpp}
+\mbox{\hyperlink{_input_sensing_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00001}00001 \textcolor{comment}{// Input monitoring}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00002}00002 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00003}00003 \textcolor{preprocessor}{\#include <Arduino.h>}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00004}00004 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{_input_sensing_8h}{InputSensing.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00005}00005 \textcolor{preprocessor}{\#include <MiniDSP.h>}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00006}00006 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00007}\mbox{\hyperlink{class_input_sensing_a1ce46cd3a52a686e5590ad655371a78c}{00007}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_input_sensing_a1ce46cd3a52a686e5590ad655371a78c}{InputSensing::Init}}() \{}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00008}00008 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00009}00009     \textcolor{comment}{// Pins}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00010}00010     pinMode(\mbox{\hyperlink{_input_sensing_8h_ad60d39458131e817115cde64bc1b1bf7}{PIN\_DIGITAL\_TRIGGER}}, INPUT\_PULLUP);  \textcolor{comment}{// Open collector}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00011}00011     pinMode(\mbox{\hyperlink{_input_sensing_8h_a5307366371a94ac24e7be33e49a1c232}{PIN\_ANALOG\_TRIGGER}}, INPUT\_PULLUP);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00012}00012     pinMode(\mbox{\hyperlink{_input_sensing_8h_a491cab80181143aed1df2888ca813f11}{PIN\_ANALOG\_L}}, INPUT);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00013}00013     pinMode(\mbox{\hyperlink{_input_sensing_8h_a5971dca8cd4b8aa5ce78e0ee8f29640f}{PIN\_ANALOG\_R}}, INPUT);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00014}00014 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00015}00015     \textcolor{comment}{// Use 12-\/bit resolution, 3.6V reference}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00016}00016     \textcolor{comment}{// 1 LSB = 0.88 mV}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00017}00017     analogReadResolution(12);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00018}00018     analogReference(AR\_DEFAULT);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00019}00019 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00020}00020     \textcolor{comment}{// Init signal history}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00021}00021     analogLastL = 0;}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00022}00022     analogLastR = 0;}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00023}00023     lastSignalTime = millis();}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00024}00024 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00025}00025     \textcolor{comment}{// Do initial signal checks}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00026}00026     \mbox{\hyperlink{class_input_sensing_a5a36c1811b90b5f6a5c6b4587d138292}{signalChecks}}(); }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00027}00027 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00028}00028 \};}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00029}00029 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00030}\mbox{\hyperlink{class_input_sensing_a5a36c1811b90b5f6a5c6b4587d138292}{00030}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_input_sensing_a5a36c1811b90b5f6a5c6b4587d138292}{InputSensing::signalChecks}}() \{}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00031}00031 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00032}00032     \textcolor{comment}{// Triggers}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00033}00033     \mbox{\hyperlink{class_input_sensing_ab0fa35ec20be3d45a33aea10d95a542c}{digitalTriggerPresent}} = !digitalRead(\mbox{\hyperlink{_input_sensing_8h_ad60d39458131e817115cde64bc1b1bf7}{PIN\_DIGITAL\_TRIGGER}});}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00034}00034     \mbox{\hyperlink{class_input_sensing_a1406355e6ecaae16bfedea3725ee0b0d}{analogTriggerPresent}} = !digitalRead(\mbox{\hyperlink{_input_sensing_8h_a5307366371a94ac24e7be33e49a1c232}{PIN\_ANALOG\_TRIGGER}});}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00035}00035     }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00036}00036     \textcolor{comment}{// Analog levels}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00037}00037     \textcolor{comment}{// The simplest approach is that anything over threshold counts}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00038}00038     \textcolor{comment}{// This is not robust against little spikes, etc.}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00039}00039 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00040}00040     \textcolor{keywordtype}{bool} analogDetected = \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00041}00041 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00042}00042     uint16\_t aSignal = max(analogRead(\mbox{\hyperlink{_input_sensing_8h_a491cab80181143aed1df2888ca813f11}{PIN\_ANALOG\_L}}), analogRead(\mbox{\hyperlink{_input_sensing_8h_a5971dca8cd4b8aa5ce78e0ee8f29640f}{PIN\_ANALOG\_R}}));}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00043}00043     \textcolor{keywordflow}{if} (aSignal >= \mbox{\hyperlink{_input_sensing_8h_a62711a9322960a56dcf69f0d90da49c2}{ANALOG\_SIGNAL\_THRESHOLD}}) \{}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00044}00044         lastSignalTime = millis();}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00045}00045         analogDetected = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00046}00046         \mbox{\hyperlink{class_input_sensing_a8638d7839322eff10c4b7d82217ca2bb}{analogSignalPresent}} = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00047}00047     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00048}00048         \mbox{\hyperlink{class_input_sensing_a8638d7839322eff10c4b7d82217ca2bb}{analogSignalPresent}} = !( (millis() -\/ lastSignalTime) > \mbox{\hyperlink{_input_sensing_8h_a73d71e23ad7a5d61a38fc06334a4d4d8}{ANALOG\_SIGNAL\_HOLDUP}} );}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00049}00049     \}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00050}00050 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00051}00051     \textcolor{keywordflow}{if} (analogDetected) \{}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00052}00052         \mbox{\hyperlink{class_input_sensing_a5ee7b0c2b4857c97eea2cff82fbe2a24}{analogImpedanceLow}} = \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00053}00053     \} \textcolor{keywordflow}{else} \{}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00054}00054         \mbox{\hyperlink{class_input_sensing_a5ee7b0c2b4857c97eea2cff82fbe2a24}{analogImpedanceLow}} = \mbox{\hyperlink{class_input_sensing_a2a041de6410815bf42be507d50e1d5b2}{analogImpedanceTest}}();}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00055}00055     \}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00056}00056 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00057}00057 \}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00058}00058 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00059}\mbox{\hyperlink{class_input_sensing_a2a041de6410815bf42be507d50e1d5b2}{00059}} \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_input_sensing_a2a041de6410815bf42be507d50e1d5b2}{InputSensing::analogImpedanceTest}}() \{}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00060}00060 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00061}00061     \textcolor{comment}{// If an input is disconnected, or connected to a high-\/impedance (turned off)}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00062}00062     \textcolor{comment}{// source, then turning on the input pullup should bring the pin voltage very close}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00063}00063     \textcolor{comment}{// to Vdd. Otherwise, it must be connected to a source.}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00064}00064     \textcolor{comment}{// }}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00065}00065     \textcolor{comment}{// This will read incorrectly if the signal came on right before this was called,}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00066}00066     \textcolor{comment}{// but that will get corrected on the next update.}}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00067}00067 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00068}00068     uint16\_t baseline;}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00069}00069     uint16\_t purturbed;}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00070}00070     \textcolor{keyword}{constexpr} uint16\_t thresh = (uint16\_t) (4096 * 3.3 / 3.6 * \mbox{\hyperlink{_input_sensing_8h_ac3e75703389b17faf1367e0eef5e0853}{ANALOG\_IMPEDANCE\_THRESHOLD}});}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00071}00071 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00072}00072     pinMode(\mbox{\hyperlink{_input_sensing_8h_a491cab80181143aed1df2888ca813f11}{PIN\_ANALOG\_L}}, INPUT\_PULLUP);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00073}00073     pinMode(\mbox{\hyperlink{_input_sensing_8h_a5971dca8cd4b8aa5ce78e0ee8f29640f}{PIN\_ANALOG\_R}}, INPUT\_PULLUP);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00074}00074     delay(10);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00075}00075     \textcolor{keywordtype}{bool} high = (analogRead(\mbox{\hyperlink{_input_sensing_8h_a491cab80181143aed1df2888ca813f11}{PIN\_ANALOG\_L}}) > thresh) \&\& (analogRead(\mbox{\hyperlink{_input_sensing_8h_a5971dca8cd4b8aa5ce78e0ee8f29640f}{PIN\_ANALOG\_R}}) > thresh);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00076}00076     pinMode(\mbox{\hyperlink{_input_sensing_8h_a491cab80181143aed1df2888ca813f11}{PIN\_ANALOG\_L}}, INPUT);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00077}00077     pinMode(\mbox{\hyperlink{_input_sensing_8h_a5971dca8cd4b8aa5ce78e0ee8f29640f}{PIN\_ANALOG\_R}}, INPUT);}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00078}00078 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00079}00079     \textcolor{keywordflow}{return} !high;}
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00080}00080 }
+\DoxyCodeLine{\Hypertarget{_input_sensing_8cpp_source_l00081}00081 \}}
+
+\end{DoxyCode}

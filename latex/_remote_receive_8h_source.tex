@@ -1,0 +1,82 @@
+\hypertarget{_remote_receive_8h_source}{}\doxysection{Remote\+Receive.\+h}
+\mbox{\hyperlink{_remote_receive_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00001}00001 \textcolor{comment}{// Take input from the IR receiver}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00002}00002 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00003}00003 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00004}00004 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00005}00005 \textcolor{preprocessor}{\#include <Arduino.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00006}00006 \textcolor{preprocessor}{\#include <IRLibRecvPCI.h>}         \textcolor{comment}{// Use the pin change interrupt receiver}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00007}00007 \textcolor{comment}{//\#include <IRLibDecodeBase.h>      // Base class for the decoder}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00008}00008                                   \textcolor{comment}{// Decoder protocols}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00009}00009 \textcolor{preprocessor}{\#include <IRLib\_P01\_NEC.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00010}00010 \textcolor{preprocessor}{\#include <IRLib\_P02\_Sony.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00011}00011 \textcolor{comment}{// \#include <IRLib\_P03\_RC5.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00012}00012 \textcolor{comment}{// \#include <IRLib\_P04\_RC6.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00013}00013 \textcolor{comment}{// \#include <IRLib\_P05\_Panasonic\_Old.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00014}00014 \textcolor{comment}{// \#include <IRLib\_P06\_JVC.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00015}00015 \textcolor{comment}{// \#include <IRLib\_P07\_NECx.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00016}00016 \textcolor{comment}{// \#include <IRLib\_P08\_Samsung36.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00017}00017 \textcolor{comment}{// \#include <IRLib\_P09\_GICable.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00018}00018 \textcolor{comment}{// \#include <IRLib\_P10\_DirecTV.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00019}00019 \textcolor{comment}{// \#include <IRLib\_P11\_RCMM.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00020}00020 \textcolor{comment}{// \#include <IRLib\_P12\_CYKM.h>}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00021}00021 \textcolor{comment}{//\#include <IRLib\_HashRaw.h>       // If all we want is a unique code for each key}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00022}00022 \textcolor{preprocessor}{\#include <IRLibCombo.h>}            \textcolor{comment}{// Uses the first protocol that appears to match}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00023}00023 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00024}\mbox{\hyperlink{_remote_receive_8h_a83c6b4851521f263abde186c39286b07}{00024}} \textcolor{keyword}{typedef} \textcolor{keywordtype}{void} \mbox{\hyperlink{_remote_receive_8h_a83c6b4851521f263abde186c39286b07}{cmdHandler\_t}}();    \textcolor{comment}{// Command handlers take nothing and return nothing}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00025}00025 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00026}00026 \textcolor{comment}{// Command handlers are externals. They can also be called from other classes, such as the}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00027}00027 \textcolor{comment}{// one that handles the control knob.}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00028}\mbox{\hyperlink{_remote_receive_8h_a68ea8ceaea6fc52851ccc304d2836781}{00028}} \textcolor{keyword}{extern} \mbox{\hyperlink{_remote_receive_8h_a83c6b4851521f263abde186c39286b07}{cmdHandler\_t}} \mbox{\hyperlink{_remote_receive_8h_a3b35647bccb9db645a636241e5363e8a}{volPlus}}, \mbox{\hyperlink{_remote_receive_8h_a1ae1869489169b2e51df2a67fe1c0ce3}{volMinus}}, \mbox{\hyperlink{_remote_receive_8h_a15c99d8267e3a4eda311264b3c01871e}{mute}}, \mbox{\hyperlink{_remote_receive_8h_a68ea8ceaea6fc52851ccc304d2836781}{input}};}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00029}00029 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00030}\mbox{\hyperlink{classremote_receiver}{00030}} \textcolor{keyword}{class }\mbox{\hyperlink{classremote_receiver}{remoteReceiver}} \{}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00031}00031 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00036}00036     \mbox{\hyperlink{classremote_receiver}{remoteReceiver}}() \{}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00037}00037         dwt\_enable();}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00038}00038     \}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00039}00039 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00040}00040 \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00041}00041     \textcolor{comment}{// IRLib2 provides a protocol ID, command, and address (extended data). }}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00042}00042     \textcolor{comment}{// Our receiver adds the time (millis()) at which the command was received.}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00043}00043     \textcolor{keyword}{struct }IRCommand\_t \{}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00044}00044         uint8\_t protocol;}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00045}00045         uint32\_t command;}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00046}00046         uint32\_t address;}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00047}00047         uint32\_t receivedTime;}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00048}00048     \};}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00049}00049 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00050}00050     \textcolor{comment}{// Dispatch table for remote commands.}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00051}00051     \textcolor{keyword}{struct }cmdEntry\_t \{}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00052}00052         uint32\_t command;           \textcolor{comment}{// The IR command. We don't bother here with protocol or extended data ("{}address"{}) }}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00053}00053         \textcolor{keyword}{const} \textcolor{keywordtype}{char}* name;           \textcolor{comment}{// The readable name, used when training}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00054}00054         \mbox{\hyperlink{_remote_receive_8h_a83c6b4851521f263abde186c39286b07}{cmdHandler\_t}}* handler;      \textcolor{comment}{// The callback}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00055}00055     \};}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00056}00056 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00057}00057     cmdEntry\_t cmdTable[4] = \{}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00058}00058         \{0, \textcolor{stringliteral}{"{}Vol+"{}}, \mbox{\hyperlink{_remote_receive_8h_a3b35647bccb9db645a636241e5363e8a}{volPlus}}\},}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00059}00059         \{0, \textcolor{stringliteral}{"{}Vol-\/"{}}, \mbox{\hyperlink{_remote_receive_8h_a1ae1869489169b2e51df2a67fe1c0ce3}{volMinus}}\},}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00060}00060         \{0, \textcolor{stringliteral}{"{}Mute"{}}, \mbox{\hyperlink{_remote_receive_8h_a15c99d8267e3a4eda311264b3c01871e}{mute}}\},}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00061}00061         \{0, \textcolor{stringliteral}{"{}Input"{}}, \mbox{\hyperlink{_remote_receive_8h_a68ea8ceaea6fc52851ccc304d2836781}{input}}\}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00062}00062         \};}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00063}00063 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00064}00064     IRCommand\_t lastCommand;}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00065}00065 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00066}00066 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00067}00067 \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00077}\mbox{\hyperlink{classremote_receiver_a5727c6d5298bc840c985206890149183}{00077}}     \textcolor{keywordtype}{void} \mbox{\hyperlink{classremote_receiver_a5727c6d5298bc840c985206890149183}{Task}}();}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00078}00078 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00085}\mbox{\hyperlink{classremote_receiver_aa2f2e79b3961c79c7980ea7c724d74ba}{00085}}     IRCommand\_t \mbox{\hyperlink{classremote_receiver_aa2f2e79b3961c79c7980ea7c724d74ba}{getRawCommand}}(uint16\_t wait);}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00086}00086 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00092}\mbox{\hyperlink{classremote_receiver_a22b8b3e3c803dd149f4a44c1b20ca740}{00092}}     IRCommand\_t \mbox{\hyperlink{classremote_receiver_a22b8b3e3c803dd149f4a44c1b20ca740}{getCommand}}();}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00093}00093 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00094}00094     \textcolor{comment}{// These support IR code learning: Scrolling through a menu of named commands, and capturing the codes.}}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00095}00095 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00103}\mbox{\hyperlink{classremote_receiver_a501488bcd706b92980607ed63e906bf8}{00103}}     IRCommand\_t \mbox{\hyperlink{classremote_receiver_a501488bcd706b92980607ed63e906bf8}{learn}}(uint8\_t item, uint16\_t wait);}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00104}00104 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00111}\mbox{\hyperlink{classremote_receiver_a9b8080970fb15f9bbb84231929e72b11}{00111}}     uint8\_t \mbox{\hyperlink{classremote_receiver_a9b8080970fb15f9bbb84231929e72b11}{nextCmd}}(\textcolor{keywordtype}{bool} forward, \textcolor{keywordtype}{bool} wrap);}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00112}00112 }
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00117}\mbox{\hyperlink{classremote_receiver_af9e01d2436fab5356d281f2da49052af}{00117}}     \textcolor{keywordtype}{char} * \mbox{\hyperlink{classremote_receiver_af9e01d2436fab5356d281f2da49052af}{currentCmd}}();}
+\DoxyCodeLine{\Hypertarget{_remote_receive_8h_source_l00118}00118 \};}
+
+\end{DoxyCode}

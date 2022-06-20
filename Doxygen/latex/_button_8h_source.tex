@@ -1,0 +1,91 @@
+\hypertarget{_button_8h_source}{}\doxysection{Button.\+h}
+\mbox{\hyperlink{_button_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00001}00001 \textcolor{comment}{// Button debounce and event detection}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00002}00002 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00003}00003 \textcolor{preprocessor}{\#include <Arduino.h>}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00004}00004 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{_configuration_8h}{Configuration.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00005}00005 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00006}00006 \textcolor{preprocessor}{\#pragma once}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00007}00007 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00011}\mbox{\hyperlink{_button_8h_ac6946496d40c6cae9ac203831832d263}{00011}} \textcolor{keyword}{extern} \textcolor{keywordtype}{void} \mbox{\hyperlink{_button_8h_ac6946496d40c6cae9ac203831832d263}{shortPress}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00012}\mbox{\hyperlink{_button_8h_a36b3626998a726ce69c156ad1e8b7f30}{00012}} \textcolor{keyword}{extern} \textcolor{keywordtype}{void} \mbox{\hyperlink{_button_8h_a36b3626998a726ce69c156ad1e8b7f30}{longPressPending}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00013}\mbox{\hyperlink{_button_8h_a1c29424c1ba085d69b393bd0575c825f}{00013}} \textcolor{keyword}{extern} \textcolor{keywordtype}{void} \mbox{\hyperlink{_button_8h_a1c29424c1ba085d69b393bd0575c825f}{longPress}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00014}\mbox{\hyperlink{_button_8h_a2e3ecb01cc860fcbc42a741c431c88c3}{00014}} \textcolor{keyword}{extern} \textcolor{keywordtype}{void} \mbox{\hyperlink{_button_8h_a2e3ecb01cc860fcbc42a741c431c88c3}{fullHold}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00015}00015 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00019}\mbox{\hyperlink{class_switch}{00019}} \textcolor{keyword}{class }\mbox{\hyperlink{class_switch}{Switch}} \{}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00020}00020 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00021}00021 \textcolor{comment}{// Debounce parameters}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00022}00022 \textcolor{keyword}{const} uint8\_t MIN\_STABLE\_T = 50;     \textcolor{comment}{// ms}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00023}00023 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00024}00024 \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00028}00028     \mbox{\hyperlink{class_switch_ad445bd55441eb3891682a5c978cdbd6a}{Switch}}(uint32\_t pin\_);}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00029}00029 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00030}00030 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00036}00036     \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_switch_a391eb436c0e0361b0adfe2ddad2ebce1}{switchClosed}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00037}00037 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00042}00042     uint32\_t \mbox{\hyperlink{class_switch_a88d52f9ced73780a6f1e313eb311043b}{closedFor}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00043}00043 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00044}00044 \textcolor{keyword}{protected}:}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00045}\mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{00045}}     \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}};            \textcolor{comment}{// Current validated state}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00046}\mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{00046}}     uint32\_t \mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{currentTime}};}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00047}\mbox{\hyperlink{class_switch_ade62246047d535b87e56c392c0ff1779}{00047}}     uint32\_t \mbox{\hyperlink{class_switch_ade62246047d535b87e56c392c0ff1779}{lastStateChangeTime}};   \textcolor{comment}{// Last millis() at which the validated state changed}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00048}\mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{00048}}     uint32\_t \mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}};  }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00049}00049 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00053}00053     \textcolor{keywordtype}{void} \mbox{\hyperlink{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}{checkPin}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00054}00054 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00055}00055 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00056}00056 \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00057}00057     uint32\_t pin;}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00058}00058     \textcolor{keywordtype}{bool} lastContactState;        }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00059}00059     uint32\_t lastChangeTime;        \textcolor{comment}{// Last millis() at which contact state changed}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00060}00060 \};}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00061}00061 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00062}\mbox{\hyperlink{class_button}{00062}} \textcolor{keyword}{class }\mbox{\hyperlink{class_button}{Button}} : \textcolor{keyword}{public} \mbox{\hyperlink{class_switch}{Switch}} \{}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00063}00063 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00064}00064 \textcolor{keyword}{const} uint16\_t LONG\_PRESS\_T = 750;}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00065}00065 \textcolor{keyword}{const} uint16\_t FULL\_HOLD\_T = 4000;}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00066}00066 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00067}00067 \textcolor{keyword}{public}:}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00071}00071     \mbox{\hyperlink{class_button_ad912ba73d19afc9de4c9754fee8408b3}{Button}}(uint32\_t pin\_);}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00072}00072 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00078}\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5}{00078}}     \textcolor{keyword}{enum} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5}{buttonEvent\_t}} \{}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00079}\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{00079}}         \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}},}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00080}\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a20b6509893cb32bb941f1a808d4e0d97}{00080}}         \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a20b6509893cb32bb941f1a808d4e0d97}{SHORT\_PRESS}},        \textcolor{comment}{// Reported upon release, after a natural press of the button}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00081}\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5ac57f803bb037a8e2a98240ed2b44ba2b}{00081}}         \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5ac57f803bb037a8e2a98240ed2b44ba2b}{LONG\_PRESS\_PENDING}}, \textcolor{comment}{// Button held long enough to qualify as a long press (LONG\_PRESS\_T)}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00082}\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a09ba5f0a855c1af6bacd0b25c86aa17f}{00082}}         \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a09ba5f0a855c1af6bacd0b25c86aa17f}{LONG\_PRESS}},         \textcolor{comment}{// Reported upon release after a long press}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00083}\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a298605c9193c2aa31e0a9f08250eef9d}{00083}}         \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a298605c9193c2aa31e0a9f08250eef9d}{FULL\_HOLD}},          \textcolor{comment}{// Button held long enough to qualify as a full (long) hold (FULL\_HOLD\_T)}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00084}00084         \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a5e9581ec0bf4eca62c53864988c063a5}{EVENT\_COUNT}}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00085}\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a5e9581ec0bf4eca62c53864988c063a5}{00085}}     \};}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00086}00086 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00092}00092     \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5}{buttonEvent\_t}} \mbox{\hyperlink{class_button_a475aa75a856bb8f8e95a860c23713a97}{update}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00093}\mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7}{00093}}     \textcolor{keyword}{enum} \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7}{buttonState\_t}} \{}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00094}\mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7}{00094}}         \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7}{RELEASED}}, }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00095}\mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7535909580d749414383c9dd8726d0e0}{00095}}         \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7535909580d749414383c9dd8726d0e0}{PRESSED}},}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00096}\mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7aba2ed4aa479b00b1ab8c725127126a43}{00096}}         \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7aba2ed4aa479b00b1ab8c725127126a43}{LONG\_PRESSED}},}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00097}00097         \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7a70338958b15787a738046c7fdf4d34}{HELD}}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00098}\mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7a70338958b15787a738046c7fdf4d34}{00098}}     \};}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00099}00099 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00104}00104     \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5}{buttonEvent\_t}} \mbox{\hyperlink{class_button_ab30555050caa816d24ded1f8278003b2}{Task}}();}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00105}00105 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00106}00106 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00107}00107 \textcolor{keyword}{private}:}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00108}00108 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00109}00109     \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7}{buttonState\_t}} buttonState;}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00110}00110     uint32\_t lastChangeTime;}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00111}00111     \textcolor{keywordtype}{bool} fullHoldLock;}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00112}00112 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00113}00113     \textcolor{comment}{//Dispatch table -\/ must be in the same order as the buttonEvent\_t enum}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00114}00114     \textcolor{keyword}{typedef} \textcolor{keywordtype}{void} cmdHandler\_t();    \textcolor{comment}{// Command handlers take nothing and return nothing}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00115}00115 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00116}00116     \textcolor{keyword}{const} cmdHandler\_t * dispatchTable[\mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a5e9581ec0bf4eca62c53864988c063a5}{EVENT\_COUNT}}] = \{}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00117}00117         0,}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00118}00118         \mbox{\hyperlink{_button_8h_ac6946496d40c6cae9ac203831832d263}{shortPress}},}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00119}00119         \mbox{\hyperlink{_button_8h_a36b3626998a726ce69c156ad1e8b7f30}{longPressPending}},}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00120}00120         \mbox{\hyperlink{_button_8h_a1c29424c1ba085d69b393bd0575c825f}{longPress}},}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00121}00121         \mbox{\hyperlink{_button_8h_a2e3ecb01cc860fcbc42a741c431c88c3}{fullHold}}}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00122}00122     \};}
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00123}00123 }
+\DoxyCodeLine{\Hypertarget{_button_8h_source_l00124}00124 \};}
+
+\end{DoxyCode}

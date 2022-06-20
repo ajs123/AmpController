@@ -158,9 +158,9 @@ public:
     // @brief Never mind the long press
     void cancelLongPress();
 
-
-
 private:
+
+    Options & ampOptions = Options::instance();      // Access the options store
 
     // These are the max and min in dB that can be set in the minidsp
     const uint8_t MAX_VOLUME = 0; 

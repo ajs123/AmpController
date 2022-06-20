@@ -20,7 +20,6 @@ void Switch::checkPin() {
 
     // If different from the last sample, note the time and the state.
     if (currentContactState != lastContactState) {
-        //Serial.printf("Switch current %d, last %d, validated %d\r\n", currentContactState, lastContactState, validatedState);
         lastChangeTime = currentTime;
         lastContactState = currentContactState;
         return;
@@ -29,16 +28,13 @@ void Switch::checkPin() {
     // We're here if at least the last two samples were the same.
     // If also the same as the validated state, then we're persisting pressed or released.
     if (currentContactState == validatedState) {
-        //Serial.printf("Current %d, validated %d\r\n", currentContactState, validatedState);
         timeInValidatedState = currentTime - lastStateChangeTime;
         return;
     }
 
     // Otherwise, if it's been long enough since the last change,
     // we have a new validated state.
-    //Serial.printf("Current repeated at %d with validated %d\r\n", currentContactState, validatedState);
     if ((currentTime - lastChangeTime) > MIN_STABLE_T) {
-        //Serial.println("New validated state.");
         validatedState = currentContactState;
         lastStateChangeTime = currentTime;
         timeInValidatedState = 0;
@@ -68,6 +64,8 @@ Button::Button(uint32_t pin_) : Switch(pin_) {
     };
 
 
+// The button FSM could be implemented with an array of pointers to state functions corresponding to the elements
+// of the state enum. But with only four states, it's easier to read this way!
 Button::buttonEvent_t Button::update() {
 
     checkPin();

@@ -79,6 +79,7 @@
         "DIGITAL"
     };
 
+    // Making the labels changeable will require going back to the switch statement, or some alternative
     void AmpDisplay::drawSource(bool changeInd)
     {
         char label[12];

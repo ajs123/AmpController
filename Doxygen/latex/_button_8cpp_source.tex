@@ -1,0 +1,134 @@
+\hypertarget{_button_8cpp_source}{}\doxysection{Button.\+cpp}
+\mbox{\hyperlink{_button_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00001}00001     }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00002}00002 \textcolor{preprocessor}{\#include "{}\mbox{\hyperlink{_button_8h}{Button.h}}"{}}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00003}00003 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00004}00004 \textcolor{comment}{// Switch}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00005}00005 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00006}\mbox{\hyperlink{class_switch_ad445bd55441eb3891682a5c978cdbd6a}{00006}} \mbox{\hyperlink{class_switch_ad445bd55441eb3891682a5c978cdbd6a}{Switch::Switch}}(uint32\_t pin\_) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00007}00007     pin = pin\_;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00008}00008     pinMode(pin, INPUT\_PULLUP);}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00009}00009     \mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}} = \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00010}00010     lastContactState = \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00011}00011     lastChangeTime = millis();}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00012}00012     \mbox{\hyperlink{class_switch_ade62246047d535b87e56c392c0ff1779}{lastStateChangeTime}} = lastChangeTime;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00013}00013     \mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}} = 0;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00014}00014 \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00015}00015 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00016}\mbox{\hyperlink{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}{00016}} \textcolor{keywordtype}{void} \mbox{\hyperlink{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}{Switch::checkPin}}() \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00017}00017 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00018}00018     \textcolor{keywordtype}{bool} currentContactState = !digitalRead(pin);}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00019}00019     uint32\_t \mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{currentTime}} = millis();}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00020}00020 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00021}00021     \textcolor{comment}{// If different from the last sample, note the time and the state.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00022}00022     \textcolor{keywordflow}{if} (currentContactState != lastContactState) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00023}00023         \textcolor{comment}{//Serial.printf("{}Switch current \%d, last \%d, validated \%d\(\backslash\)r\(\backslash\)n"{}, currentContactState, lastContactState, validatedState);}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00024}00024         lastChangeTime = \mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{currentTime}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00025}00025         lastContactState = currentContactState;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00026}00026         \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00027}00027     \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00028}00028 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00029}00029     \textcolor{comment}{// We're here if at least the last two samples were the same.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00030}00030     \textcolor{comment}{// If also the same as the validated state, then we're persisting pressed or released.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00031}00031     \textcolor{keywordflow}{if} (currentContactState == \mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}}) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00032}00032         \textcolor{comment}{//Serial.printf("{}Current \%d, validated \%d\(\backslash\)r\(\backslash\)n"{}, currentContactState, validatedState);}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00033}00033         \mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}} = \mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{currentTime}} -\/ \mbox{\hyperlink{class_switch_ade62246047d535b87e56c392c0ff1779}{lastStateChangeTime}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00034}00034         \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00035}00035     \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00036}00036 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00037}00037     \textcolor{comment}{// Otherwise, if it's been long enough since the last change,}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00038}00038     \textcolor{comment}{// we have a new validated state.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00039}00039     \textcolor{comment}{//Serial.printf("{}Current repeated at \%d with validated \%d\(\backslash\)r\(\backslash\)n"{}, currentContactState, validatedState);}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00040}00040     \textcolor{keywordflow}{if} ((\mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{currentTime}} -\/ lastChangeTime) > MIN\_STABLE\_T) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00041}00041         \textcolor{comment}{//Serial.println("{}New validated state."{});}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00042}00042         \mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}} = currentContactState;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00043}00043         \mbox{\hyperlink{class_switch_ade62246047d535b87e56c392c0ff1779}{lastStateChangeTime}} = \mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{currentTime}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00044}00044         \mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}} = 0;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00045}00045         \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00046}00046     \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00047}00047 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00048}00048     \textcolor{comment}{// We're here if the last two samples were the same but it hasn't been long enough, }}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00049}00049     \textcolor{comment}{// so remain in the current state.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00050}00050     \mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}} = \mbox{\hyperlink{class_switch_a6764682de280ba289f0d47410fe675d1}{currentTime}} -\/ \mbox{\hyperlink{class_switch_ade62246047d535b87e56c392c0ff1779}{lastStateChangeTime}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00051}00051     \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00052}00052 \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00053}00053 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00054}\mbox{\hyperlink{class_switch_a391eb436c0e0361b0adfe2ddad2ebce1}{00054}} \textcolor{keywordtype}{bool} \mbox{\hyperlink{class_switch_a391eb436c0e0361b0adfe2ddad2ebce1}{Switch::switchClosed}}() \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00055}00055     \mbox{\hyperlink{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}{checkPin}}();                   \textcolor{comment}{// We could do this selectively, based on how long since the last sample.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00056}00056     \textcolor{keywordflow}{return} \mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00057}00057 \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00058}00058 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00059}\mbox{\hyperlink{class_switch_a88d52f9ced73780a6f1e313eb311043b}{00059}} uint32\_t \mbox{\hyperlink{class_switch_a88d52f9ced73780a6f1e313eb311043b}{Switch::closedFor}}() \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00060}00060     \mbox{\hyperlink{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}{checkPin}}();                  \textcolor{comment}{// We could do this selectively, based on how long since the last sample.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00061}00061     \textcolor{keywordflow}{return} \mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}} ? \mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}} : 0 ;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00062}00062 \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00063}00063 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00064}00064 \textcolor{comment}{// Button}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00065}00065 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00066}\mbox{\hyperlink{class_button_ad912ba73d19afc9de4c9754fee8408b3}{00066}} \mbox{\hyperlink{class_button_ad912ba73d19afc9de4c9754fee8408b3}{Button::Button}}(uint32\_t pin\_) : \mbox{\hyperlink{class_switch}{Switch}}(pin\_) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00067}00067         buttonState = \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7}{RELEASED}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00068}00068     \};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00069}00069 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00070}00070 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00071}\mbox{\hyperlink{class_button_a475aa75a856bb8f8e95a860c23713a97}{00071}} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5}{Button::buttonEvent\_t}} \mbox{\hyperlink{class_button_a475aa75a856bb8f8e95a860c23713a97}{Button::update}}() \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00072}00072 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00073}00073     \mbox{\hyperlink{class_switch_a9f03af9bf8ac4c3858dbb8033eada8e7}{checkPin}}();}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00074}00074     \textcolor{keywordflow}{switch} (buttonState) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00075}00075         \textcolor{keywordflow}{case} \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7}{RELEASED}}:}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00076}00076             \textcolor{keywordflow}{if} (\mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}}) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00077}00077                 buttonState = \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7535909580d749414383c9dd8726d0e0}{PRESSED}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00078}00078             \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00079}00079             \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00080}00080         \textcolor{keywordflow}{case} \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7535909580d749414383c9dd8726d0e0}{PRESSED}}:}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00081}00081             \textcolor{keywordflow}{if} (!\mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}}) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00082}00082                 buttonState = \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7}{RELEASED}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00083}00083                 \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a20b6509893cb32bb941f1a808d4e0d97}{SHORT\_PRESS}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00084}00084             \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00085}00085             \textcolor{keywordflow}{if} (\mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}} > LONG\_PRESS\_T) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00086}00086                 buttonState = \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7aba2ed4aa479b00b1ab8c725127126a43}{LONG\_PRESSED}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00087}00087                 \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5ac57f803bb037a8e2a98240ed2b44ba2b}{LONG\_PRESS\_PENDING}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00088}00088             \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00089}00089             \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00090}00090         \textcolor{keywordflow}{case} \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7aba2ed4aa479b00b1ab8c725127126a43}{LONG\_PRESSED}}:}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00091}00091             \textcolor{keywordflow}{if} (!\mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}}) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00092}00092                 buttonState = \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7}{RELEASED}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00093}00093                 \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a09ba5f0a855c1af6bacd0b25c86aa17f}{LONG\_PRESS}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00094}00094             \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00095}00095             \textcolor{keywordflow}{if} (\mbox{\hyperlink{class_switch_ac467012dd4cb48a113a6f5744ffdd840}{timeInValidatedState}} > FULL\_HOLD\_T) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00096}00096                 buttonState = \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7a70338958b15787a738046c7fdf4d34}{HELD}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00097}00097                 \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a298605c9193c2aa31e0a9f08250eef9d}{FULL\_HOLD}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00098}00098             \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00099}00099             \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00100}00100         \textcolor{keywordflow}{case} \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7a7a70338958b15787a738046c7fdf4d34}{HELD}}:}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00101}00101             \textcolor{keywordflow}{if} (!\mbox{\hyperlink{class_switch_adc991447c6f2557bc641082bbf96cc79}{validatedState}}) \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00102}00102                 buttonState = \mbox{\hyperlink{class_button_aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7}{RELEASED}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00103}00103                 \}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00104}00104             \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00105}00105     \};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00106}00106     \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}};        \textcolor{comment}{// This should not actually be reachable.}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00107}00107 \};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00108}00108 }
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00109}\mbox{\hyperlink{class_button_ab30555050caa816d24ded1f8278003b2}{00109}} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5}{Button::buttonEvent\_t}} \mbox{\hyperlink{class_button_ab30555050caa816d24ded1f8278003b2}{Button::Task}}() \{}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00110}00110     \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5}{buttonEvent\_t}} \textcolor{keyword}{event} = \mbox{\hyperlink{class_button_a475aa75a856bb8f8e95a860c23713a97}{update}}();}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00111}00111     \textcolor{keywordflow}{if} (event >= \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a5e9581ec0bf4eca62c53864988c063a5}{EVENT\_COUNT}}) \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00112}00112     \textcolor{keywordflow}{if} (!dispatchTable[event]) \textcolor{keywordflow}{return} \mbox{\hyperlink{class_button_a9db6e91b1aa663b40ef96f4cab2177d5a469d280ccbd670dc55a48d57c6fcec07}{NONE}};}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00113}00113     dispatchTable[event]();}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00114}00114     \textcolor{comment}{// switch (event) \{}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00115}00115     \textcolor{comment}{//     case SHORT\_PRESS:}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00116}00116     \textcolor{comment}{//         shortPress();}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00117}00117     \textcolor{comment}{//         break;}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00118}00118     \textcolor{comment}{//     case LONG\_PRESS\_PENDING:}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00119}00119     \textcolor{comment}{//         longPressPending();}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00120}00120     \textcolor{comment}{//         break;}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00121}00121     \textcolor{comment}{//     case LONG\_PRESS:}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00122}00122     \textcolor{comment}{//         longPress();}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00123}00123     \textcolor{comment}{//         break;}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00124}00124     \textcolor{comment}{//     case FULL\_HOLD:}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00125}00125     \textcolor{comment}{//         fullHold();}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00126}00126     \textcolor{comment}{//         break;}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00127}00127     \textcolor{comment}{// \};}}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00128}00128     \textcolor{keywordflow}{return} event;}
+\DoxyCodeLine{\Hypertarget{_button_8cpp_source_l00129}00129 \}}
+
+\end{DoxyCode}

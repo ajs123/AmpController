@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="__input_sensing_8cpp" xml:lang="en-US">
-<title>InputSensing.cpp File Reference</title>
-<indexterm><primary>InputSensing.cpp</primary></indexterm>
-<programlisting linenumbering="unnumbered">#include &lt;Arduino.h&gt;
-#include &quot;InputSensing.h&quot;
-#include &lt;MiniDSP.h&gt;
-</programlisting></section>
