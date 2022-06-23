@@ -13,6 +13,7 @@
 // The maximum volume that can be set under any circumstances. 
 // In MiniDSP units of -0.5 dB.
 // This might be set to other than 0 to preclude amplifier clipping or driver overextension.
+// This will be removed in favor of a configurable option
 constexpr uint8_t MAXIMUM_VOLUME = 0;
 
 // Time (ms) after wich the volume indicator will go away and the diplay will dim
@@ -21,16 +22,45 @@ constexpr uint16_t DIM_TIME = 5 * 1000;
 // Minimum level in dB for the VU meter
 #define MINBARLEVEL -60
 
+// Setup menu timeout (sec)
+constexpr uint16_t MENU_TIMEOUT = 120;
+
+// Default remote codes
+// These are for a particular Apple remote. The last two hex digits are the individual remote ID.
+#define DEFAULT_VOLPLUS_CMD     0x77E1507C // Apple remote UP
+#define DEFAULT_VOLMINUS_CMD    0x77E1307C //              DOWN
+#define DEFAULT_MUTE_CMD        0x77E1A07C //              PLAY/PAUSE
+#define DEFAULT_INPUT_CMD       0x77E1C07C //              INPUT
+#define DEFAULT_POWER_CMD       0x00
+
+// Remote commands and their names
+// Tables in this file, and in the remote handler, are indexed by this enum.
+
+enum remoteCommands {
+    REMOTE_VOLPLUS = 0,
+    REMOTE_VOLMINUS,
+    REMOTE_MUTE,
+    REMOTE_INPUT,
+    REMOTE_POWER,
+    REMOTE_COMMAND_COUNT
+};
+
+constexpr char remoteCommandNames[REMOTE_COMMAND_COUNT][6] = {"Vol +", "Vol -", "Mute", "Input", "Power"};
+
 // User-configurable (writable) options
 // Defaults are set in the initialization of the variables.
 // This is configured as a Meyer's singleton. Other classes can access it using
 // Options & options = Options::instance();
+// In namespaces cordoned off by namespace{} only, the reference in the main .ino remains
+// visible so either a unique name or an extern is needed.
 
 const uint8_t MAX_LABEL_LENGTH = 12;
 const uint8_t MAX_VARIABLE_SIZE = MAX_LABEL_LENGTH + 1;
 const uint8_t MAX_FNAME_LENGTH = 10;
 
 class Options {
+
+    //Remote & ourRemote = Remote::instance();
 
     public:
         // The individual options are public, so they're accessed directly (not thread safe) by any client.
@@ -59,6 +89,7 @@ class Options {
         uint32_t volMinusCmd = DEFAULT_VOLMINUS_CMD;
         uint32_t muteCmd = DEFAULT_MUTE_CMD;
         uint32_t inputCmd = DEFAULT_INPUT_CMD;
+        uint32_t powerCmd = DEFAULT_POWER_CMD;
 
         static Options & instance() {
             static Options _instance;
@@ -73,7 +104,7 @@ class Options {
         } writableOption_t;
 
         // This holds a reference to each variable with its name in the filesystem and its size
-        const writableOption_t optionTable[10] = {
+        const writableOption_t optionTable[11] = {
             {&maxVolume, "Vol_max", sizeof(maxVolume)},
             {&maxInitialVolume, "Vol_init", sizeof(maxInitialVolume)},
             {&analogDigitalDifference, "AD_diff", sizeof(analogDigitalDifference)},
@@ -83,7 +114,8 @@ class Options {
             {&volPlusCmd, "Vol_plus", sizeof(volPlusCmd)},
             {&volMinusCmd, "Vol_minus", sizeof(volMinusCmd)},
             {&muteCmd, "Mute_cmd", sizeof(muteCmd)},
-            {&inputCmd, "Input_cmd", sizeof(inputCmd)}
+            {&inputCmd, "Input_cmd", sizeof(inputCmd)},
+            {&powerCmd, "Power_cmd", sizeof(powerCmd)}
         };
 
         // The parameters are saved in a folder in the filesystem, just in case the device is used

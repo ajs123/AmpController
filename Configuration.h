@@ -24,9 +24,4 @@
 #define UHS_SS  1   // Labeled RX
 #define UHS_INT 0   // Labeled TX
 
-// Default remote codes
-#define DEFAULT_VOLPLUS_CMD     0x77E1507C // Apple remote UP
-#define DEFAULT_VOLMINUS_CMD    0x77E1307C //              DOWN
-#define DEFAULT_MUTE_CMD        0x77E1A07C //              PLAY/PAUSE
-#define DEFAULT_INPUT_CMD       0x77E1C07C //              INPUT
 

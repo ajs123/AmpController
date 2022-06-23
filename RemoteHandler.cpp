@@ -65,18 +65,18 @@ void Remote::stopListening() {
     getResults();
 }
 
-bool Remote::getRawCommand(uint16_t wait) {
+uint32_t Remote::getRawCommand(uint16_t wait) {
 
     uint32_t startTime = millis();
 
     enableIRIn();
     while (!getResults()) {
-        if (millis() - startTime > wait) return false;
+        if (millis() - startTime > wait) return 0;
     }
     decode();
     receivedTime = millis();
 
-    return true;
+    return value;
 }
 
 bool Remote::learn(uint8_t item, uint16_t wait) {
@@ -104,3 +104,26 @@ uint8_t Remote::nextMenuItem(bool forward, bool wrap) {
 const char * Remote::currentItemName() {
     return cmdTable[menuItem].name;
 }
+
+
+void Remote::set(remoteCommands item, uint32_t command) {
+    if (item > REMOTE_COMMAND_COUNT) return;
+    cmdTable[item].command = command;
+}
+
+void Remote::loadFromOptions() {
+    cmdTable[REMOTE_VOLPLUS].command = ampOptions.volPlusCmd;
+    cmdTable[REMOTE_VOLMINUS].command = ampOptions.volMinusCmd; 
+    cmdTable[REMOTE_MUTE].command = ampOptions.muteCmd;
+    cmdTable[REMOTE_INPUT].command = ampOptions.inputCmd;
+    cmdTable[REMOTE_POWER].command = ampOptions.powerCmd;
+}
+
+void Remote::saveToOptions() {
+    ampOptions.volPlusCmd = cmdTable[REMOTE_VOLPLUS].command;
+    ampOptions.volMinusCmd = cmdTable[REMOTE_VOLMINUS].command;
+    ampOptions.muteCmd = cmdTable[REMOTE_MUTE].command;
+    ampOptions.inputCmd = cmdTable[REMOTE_INPUT].command;
+    ampOptions.powerCmd = cmdTable[REMOTE_POWER].command;
+}
+

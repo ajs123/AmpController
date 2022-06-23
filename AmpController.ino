@@ -12,6 +12,9 @@
 #include "Options.h"
 #include "Configuration.h"
 
+// Options store
+Options & ampOptions = Options::instance();
+
 // Hardware and interface class instances
 USB thisUSB;                                                  // USB via Host Shield
 MiniDSP ourMiniDSP(&thisUSB);                                 // MiniDSP on thisUSB
@@ -19,10 +22,9 @@ MiniDSP ourMiniDSP(&thisUSB);                                 // MiniDSP on this
 U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE);  // Adafruit OLED Featherwing display on I2C bus
 AmpDisplay AmpDisp(&display);                                 // Live display on the OLED
 
-Remote ourRemote(IR_PIN);                                     // IR receiver
+//Remote ourRemote(IR_PIN);                                     // IR receiver
+Remote & ourRemote = Remote::instance();
 Button goButton(ENCODER_BUTTON);                              // Encoder action button
-
-Options & ampOptions = Options::instance();                      // Options store
 
 // For the display log, if used
 #define LOG_FONT u8g2_font_5x7_tr //u8g2_font_7x14_tf
@@ -30,7 +32,7 @@ Options & ampOptions = Options::instance();                      // Options stor
 #define LOG_HEIGHT 9
 
 // Interval (ms) between queries to the dsp.
-// The update rate is mostly limited by display updates.
+// The update rate is mostly limited by display updates, which happen in callbacks.
 constexpr uint32_t INTERVAL = 30;   
 
 // Persistent state
@@ -157,6 +159,10 @@ void input() {
   ourMiniDSP.setSource(ourMiniDSP.getSource() ? 0 : 1);
 }
 
+void power() {
+  AmpDisp.displayMessage("POWER");
+}
+
 // Action button callbacks.
 // Some of these might go away when no longer needed for debugging, as they just display a message and invoke the actual action callback.
 void shortPress() {
@@ -178,6 +184,7 @@ void longPress() {
 void fullHold() {
   AmpDisp.displayMessage("FULL HOLD");
   AmpDisp.cancelLongPress();
+  //OptionsMenu::menu(&display);
 }
 
 // Prep the blue LED for use in debugging
@@ -205,6 +212,7 @@ void setup() {
   // dependencies such as (when debugging) Serial are initialized first.
   ampOptions.begin();
   ampOptions.load();
+  ourRemote.loadFromOptions();
   //options.save(); // For testing. No normal reason to do this here.
 
   DisplaySetup();
