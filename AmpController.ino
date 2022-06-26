@@ -8,12 +8,13 @@
 #include <Wire.h>   // For the I2C display. Also provides Serial.
 #include <SPI.h>    // This doesn't seem to matter, at least not for the Adafruit nrf52840
 #include <bluefruit.h>  // Experimental - for OTA updates
+#include <math.h>
 
 #include "Options.h"
 #include "Configuration.h"
 
 // Options store
-Options & ampOptions = Options::instance();
+Options & ampOptions = Options::instance();                   // Options store - singleton form
 
 // Hardware and interface class instances
 USB thisUSB;                                                  // USB via Host Shield
@@ -22,14 +23,18 @@ MiniDSP ourMiniDSP(&thisUSB);                                 // MiniDSP on this
 U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE);  // Adafruit OLED Featherwing display on I2C bus
 AmpDisplay AmpDisp(&display);                                 // Live display on the OLED
 
+// Input devices
 //Remote ourRemote(IR_PIN);                                     // IR receiver
-Remote & ourRemote = Remote::instance();
+Remote & ourRemote = Remote::instance();                      // IR receiver - singleton form
 Button goButton(ENCODER_BUTTON);                              // Encoder action button
 
-// For the display log, if used
-#define LOG_FONT u8g2_font_5x7_tr //u8g2_font_7x14_tf
-#define LOG_WIDTH 25 
-#define LOG_HEIGHT 9
+
+// U8G2 log can be used at startup
+//#define LOG_FONT u8g2_font_5x7_tr //u8g2_font_7x14_tf
+//#define LOG_WIDTH 25 
+//#define LOG_HEIGHT 9
+//uint8_t u8log_buffer[LOG_WIDTH * LOG_HEIGHT];
+//U8G2LOG displog;
 
 // Interval (ms) between queries to the dsp.
 // The update rate is mostly limited by display updates, which happen in callbacks.
@@ -38,11 +43,7 @@ constexpr uint32_t INTERVAL = 30;
 // Persistent state
 uint32_t lastTime;
 
-// U8G2 log can be used at startup
-//uint8_t u8log_buffer[LOG_WIDTH * LOG_HEIGHT];
-//U8G2LOG displog;
-
-// Experimental - enable OTA updates
+// Enable OTA updates - to update without opening the box!
 BLEDfu bledfu;
 BLEDis bledis;
 
@@ -93,25 +94,23 @@ void OnMiniDSPConnected() {
   lastTime = millis() + INTERVAL;
 }
 
+// Checks on max volume shouldn't be needed here anymore
 void OnVolumeChange(uint8_t volume) {
   //if (volume < options.maxVolume);
-  if (volume < MAXIMUM_VOLUME) {
-    ourMiniDSP.setVolume((uint8_t) MAXIMUM_VOLUME); 
-    AmpDisp.volume(-MAXIMUM_VOLUME/2.0);
+  if (volume < ampOptions.maxVolume) {
+    ourMiniDSP.setVolume((uint8_t) ampOptions.maxVolume); 
+    AmpDisp.volume(-ampOptions.maxVolume/2.0);
   } else {  
     AmpDisp.volume(-volume/2.0);
   }
-//    AmpDisp.scheduleDim();
 }
 
 void OnMutedChange(bool isMuted) {
   AmpDisp.mute(isMuted);
-//  AmpDisp.scheduleDim();
 }
 
 void OnSourceChange(uint8_t source) {
   AmpDisp.source((source_t) source);
-//  AmpDisp.scheduleDim();
 }
 
 // For debugging: Puts the first 8 bytes of received messages on the display.
@@ -121,8 +120,14 @@ void OnParse(uint8_t * buf) {
   AmpDisp.displayMessage(bufStr);
 }
 
+float dBSum(float dB1, float dB2) {
+  return 10 * log10(pow(dB1/10, 10) + pow(dB2/10, 10));
+}
+
 // VUMeter should move to AmpDisplay. Then a callback from MiniDSP can call that.
-void VUMeter(float * levels ) {
+void VUMeter(float * levels) {
+  //int leftSum = (int) dbSum(levels[0], levels[1]);
+  //int rightSum = (int) dbSum(levels[2], levels[3]);
   int leftSum = ((int) levels[0] + (int) levels[1]) / 2;    // On L and R, sum the woofer and tweeter levels
   int rightSum = ((int) levels[2] + (int) levels[3]) / 2;
   uint8_t left = max( leftSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
@@ -130,33 +135,52 @@ void VUMeter(float * levels ) {
   AmpDisp.displayLRBarGraph(left, right, messageArea);
 }
 
-// Callbacks - remote and knob.
+void takeInputLevels(float * levels) {
+  char buf[20];
+  //snprintf(buf, 20, "Input %f", levels[0] + levels[1]);
+  //AmpDisp.displayMessage(buf);
+}
+
+// Callbacks for response to both the remote and knob.
+bool needStatus = true;
 
 void volPlus() {
   AmpDisp.displayMessage("VOL +");
   uint8_t currentVolume = ourMiniDSP.getVolume();
-  uint8_t newVolume = currentVolume <= MAXIMUM_VOLUME ? MAXIMUM_VOLUME : currentVolume - 1;
+  uint8_t newVolume = currentVolume <= ampOptions.maxVolume ? ampOptions.maxVolume : currentVolume - 1;
   if (ourMiniDSP.isMuted()) ourMiniDSP.setMute(false);
   ourMiniDSP.setVolume(newVolume);
+  char buf[24];
+  snprintf(buf, 24, "Vol %d %d -> %d", ampOptions.maxVolume, currentVolume, newVolume);
+  AmpDisp.displayMessage(buf);
   AmpDisp.wakeup();
+
+  needStatus = true;
 }
 
+// No need to set the volume if already at min (0xFF)
 void volMinus() {
   AmpDisp.displayMessage("VOL -");
   uint8_t currentVolume = ourMiniDSP.getVolume();
-  uint8_t newVolume = currentVolume >= 0xFE ? 0xFE : currentVolume + 1;
+  uint8_t newVolume = currentVolume == 0xFF ? 0xFF : currentVolume + 1;
   if (ourMiniDSP.isMuted()) ourMiniDSP.setMute(false);
   ourMiniDSP.setVolume(newVolume);
+
+  needStatus = true;
 }
 
 void mute() {
   AmpDisp.displayMessage("MUTE");
   ourMiniDSP.setMute(!ourMiniDSP.isMuted());
+
+  needStatus = true;
 }
 
 void input() {
   AmpDisp.displayMessage("INPUT");
   ourMiniDSP.setSource(ourMiniDSP.getSource() ? 0 : 1);
+
+  needStatus = true;
 }
 
 void power() {
@@ -164,13 +188,14 @@ void power() {
 }
 
 // Action button callbacks.
-// Some of these might go away when no longer needed for debugging, as they just display a message and invoke the actual action callback.
+// Some of these might go away when no longer needed for debugging, 
+// as they just display a message and invoke the actual action callback.
+
 void shortPress() {
   AmpDisp.displayMessage("SHORT PRESS");
   mute();
 }
 
-// Cue the user re a long press, which changes the source.
 void longPressPending() {
   AmpDisp.displayMessage("LONG PRESS PENDING");
   AmpDisp.cueLongPress();
@@ -181,17 +206,20 @@ void longPress() {
   input();
 }
 
+// Kludge just to test full hold --> setup
+bool menuState = false;
 void fullHold() {
   AmpDisp.displayMessage("FULL HOLD");
   AmpDisp.cancelLongPress();
-  //OptionsMenu::menu(&display);
+  menuState = true;
 }
 
 // Prep the blue LED for use in debugging
-void ledSetup() {
-  pinMode(LED_BLUE, OUTPUT);
-}
+//void ledSetup() {
+//  pinMode(LED_BLUE, OUTPUT);
+//}
 
+// Hold the action button at startup to enter the setup menu
 void menuCheck() {
   goButton.switchClosed();      // Returning a validated "closed" requires two samples
   delay(200);
@@ -201,6 +229,7 @@ void menuCheck() {
   while (goButton.switchClosed()) delay(100);
   AmpDisp.displayMessage("", sourceArea);
 
+  display.setFontPosBottom();
   OptionsMenu::menu(&display);
 }
 
@@ -213,10 +242,9 @@ void setup() {
   ampOptions.begin();
   ampOptions.load();
   ourRemote.loadFromOptions();
-  //options.save(); // For testing. No normal reason to do this here.
 
   DisplaySetup();
-  ledSetup();
+  //ledSetup();
 
   BLESetup();
 
@@ -232,8 +260,6 @@ void setup() {
     //displog.println("OSC did not start");
     AmpDisp.displayMessage("USB did not start");
     while(1); // Halt
-
-  //lastTime = millis() + INTERVAL;
   }
 
   menuCheck();
@@ -245,6 +271,7 @@ void setup() {
   ourMiniDSP.attachOnSourceChange(&OnSourceChange);
   //ourMiniDSP.attachOnParse(&OnParse);
   ourMiniDSP.attachOnNewLevels(&VUMeter);
+  ourMiniDSP.attachOnNewInputLevels(&takeInputLevels);
 
   // Remote and knob callbacks have fixed names so they don't need to be registered.
 
@@ -293,25 +320,45 @@ void loop() {
 
   showUSBTaskState();      // Useful in testing. May be useful in production with good messages.
 
+  // If we're going to provide menu access without a power cycle, this ought to include
+  // navigation commands or equivalent manipulation of the nav object to bring us
+  // to the top of the menu
+  if (menuState) {
+    menuCheck();
+    menuState = false; // This would be replaced with the top-level state
+  }
+
+/* display test
+  AmpDisp.source(Analog);
+  AmpDisp.volume(0.0);
+  delay(2000);
+  AmpDisp.mute(true);
+  delay(2000);
+  AmpDisp.mute(false);
+  AmpDisp.volume(-120);
+  delay(2000);
+  AmpDisp.wakeup();
+  AmpDisp.dim();
+  delay(5000);
+*/
   // Periodic requests, such as input signal levels
-  if (INTERVAL) {
+  if (INTERVAL && ourMiniDSP.connected()) {
 
     uint32_t currentTime = millis();
 
-    // Should be able to just do 
-    //uint32_t sinceLast = currentTime - lastTime;
-    //if (sinceLast >= INTERVAL) delay(sinceLast - INTERVAL);
-    // ...or do we want top-of-loop tasks to happen more often?
-    
     if ((currentTime - lastTime) >= INTERVAL) {
       //showFrameInterval(currentTime, lastTime); // DEBUG: Show the update interval in
 
       static bool levelsLast;
       if (levelsLast) {
-        ourMiniDSP.RequestStatus();
+        if (needStatus) {
+          ourMiniDSP.RequestStatus();
+          needStatus = false;
+        }
       }
       else {
-        ourMiniDSP.RequestOutputLevels();
+        ourMiniDSP.RequestLevels();   // Inputs and outputs
+        //ourMiniDSP.RequestOutputLevels();   // Just outputs
       }
       levelsLast = !levelsLast;
       lastTime = currentTime;

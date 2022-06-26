@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['powercontrol_0',['PowerControl',['../class_power_control.html',1,'']]]
+  ['options_0',['Options',['../class_options.html',1,'']]]
 ];

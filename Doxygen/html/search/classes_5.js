@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['switch_0',['Switch',['../class_switch.html',1,'']]]
+  ['remote_0',['Remote',['../class_remote.html',1,'']]]
 ];

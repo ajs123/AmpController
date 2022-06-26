@@ -84,13 +84,14 @@ $(document).ready(function(){initNavTree('_remote_handler_8h.html',''); initResi
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">RemoteHandler.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;Arduino.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="_options_8h_source.html">Options.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="_configuration_8h_source.html">Configuration.h</a>&quot;</code><br />
 <code>#include &lt;IRLibRecvPCI.h&gt;</code><br />
 <code>#include &lt;IRLibDecodeBase.h&gt;</code><br />
 <code>#include &lt;IRLib_P01_NEC.h&gt;</code><br />
@@ -104,17 +105,6 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html">Remote</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a814bb861b515c96e3bb00df568eff84f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a814bb861b515c96e3bb00df568eff84f">VOLPLUS_CMD</a>&#160;&#160;&#160;0x77E1507C</td></tr>
-<tr class="separator:a814bb861b515c96e3bb00df568eff84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa53322649a963bbe68b3e070cd7edaff"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#aa53322649a963bbe68b3e070cd7edaff">VOLMINUS_CMD</a>&#160;&#160;&#160;0x77E1307C</td></tr>
-<tr class="separator:aa53322649a963bbe68b3e070cd7edaff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a581d3437d25bef80816c22a942a4f39e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a581d3437d25bef80816c22a942a4f39e">MUTE_CMD</a>&#160;&#160;&#160;0x77E1A07C</td></tr>
-<tr class="separator:a581d3437d25bef80816c22a942a4f39e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8db5a0c868d7191d31d2ec5918281645"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a8db5a0c868d7191d31d2ec5918281645">INPUT_CMD</a>&#160;&#160;&#160;0x77E1C07C</td></tr>
-<tr class="separator:a8db5a0c868d7191d31d2ec5918281645"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
 <tr class="memitem:a83c6b4851521f263abde186c39286b07"><td class="memItemLeft" align="right" valign="top">typedef void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>()</td></tr>
@@ -124,80 +114,17 @@ Typedefs</h2></td></tr>
 Variables</h2></td></tr>
 <tr class="memitem:aa84261277fbb8d8bb376085713307477"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#aa84261277fbb8d8bb376085713307477">maxDelayBeforeRepeat</a> = 1000</td></tr>
 <tr class="separator:aa84261277fbb8d8bb376085713307477"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b35647bccb9db645a636241e5363e8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a3b35647bccb9db645a636241e5363e8a">volPlus</a></td></tr>
+<tr class="memitem:a3b35647bccb9db645a636241e5363e8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a3b35647bccb9db645a636241e5363e8a">volPlus</a></td></tr>
 <tr class="separator:a3b35647bccb9db645a636241e5363e8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ae1869489169b2e51df2a67fe1c0ce3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a1ae1869489169b2e51df2a67fe1c0ce3">volMinus</a></td></tr>
+<tr class="memitem:a1ae1869489169b2e51df2a67fe1c0ce3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a1ae1869489169b2e51df2a67fe1c0ce3">volMinus</a></td></tr>
 <tr class="separator:a1ae1869489169b2e51df2a67fe1c0ce3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15c99d8267e3a4eda311264b3c01871e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a15c99d8267e3a4eda311264b3c01871e">mute</a></td></tr>
+<tr class="memitem:a15c99d8267e3a4eda311264b3c01871e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a15c99d8267e3a4eda311264b3c01871e">mute</a></td></tr>
 <tr class="separator:a15c99d8267e3a4eda311264b3c01871e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68ea8ceaea6fc52851ccc304d2836781"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a68ea8ceaea6fc52851ccc304d2836781">input</a></td></tr>
+<tr class="memitem:a68ea8ceaea6fc52851ccc304d2836781"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a68ea8ceaea6fc52851ccc304d2836781">input</a></td></tr>
 <tr class="separator:a68ea8ceaea6fc52851ccc304d2836781"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0962798d502160e4671892f952212b0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_remote_handler_8h.html#a0962798d502160e4671892f952212b0f">power</a></td></tr>
+<tr class="separator:a0962798d502160e4671892f952212b0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a8db5a0c868d7191d31d2ec5918281645" name="a8db5a0c868d7191d31d2ec5918281645"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8db5a0c868d7191d31d2ec5918281645">&#9670;&nbsp;</a></span>INPUT_CMD</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define INPUT_CMD&#160;&#160;&#160;0x77E1C07C</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00028">28</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
-
-</div>
-</div>
-<a id="a581d3437d25bef80816c22a942a4f39e" name="a581d3437d25bef80816c22a942a4f39e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a581d3437d25bef80816c22a942a4f39e">&#9670;&nbsp;</a></span>MUTE_CMD</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MUTE_CMD&#160;&#160;&#160;0x77E1A07C</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00027">27</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
-
-</div>
-</div>
-<a id="aa53322649a963bbe68b3e070cd7edaff" name="aa53322649a963bbe68b3e070cd7edaff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa53322649a963bbe68b3e070cd7edaff">&#9670;&nbsp;</a></span>VOLMINUS_CMD</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define VOLMINUS_CMD&#160;&#160;&#160;0x77E1307C</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00026">26</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
-
-</div>
-</div>
-<a id="a814bb861b515c96e3bb00df568eff84f" name="a814bb861b515c96e3bb00df568eff84f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a814bb861b515c96e3bb00df568eff84f">&#9670;&nbsp;</a></span>VOLPLUS_CMD</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define VOLPLUS_CMD&#160;&#160;&#160;0x77E1507C</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00025">25</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
-
-</div>
-</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a83c6b4851521f263abde186c39286b07" name="a83c6b4851521f263abde186c39286b07"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a83c6b4851521f263abde186c39286b07">&#9670;&nbsp;</a></span>cmdHandler_t</h2>
@@ -211,7 +138,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00033">33</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00029">29</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
 
 </div>
 </div>
@@ -223,12 +150,12 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> input</td>
+          <td class="memname"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> input</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00037">37</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00033">33</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
 
 </div>
 </div>
@@ -252,7 +179,7 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00031">31</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00027">27</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
 
 </div>
 </div>
@@ -263,12 +190,28 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> mute</td>
+          <td class="memname"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> mute</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00037">37</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00033">33</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
+
+</div>
+</div>
+<a id="a0962798d502160e4671892f952212b0f" name="a0962798d502160e4671892f952212b0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0962798d502160e4671892f952212b0f">&#9670;&nbsp;</a></span>power</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> power</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00033">33</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
 
 </div>
 </div>
@@ -279,12 +222,12 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> volMinus</td>
+          <td class="memname"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> volMinus</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00037">37</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00033">33</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
 
 </div>
 </div>
@@ -298,7 +241,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="_remote_receive_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> volPlus</td>
+          <td class="memname"><a class="el" href="_remote_handler_8h.html#a83c6b4851521f263abde186c39286b07">cmdHandler_t</a> volPlus</td>
         </tr>
       </table>
   </td>

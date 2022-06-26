@@ -1,8 +1,20 @@
 var searchData=
 [
-  ['task_0',['task',['../class_amp_display.html#a52170f4dfacff6ce87aa423601f02bb9',1,'AmpDisplay']]],
-  ['task_1',['Task',['../class_button.html#ab30555050caa816d24ded1f8278003b2',1,'Button::Task()'],['../class_remote.html#a386518bafe5bd08dc412c3b1bf7e915f',1,'Remote::Task()'],['../classremote_receiver.html#a5727c6d5298bc840c985206890149183',1,'remoteReceiver::Task()']]],
-  ['timeinvalidatedstate_2',['timeInValidatedState',['../class_switch.html#ac467012dd4cb48a113a6f5744ffdd840',1,'Switch']]],
-  ['toslink_3',['Toslink',['../_amp_display_8h.html#a68a545a3c23609598d9bf398fc14de95a83f9aea5fb5be35fd29415f5bc365633',1,'AmpDisplay.h']]],
-  ['transientvolume_4',['TRANSIENTVOLUME',['../_amp_display_8h.html#a7406f7f98e32ac42dd612a6c083aa40e',1,'AmpDisplay.h']]]
+  ['relay_5fpin_0',['RELAY_PIN',['../_configuration_8h.html#a5c2c8c24f2085fc8445d70fa9b89eef3',1,'Configuration.h']]],
+  ['released_1',['RELEASED',['../class_button.html#aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7',1,'Button']]],
+  ['remote_2',['Remote',['../class_remote.html',1,'']]],
+  ['remote_5fcommand_5fcount_3',['REMOTE_COMMAND_COUNT',['../_options_8h.html#a334d743b6855b0185b22facf061b8cd1a4903db29a4afe3be6472f21028135aa0',1,'Options.h']]],
+  ['remote_5finput_4',['REMOTE_INPUT',['../_options_8h.html#a334d743b6855b0185b22facf061b8cd1abe6a30a3de9bb9e8a860f4756dd3b712',1,'Options.h']]],
+  ['remote_5fmute_5',['REMOTE_MUTE',['../_options_8h.html#a334d743b6855b0185b22facf061b8cd1aa40870021a1c410fb846ab80e7c90289',1,'Options.h']]],
+  ['remote_5fpower_6',['REMOTE_POWER',['../_options_8h.html#a334d743b6855b0185b22facf061b8cd1af74f7a982ac6f598390f797ed7bf7e9e',1,'Options.h']]],
+  ['remote_5fvolminus_7',['REMOTE_VOLMINUS',['../_options_8h.html#a334d743b6855b0185b22facf061b8cd1a74a10d8c1b2a20cc8d7f8245b102882a',1,'Options.h']]],
+  ['remote_5fvolplus_8',['REMOTE_VOLPLUS',['../_options_8h.html#a334d743b6855b0185b22facf061b8cd1aea12a7e5c7b9e5e2da401f02d6eecf7d',1,'Options.h']]],
+  ['remotecommandnames_9',['remoteCommandNames',['../_options_8h.html#a184d0b510c0af5c4d3b359810d5bbee1',1,'Options.h']]],
+  ['remotecommands_10',['remoteCommands',['../_options_8h.html#a334d743b6855b0185b22facf061b8cd1',1,'Options.h']]],
+  ['remotehandler_2ecpp_11',['RemoteHandler.cpp',['../_remote_handler_8cpp.html',1,'']]],
+  ['remotehandler_2eh_12',['RemoteHandler.h',['../_remote_handler_8h.html',1,'']]],
+  ['remoteinit_13',['remoteInit',['../_options_menu_8cpp.html#a4e3730e27f9f87bdc2fbed92b24180cc',1,'OptionsMenu.cpp']]],
+  ['remotelearn_14',['remoteLearn',['../_options_menu_8cpp.html#ac5307e583b84275b3c44f019e061fad8',1,'OptionsMenu.cpp']]],
+  ['ret_15',['ret',['../classalt_title.html#a9763a999f925f44c54951768a91e5419',1,'altTitle']]],
+  ['rjust_16',['rJust',['../structarea_spec__t.html#a2d022a615085ff8e7bf852317047c188',1,'areaSpec_t']]]
 ];

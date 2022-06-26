@@ -8,5 +8,7 @@ var _configuration_8h =
     [ "ENCODER_B", "_configuration_8h.html#a322b44038bee8154d36c96c8ebaee86d", null ],
     [ "ENCODER_BUTTON", "_configuration_8h.html#a13d83485198c96bfc9ab7e0bd91bbc3a", null ],
     [ "IR_PIN", "_configuration_8h.html#a3b0a1d1d72b10a9c0c95adeb235d19f4", null ],
-    [ "RELAY_PIN", "_configuration_8h.html#a5c2c8c24f2085fc8445d70fa9b89eef3", null ]
+    [ "RELAY_PIN", "_configuration_8h.html#a5c2c8c24f2085fc8445d70fa9b89eef3", null ],
+    [ "UHS_INT", "_configuration_8h.html#a3b069b41e7592ca1f48b5f63439a723b", null ],
+    [ "UHS_SS", "_configuration_8h.html#a5537ed05bd61ffe74d2a926a991c2f2e", null ]
 ];

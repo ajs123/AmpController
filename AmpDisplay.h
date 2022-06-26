@@ -25,7 +25,7 @@
 #define VOL_DB_FONT     u8g2_font_helvR24_tr
 #define DB_FONT         u8g2_font_helvR14_tf
 #define MUTE_FONT       u8g2_font_helvR24_tr
-#define MSG_FONT        u8g2_font_helvR08_tf
+#define MSG_FONT        u8g2_font_helvR08_tr
 #define SOURCE_FONT     u8g2_font_helvB12_tf
 
 // Display zones
@@ -38,11 +38,23 @@ struct areaSpec_t {
 } ;
 
 // Text areas {XLeft, XRight, YTop, YBottom, rightJustify}
+// Text is aligned at the bottom. The height should be at least the height of the A or 1 of
+// the font used, with extra (bounding box height) if any text with descenders is displayed.
+// If displaying text with descenders, specify an offset in displayText to make room.
+constexpr areaSpec_t sourceArea =       {  0, 127,  0, 13, false};
+constexpr areaSpec_t volumeArea =       {  0, 100, 20, 48, true};
+constexpr areaSpec_t volLabArea =       {101, 127, 20, 48, false};
+constexpr areaSpec_t wholeVolumeArea =  {  0, 127, 20, 48, false};
+constexpr areaSpec_t messageArea =      {  0, 127, 53, 63, false};
+
+/* OLD
+// Text areas {XLeft, XRight, YTop, YBottom, rightJustify}
 constexpr areaSpec_t sourceArea = {0, 127, 0, 15, false};
 constexpr areaSpec_t messageArea = {0, 127, 50, 63, false};
 constexpr areaSpec_t volumeArea = {0, 100, 21, 47, true};
 constexpr areaSpec_t volLabArea = {101, 127, 21, 47, false};
 constexpr areaSpec_t wholeVolumeArea = {0, 127, 22, 48, false};
+*/
 
 // Input icons
 #define icons_binary_width 32
@@ -167,7 +179,7 @@ private:
     const uint8_t MIN_VOLUME = -128;
 
     // @brief Display a text string in a specified area
-    void displayText(const char * text, const uint8_t * font,  areaSpec_t area, const bool erase);
+    void displayText(const char * text, const uint8_t * font,  areaSpec_t area, const bool erase, const uint8_t offset = 0);
 
     // @brief Draw the volume indicator (including mute)
     // erase causes the field to be erased instead of redrawn
@@ -179,7 +191,11 @@ private:
     // @brief Erase a text area
     void eraseArea(areaSpec_t area);
 
-    // Draw the input indicator
+    /**
+     * @brief Draw the source indicator
+     * 
+     * @param changeInd True if a change is pending - provides visual feedback for a button hold
+     */
     void drawSource(bool changeInd = false);
 
     // Update the display

@@ -85,6 +85,7 @@ $(document).ready(function(){initNavTree('class_remote.html',''); initResizable(
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="class_remote-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">Remote Class Reference</div></div>
 </div><!--header-->
@@ -100,9 +101,6 @@ Inheritance diagram for Remote:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5d3a26ed0bc9e416e652da0b4344b28c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#a5d3a26ed0bc9e416e652da0b4344b28c">Remote</a> (uint8_t pin)</td></tr>
-<tr class="memdesc:a5d3a26ed0bc9e416e652da0b4344b28c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="class_remote.html#a5d3a26ed0bc9e416e652da0b4344b28c">More...</a><br /></td></tr>
-<tr class="separator:a5d3a26ed0bc9e416e652da0b4344b28c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a386518bafe5bd08dc412c3b1bf7e915f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#a386518bafe5bd08dc412c3b1bf7e915f">Task</a> ()</td></tr>
 <tr class="memdesc:a386518bafe5bd08dc412c3b1bf7e915f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for any command received and invokes the corresponding handler.  <a href="class_remote.html#a386518bafe5bd08dc412c3b1bf7e915f">More...</a><br /></td></tr>
 <tr class="separator:a386518bafe5bd08dc412c3b1bf7e915f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,9 +110,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4efad06c654cd974e33f17c4cb9c7ddf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#a4efad06c654cd974e33f17c4cb9c7ddf">stopListening</a> ()</td></tr>
 <tr class="memdesc:a4efad06c654cd974e33f17c4cb9c7ddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears any pending received codes and stops listening.  <a href="class_remote.html#a4efad06c654cd974e33f17c4cb9c7ddf">More...</a><br /></td></tr>
 <tr class="separator:a4efad06c654cd974e33f17c4cb9c7ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac7f0952c351f22b90a91fc05fa3ab2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#aac7f0952c351f22b90a91fc05fa3ab2a">getRawCommand</a> (uint16_t wait)</td></tr>
-<tr class="memdesc:aac7f0952c351f22b90a91fc05fa3ab2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures that there is nothing in the input buffer, waits for a fresh command (button press), and identifies the command received. Does not handle repeat codes. Used when learning a new remote.  <a href="class_remote.html#aac7f0952c351f22b90a91fc05fa3ab2a">More...</a><br /></td></tr>
-<tr class="separator:aac7f0952c351f22b90a91fc05fa3ab2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a799a0d5cbc42053f2fdd7602125fc2b0"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#a799a0d5cbc42053f2fdd7602125fc2b0">getRawCommand</a> (uint16_t wait)</td></tr>
+<tr class="memdesc:a799a0d5cbc42053f2fdd7602125fc2b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures that there is nothing in the input buffer, waits for a fresh command (button press), and identifies the command received. Does not handle repeat codes. Used when learning a new remote.  <a href="class_remote.html#a799a0d5cbc42053f2fdd7602125fc2b0">More...</a><br /></td></tr>
+<tr class="separator:a799a0d5cbc42053f2fdd7602125fc2b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad80462fe69ec46cfbf644c2f3805b707"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#ad80462fe69ec46cfbf644c2f3805b707">getCommand</a> ()</td></tr>
 <tr class="memdesc:ad80462fe69ec46cfbf644c2f3805b707"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for anything received, handles any special repeat codes, and re-enables the input. Used in normal "always listening" operation.  <a href="class_remote.html#ad80462fe69ec46cfbf644c2f3805b707">More...</a><br /></td></tr>
 <tr class="separator:ad80462fe69ec46cfbf644c2f3805b707"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,48 +125,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a323affb623f838ee3ca359e9ed820d43"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#a323affb623f838ee3ca359e9ed820d43">currentItemName</a> ()</td></tr>
 <tr class="memdesc:a323affb623f838ee3ca359e9ed820d43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provide the name of the current item in the command table.  <a href="class_remote.html#a323affb623f838ee3ca359e9ed820d43">More...</a><br /></td></tr>
 <tr class="separator:a323affb623f838ee3ca359e9ed820d43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61dd2d2c765624dda371c0f4980f25b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#a61dd2d2c765624dda371c0f4980f25b6">set</a> (<a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1">remoteCommands</a> item, uint32_t command)</td></tr>
+<tr class="memdesc:a61dd2d2c765624dda371c0f4980f25b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets an IR code in the dispatch table. Used to load commands from flash.  <a href="class_remote.html#a61dd2d2c765624dda371c0f4980f25b6">More...</a><br /></td></tr>
+<tr class="separator:a61dd2d2c765624dda371c0f4980f25b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbfade8772da82adac1053bfc8c30f90"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#acbfade8772da82adac1053bfc8c30f90">loadFromOptions</a> ()</td></tr>
+<tr class="memdesc:acbfade8772da82adac1053bfc8c30f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Populates IR codes in the dispatch table from the options store.  <a href="class_remote.html#acbfade8772da82adac1053bfc8c30f90">More...</a><br /></td></tr>
+<tr class="separator:acbfade8772da82adac1053bfc8c30f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a486e36b72f1718efbcfee7ee27a82be1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#a486e36b72f1718efbcfee7ee27a82be1">saveToOptions</a> ()</td></tr>
+<tr class="memdesc:a486e36b72f1718efbcfee7ee27a82be1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves IR codes in the dispatch table to the options store.  <a href="class_remote.html#a486e36b72f1718efbcfee7ee27a82be1">More...</a><br /></td></tr>
+<tr class="separator:a486e36b72f1718efbcfee7ee27a82be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aa4d76cf8403a3cfac218f342a33d499f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="class_remote.html">Remote</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_remote.html#aa4d76cf8403a3cfac218f342a33d499f">instance</a> ()</td></tr>
+<tr class="separator:aa4d76cf8403a3cfac218f342a33d499f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00039">39</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5d3a26ed0bc9e416e652da0b4344b28c" name="a5d3a26ed0bc9e416e652da0b4344b28c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d3a26ed0bc9e416e652da0b4344b28c">&#9670;&nbsp;</a></span>Remote()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Remote::Remote </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>pin</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Constructor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">pin</td><td>Pin number </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00046">46</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00035">35</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a323affb623f838ee3ca359e9ed820d43" name="a323affb623f838ee3ca359e9ed820d43"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a323affb623f838ee3ca359e9ed820d43">&#9670;&nbsp;</a></span>currentItemName()</h2>
 
@@ -219,14 +194,14 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aac7f0952c351f22b90a91fc05fa3ab2a" name="aac7f0952c351f22b90a91fc05fa3ab2a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac7f0952c351f22b90a91fc05fa3ab2a">&#9670;&nbsp;</a></span>getRawCommand()</h2>
+<a id="a799a0d5cbc42053f2fdd7602125fc2b0" name="a799a0d5cbc42053f2fdd7602125fc2b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a799a0d5cbc42053f2fdd7602125fc2b0">&#9670;&nbsp;</a></span>getRawCommand()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool Remote::getRawCommand </td>
+          <td class="memname">uint32_t Remote::getRawCommand </td>
           <td>(</td>
           <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>wait</em></td><td>)</td>
@@ -243,10 +218,37 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>command received. <br  />
+<dl class="section return"><dt>Returns</dt><dd>command code received, or 0 for timeout. <br  />
  </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_remote_handler_8cpp_source.html#l00068">68</a> of file <a class="el" href="_remote_handler_8cpp_source.html">RemoteHandler.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa4d76cf8403a3cfac218f342a33d499f" name="aa4d76cf8403a3cfac218f342a33d499f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4d76cf8403a3cfac218f342a33d499f">&#9670;&nbsp;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="class_remote.html">Remote</a> &amp; Remote::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8h_source.html#l00041">41</a> of file <a class="el" href="_remote_handler_8h_source.html">RemoteHandler.h</a>.</p>
 
 </div>
 </div>
@@ -311,6 +313,27 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="acbfade8772da82adac1053bfc8c30f90" name="acbfade8772da82adac1053bfc8c30f90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbfade8772da82adac1053bfc8c30f90">&#9670;&nbsp;</a></span>loadFromOptions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Remote::loadFromOptions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Populates IR codes in the dispatch table from the options store. </p>
+
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8cpp_source.html#l00114">114</a> of file <a class="el" href="_remote_handler_8cpp_source.html">RemoteHandler.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a83d4edc9c7f179192b4c6353695de3fb" name="a83d4edc9c7f179192b4c6353695de3fb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a83d4edc9c7f179192b4c6353695de3fb">&#9670;&nbsp;</a></span>nextMenuItem()</h2>
 
@@ -348,6 +371,66 @@ Public Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>the now-current item number </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="_remote_handler_8cpp_source.html#l00091">91</a> of file <a class="el" href="_remote_handler_8cpp_source.html">RemoteHandler.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a486e36b72f1718efbcfee7ee27a82be1" name="a486e36b72f1718efbcfee7ee27a82be1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a486e36b72f1718efbcfee7ee27a82be1">&#9670;&nbsp;</a></span>saveToOptions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Remote::saveToOptions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Saves IR codes in the dispatch table to the options store. </p>
+
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8cpp_source.html#l00122">122</a> of file <a class="el" href="_remote_handler_8cpp_source.html">RemoteHandler.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a61dd2d2c765624dda371c0f4980f25b6" name="a61dd2d2c765624dda371c0f4980f25b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61dd2d2c765624dda371c0f4980f25b6">&#9670;&nbsp;</a></span>set()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Remote::set </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1">remoteCommands</a>&#160;</td>
+          <td class="paramname"><em>item</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>command</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets an IR code in the dispatch table. Used to load commands from flash. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">item</td><td>Index in the dispatch table </td></tr>
+    <tr><td class="paramname">command</td><td>The IR command code </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="_remote_handler_8cpp_source.html#l00109">109</a> of file <a class="el" href="_remote_handler_8cpp_source.html">RemoteHandler.cpp</a>.</p>
 
 </div>
 </div>

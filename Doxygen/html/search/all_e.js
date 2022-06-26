@@ -1,11 +1,24 @@
 var searchData=
 [
-  ['relay_5fpin_0',['RELAY_PIN',['../_configuration_8h.html#a5c2c8c24f2085fc8445d70fa9b89eef3',1,'Configuration.h']]],
-  ['released_1',['RELEASED',['../class_button.html#aeb90239ed9aff11eca31b82b4c0f1de7ad315b95a1bb92e0387cf24504c8a33c7',1,'Button']]],
-  ['remote_2',['Remote',['../class_remote.html',1,'Remote'],['../class_remote.html#a5d3a26ed0bc9e416e652da0b4344b28c',1,'Remote::Remote()']]],
-  ['remotehandler_2ecpp_3',['RemoteHandler.cpp',['../_remote_handler_8cpp.html',1,'']]],
-  ['remotehandler_2eh_4',['RemoteHandler.h',['../_remote_handler_8h.html',1,'']]],
-  ['remotereceive_2eh_5',['RemoteReceive.h',['../_remote_receive_8h.html',1,'']]],
-  ['remotereceiver_6',['remoteReceiver',['../classremote_receiver.html',1,'']]],
-  ['rjust_7',['rJust',['../structarea_spec__t.html#a2d022a615085ff8e7bf852317047c188',1,'areaSpec_t']]]
+  ['padstring_0',['padString',['../_options_menu_8cpp.html#ac04fe266c045f226376e4f88f700d380',1,'OptionsMenu.cpp']]],
+  ['pct_5ffont_1',['PCT_FONT',['../_amp_display_8h.html#a4b95dd5e0ad9fd1396b581b5d75b11ea',1,'AmpDisplay.h']]],
+  ['pin_5famp_5frelay_2',['PIN_AMP_RELAY',['../_power_control_8h.html#ac421d54fc77b2895650febe563777f4f',1,'PowerControl.h']]],
+  ['pin_5fanalog_5fl_3',['PIN_ANALOG_L',['../_input_sensing_8h.html#a491cab80181143aed1df2888ca813f11',1,'InputSensing.h']]],
+  ['pin_5fanalog_5fr_4',['PIN_ANALOG_R',['../_input_sensing_8h.html#a5971dca8cd4b8aa5ce78e0ee8f29640f',1,'InputSensing.h']]],
+  ['pin_5fanalog_5ftrigger_5',['PIN_ANALOG_TRIGGER',['../_input_sensing_8h.html#a5307366371a94ac24e7be33e49a1c232',1,'InputSensing.h']]],
+  ['pin_5fdigital_5ftrigger_6',['PIN_DIGITAL_TRIGGER',['../_input_sensing_8h.html#ad60d39458131e817115cde64bc1b1bf7',1,'InputSensing.h']]],
+  ['pin_5fdsp_5frelay_7',['PIN_DSP_RELAY',['../_power_control_8h.html#a654247286b2a6dcf1ea546330d758bdc',1,'PowerControl.h']]],
+  ['postlabels_8',['postLabels',['../_options_menu_8cpp.html#aceca802fa46219bed4e34d7cda097825',1,'OptionsMenu.cpp']]],
+  ['postvolumevals_9',['postVolumeVals',['../_options_menu_8cpp.html#ad6f73da929a14253c101ad2389ea80e7',1,'OptionsMenu.cpp']]],
+  ['power_10',['power',['../_remote_handler_8h.html#a0962798d502160e4671892f952212b0f',1,'RemoteHandler.h']]],
+  ['powercmd_11',['powerCmd',['../class_options.html#a9264d758a98b95bb41a58f811f20dee5',1,'Options']]],
+  ['powercontrol_12',['PowerControl',['../class_power_control.html',1,'']]],
+  ['powercontrol_2ecpp_13',['PowerControl.cpp',['../_power_control_8cpp.html',1,'']]],
+  ['powercontrol_2eh_14',['PowerControl.h',['../_power_control_8h.html',1,'']]],
+  ['powerop_15',['powerOp',['../_options_menu_8cpp.html#aaf745a1ae0584475a057af7cb1303bc8',1,'OptionsMenu.cpp']]],
+  ['preplabels_16',['prepLabels',['../_options_menu_8cpp.html#a21917e94a40c38dabfb68af6d086e118',1,'OptionsMenu.cpp']]],
+  ['prepvolumevals_17',['prepVolumeVals',['../_options_menu_8cpp.html#a8e54fb956bd4157948770b4eef7767fc',1,'OptionsMenu.cpp']]],
+  ['pressed_18',['PRESSED',['../class_button.html#aeb90239ed9aff11eca31b82b4c0f1de7a7535909580d749414383c9dd8726d0e0',1,'Button']]],
+  ['printhex_19',['printHex',['../_options_8cpp.html#a2543a50b6fa3e7e7736972715bc1a617',1,'Options.cpp']]],
+  ['printto_20',['printTo',['../classalt_title.html#a971efcef632a8ef046eab5585798dc78',1,'altTitle']]]
 ];

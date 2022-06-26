@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['laststatechangetime_0',['lastStateChangeTime',['../class_switch.html#ade62246047d535b87e56c392c0ff1779',1,'Switch']]]
+  ['input_0',['input',['../_remote_handler_8h.html#a68ea8ceaea6fc52851ccc304d2836781',1,'RemoteHandler.h']]],
+  ['inputcmd_1',['inputCmd',['../class_options.html#a13062451b1120a880cf90c9ee5cd15ed',1,'Options']]]
 ];

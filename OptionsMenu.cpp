@@ -23,28 +23,31 @@ void prepVolumeVals() {
 }
 
 void postVolumeVals() {
-    Options::instance().maxVolume = f_maxVolume / -0.5;
-    Options::instance().maxInitialVolume = f_maxInitialVolume / -0.5;
-    Options::instance().analogDigitalDifference = f_analogDigitalDifference / -0.5;
+    ampOptions.maxVolume = f_maxVolume / -0.5;
+    ampOptions.maxInitialVolume = f_maxInitialVolume / -0.5;
+    ampOptions.analogDigitalDifference = f_analogDigitalDifference / -0.5;
 }
 
 result setVolumeVals(eventMask event) {
+    Serial.flush();
     switch (event) {
         case enterEvent:
-            prepVolumeVals;
+            prepVolumeVals();
             break;
         case exitEvent:
-            postVolumeVals;
+            postVolumeVals();
             break;
     }
     return proceed;
 }
 
-// The volume at startup can be no higher than the absolute maximum.
+// The maximum volume can't be set above the compile-time maximum.
+// And the volume at startup can't be higher than the absolute maximum.
 // If the absolute maximum is lowered and then raised again without
 // having edited the volume at startup, track appropriately.
 
-result limitMaxInitialVolume(eventMask event) {
+result handleMaxVolume(eventMask event) {
+    f_maxVolume = min(f_maxVolume, MAXIMUM_VOLUME / -0.5);
     f_maxInitialVolume = min(saved_f_maxInitialVolume, f_maxVolume);
     return proceed;
 }
@@ -97,7 +100,7 @@ public:
 };
 
 altMENU(altTitle, volumeMenu, "Volume", setVolumeVals, (eventMask)(enterEvent | exitEvent), noStyle, (Menu::_menuData|Menu::_canNav),
-    altFIELD(decPlaces<1>::menuField, f_maxVolume, "Max", " dB", -40, 0, 0.5, 0, limitMaxInitialVolume, anyEvent, noStyle),
+    altFIELD(decPlaces<1>::menuField, f_maxVolume, "Max", " dB", -40, 0, 0.5, 0, handleMaxVolume, anyEvent, noStyle),
     altFIELD(decPlaces<1>::menuField, f_maxInitialVolume, "Max start", " dB", -40, 0, 0.5, 0, handleMaxInitialVolume, updateEvent, noStyle),
     altFIELD(decPlaces<1>::menuField, f_analogDigitalDifference, "A-D diff", " dB", -12, 12, 0.5, 0, doNothing, noEvent, noStyle),
     EXIT("<< BACK")
@@ -308,6 +311,7 @@ void OptionsMenu::menu(U8G2 * _display) {
     options->invertFieldKeys = true;
     joystickBtns.begin();
     nav.useUpdateEvent = true;
+    nav.idleOff();
 
     do {
         nav.doInput();

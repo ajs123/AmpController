@@ -1,10 +1,7 @@
 var searchData=
 [
-  ['pct_5ffont_0',['PCT_FONT',['../_amp_display_8h.html#a4b95dd5e0ad9fd1396b581b5d75b11ea',1,'AmpDisplay.h']]],
-  ['pin_5famp_5frelay_1',['PIN_AMP_RELAY',['../_power_control_8h.html#ac421d54fc77b2895650febe563777f4f',1,'PowerControl.h']]],
-  ['pin_5fanalog_5fl_2',['PIN_ANALOG_L',['../_input_sensing_8h.html#a491cab80181143aed1df2888ca813f11',1,'InputSensing.h']]],
-  ['pin_5fanalog_5fr_3',['PIN_ANALOG_R',['../_input_sensing_8h.html#a5971dca8cd4b8aa5ce78e0ee8f29640f',1,'InputSensing.h']]],
-  ['pin_5fanalog_5ftrigger_4',['PIN_ANALOG_TRIGGER',['../_input_sensing_8h.html#a5307366371a94ac24e7be33e49a1c232',1,'InputSensing.h']]],
-  ['pin_5fdigital_5ftrigger_5',['PIN_DIGITAL_TRIGGER',['../_input_sensing_8h.html#ad60d39458131e817115cde64bc1b1bf7',1,'InputSensing.h']]],
-  ['pin_5fdsp_5frelay_6',['PIN_DSP_RELAY',['../_power_control_8h.html#a654247286b2a6dcf1ea546330d758bdc',1,'PowerControl.h']]]
+  ['max_5fdepth_0',['MAX_DEPTH',['../_options_menu_8h.html#a5db49eeef5c9bb774f02996f684df238',1,'OptionsMenu.h']]],
+  ['minbarlevel_1',['MINBARLEVEL',['../_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a',1,'Options.h']]],
+  ['msg_5ffont_2',['MSG_FONT',['../_amp_display_8h.html#ac0577c898fd8a7731aa124210bc4dfe3',1,'AmpDisplay.h']]],
+  ['mute_5ffont_3',['MUTE_FONT',['../_amp_display_8h.html#a1ed2e0b2103163c89187c60c46b85795',1,'AmpDisplay.h']]]
 ];

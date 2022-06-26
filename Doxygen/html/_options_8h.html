@@ -83,19 +83,54 @@ $(document).ready(function(){initNavTree('_options_8h.html',''); initResizable()
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">Options.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;Arduino.h&gt;</code><br />
+<code>#include &quot;<a class="el" href="_configuration_8h_source.html">Configuration.h</a>&quot;</code><br />
+<code>#include &lt;Adafruit_LittleFS.h&gt;</code><br />
+<code>#include &lt;Adafruit_LittleFS_File.h&gt;</code><br />
+<code>#include &lt;InternalFileSystem.h&gt;</code><br />
 </div>
 <p><a href="_options_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_options.html">Options</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a7240ab9ea0ed66225ab9b54fcd32d06a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a">MINBARLEVEL</a>&#160;&#160;&#160;-60</td></tr>
 <tr class="separator:a7240ab9ea0ed66225ab9b54fcd32d06a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0d6c3c3463f0fc8f41813f7666c329c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#ab0d6c3c3463f0fc8f41813f7666c329c">DEFAULT_VOLPLUS_CMD</a>&#160;&#160;&#160;0x77E1507C</td></tr>
+<tr class="separator:ab0d6c3c3463f0fc8f41813f7666c329c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93d271ca424444b9f09cafb22e928822"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a93d271ca424444b9f09cafb22e928822">DEFAULT_VOLMINUS_CMD</a>&#160;&#160;&#160;0x77E1307C</td></tr>
+<tr class="separator:a93d271ca424444b9f09cafb22e928822"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a546aa3d4f6a7fe93994d38fad735e160"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a546aa3d4f6a7fe93994d38fad735e160">DEFAULT_MUTE_CMD</a>&#160;&#160;&#160;0x77E1A07C</td></tr>
+<tr class="separator:a546aa3d4f6a7fe93994d38fad735e160"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7596e77c825b2c08058b7cb51f8743c4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a7596e77c825b2c08058b7cb51f8743c4">DEFAULT_INPUT_CMD</a>&#160;&#160;&#160;0x77E1C07C</td></tr>
+<tr class="separator:a7596e77c825b2c08058b7cb51f8743c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4dfeb475d8df64b05fc2ea260224ece0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a4dfeb475d8df64b05fc2ea260224ece0">DEFAULT_POWER_CMD</a>&#160;&#160;&#160;0x00</td></tr>
+<tr class="separator:a4dfeb475d8df64b05fc2ea260224ece0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a334d743b6855b0185b22facf061b8cd1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1">remoteCommands</a> { <br />
+&#160;&#160;<a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1aea12a7e5c7b9e5e2da401f02d6eecf7d">REMOTE_VOLPLUS</a> = 0
+, <a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1a74a10d8c1b2a20cc8d7f8245b102882a">REMOTE_VOLMINUS</a>
+, <a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1aa40870021a1c410fb846ab80e7c90289">REMOTE_MUTE</a>
+, <a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1abe6a30a3de9bb9e8a860f4756dd3b712">REMOTE_INPUT</a>
+, <br />
+&#160;&#160;<a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1af74f7a982ac6f598390f797ed7bf7e9e">REMOTE_POWER</a>
+, <a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1a4903db29a4afe3be6472f21028135aa0">REMOTE_COMMAND_COUNT</a>
+<br />
+ }</td></tr>
+<tr class="separator:a334d743b6855b0185b22facf061b8cd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -103,8 +138,98 @@ Variables</h2></td></tr>
 <tr class="separator:a15fbe001b7b77c9f6a0236f855861541"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46d23885cbf2bcb255f7e7598c1e6158"><td class="memItemLeft" align="right" valign="top">constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a46d23885cbf2bcb255f7e7598c1e6158">DIM_TIME</a> = 5 * 1000</td></tr>
 <tr class="separator:a46d23885cbf2bcb255f7e7598c1e6158"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ffb4294fdb907e1b8db21f810db149f"><td class="memItemLeft" align="right" valign="top">constexpr uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a3ffb4294fdb907e1b8db21f810db149f">MENU_TIMEOUT</a> = 120</td></tr>
+<tr class="separator:a3ffb4294fdb907e1b8db21f810db149f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a184d0b510c0af5c4d3b359810d5bbee1"><td class="memItemLeft" align="right" valign="top">constexpr char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a184d0b510c0af5c4d3b359810d5bbee1">remoteCommandNames</a> [<a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1a4903db29a4afe3be6472f21028135aa0">REMOTE_COMMAND_COUNT</a>][6] = {&quot;Vol +&quot;, &quot;Vol -&quot;, &quot;Mute&quot;, &quot;Input&quot;, &quot;Power&quot;}</td></tr>
+<tr class="separator:a184d0b510c0af5c4d3b359810d5bbee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a983af9412f1e042cfc35ba83d6a79830"><td class="memItemLeft" align="right" valign="top">const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a983af9412f1e042cfc35ba83d6a79830">MAX_LABEL_LENGTH</a> = 12</td></tr>
+<tr class="separator:a983af9412f1e042cfc35ba83d6a79830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31c52af9c5ff5299374fa85e06788253"><td class="memItemLeft" align="right" valign="top">const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a31c52af9c5ff5299374fa85e06788253">MAX_VARIABLE_SIZE</a> = <a class="el" href="_options_8h.html#a983af9412f1e042cfc35ba83d6a79830">MAX_LABEL_LENGTH</a> + 1</td></tr>
+<tr class="separator:a31c52af9c5ff5299374fa85e06788253"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29122b6ef703a3e87f1831c075639952"><td class="memItemLeft" align="right" valign="top">const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_options_8h.html#a29122b6ef703a3e87f1831c075639952">MAX_FNAME_LENGTH</a> = 10</td></tr>
+<tr class="separator:a29122b6ef703a3e87f1831c075639952"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a7596e77c825b2c08058b7cb51f8743c4" name="a7596e77c825b2c08058b7cb51f8743c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7596e77c825b2c08058b7cb51f8743c4">&#9670;&nbsp;</a></span>DEFAULT_INPUT_CMD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEFAULT_INPUT_CMD&#160;&#160;&#160;0x77E1C07C</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00033">33</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a546aa3d4f6a7fe93994d38fad735e160" name="a546aa3d4f6a7fe93994d38fad735e160"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a546aa3d4f6a7fe93994d38fad735e160">&#9670;&nbsp;</a></span>DEFAULT_MUTE_CMD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEFAULT_MUTE_CMD&#160;&#160;&#160;0x77E1A07C</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00032">32</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a4dfeb475d8df64b05fc2ea260224ece0" name="a4dfeb475d8df64b05fc2ea260224ece0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dfeb475d8df64b05fc2ea260224ece0">&#9670;&nbsp;</a></span>DEFAULT_POWER_CMD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEFAULT_POWER_CMD&#160;&#160;&#160;0x00</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00034">34</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a93d271ca424444b9f09cafb22e928822" name="a93d271ca424444b9f09cafb22e928822"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93d271ca424444b9f09cafb22e928822">&#9670;&nbsp;</a></span>DEFAULT_VOLMINUS_CMD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEFAULT_VOLMINUS_CMD&#160;&#160;&#160;0x77E1307C</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00031">31</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="ab0d6c3c3463f0fc8f41813f7666c329c" name="ab0d6c3c3463f0fc8f41813f7666c329c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0d6c3c3463f0fc8f41813f7666c329c">&#9670;&nbsp;</a></span>DEFAULT_VOLPLUS_CMD</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEFAULT_VOLPLUS_CMD&#160;&#160;&#160;0x77E1507C</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00030">30</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
 <a id="a7240ab9ea0ed66225ab9b54fcd32d06a" name="a7240ab9ea0ed66225ab9b54fcd32d06a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7240ab9ea0ed66225ab9b54fcd32d06a">&#9670;&nbsp;</a></span>MINBARLEVEL</h2>
 
@@ -116,9 +241,33 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Minimum level in dB for the VU meter </p>
 
-<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00016">16</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00023">23</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a334d743b6855b0185b22facf061b8cd1" name="a334d743b6855b0185b22facf061b8cd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a334d743b6855b0185b22facf061b8cd1">&#9670;&nbsp;</a></span>remoteCommands</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1">remoteCommands</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a334d743b6855b0185b22facf061b8cd1aea12a7e5c7b9e5e2da401f02d6eecf7d" name="a334d743b6855b0185b22facf061b8cd1aea12a7e5c7b9e5e2da401f02d6eecf7d"></a>REMOTE_VOLPLUS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a334d743b6855b0185b22facf061b8cd1a74a10d8c1b2a20cc8d7f8245b102882a" name="a334d743b6855b0185b22facf061b8cd1a74a10d8c1b2a20cc8d7f8245b102882a"></a>REMOTE_VOLMINUS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a334d743b6855b0185b22facf061b8cd1aa40870021a1c410fb846ab80e7c90289" name="a334d743b6855b0185b22facf061b8cd1aa40870021a1c410fb846ab80e7c90289"></a>REMOTE_MUTE&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a334d743b6855b0185b22facf061b8cd1abe6a30a3de9bb9e8a860f4756dd3b712" name="a334d743b6855b0185b22facf061b8cd1abe6a30a3de9bb9e8a860f4756dd3b712"></a>REMOTE_INPUT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a334d743b6855b0185b22facf061b8cd1af74f7a982ac6f598390f797ed7bf7e9e" name="a334d743b6855b0185b22facf061b8cd1af74f7a982ac6f598390f797ed7bf7e9e"></a>REMOTE_POWER&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a334d743b6855b0185b22facf061b8cd1a4903db29a4afe3be6472f21028135aa0" name="a334d743b6855b0185b22facf061b8cd1a4903db29a4afe3be6472f21028135aa0"></a>REMOTE_COMMAND_COUNT&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00039">39</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
 
 </div>
 </div>
@@ -142,9 +291,56 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Time (ms) after waking up that the display will dim and the volume indicator will go away. </p>
 
-<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00013">13</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00020">20</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a29122b6ef703a3e87f1831c075639952" name="a29122b6ef703a3e87f1831c075639952"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29122b6ef703a3e87f1831c075639952">&#9670;&nbsp;</a></span>MAX_FNAME_LENGTH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t MAX_FNAME_LENGTH = 10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00059">59</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a983af9412f1e042cfc35ba83d6a79830" name="a983af9412f1e042cfc35ba83d6a79830"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a983af9412f1e042cfc35ba83d6a79830">&#9670;&nbsp;</a></span>MAX_LABEL_LENGTH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t MAX_LABEL_LENGTH = 12</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00057">57</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a31c52af9c5ff5299374fa85e06788253" name="a31c52af9c5ff5299374fa85e06788253"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31c52af9c5ff5299374fa85e06788253">&#9670;&nbsp;</a></span>MAX_VARIABLE_SIZE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const uint8_t MAX_VARIABLE_SIZE = <a class="el" href="_options_8h.html#a983af9412f1e042cfc35ba83d6a79830">MAX_LABEL_LENGTH</a> + 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00058">58</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
 
 </div>
 </div>
@@ -167,9 +363,56 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Maximum volume. </p>
 
-<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00008">8</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00017">17</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a3ffb4294fdb907e1b8db21f810db149f" name="a3ffb4294fdb907e1b8db21f810db149f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ffb4294fdb907e1b8db21f810db149f">&#9670;&nbsp;</a></span>MENU_TIMEOUT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr uint16_t MENU_TIMEOUT = 120</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00026">26</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
+
+</div>
+</div>
+<a id="a184d0b510c0af5c4d3b359810d5bbee1" name="a184d0b510c0af5c4d3b359810d5bbee1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a184d0b510c0af5c4d3b359810d5bbee1">&#9670;&nbsp;</a></span>remoteCommandNames</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr char remoteCommandNames[<a class="el" href="_options_8h.html#a334d743b6855b0185b22facf061b8cd1a4903db29a4afe3be6472f21028135aa0">REMOTE_COMMAND_COUNT</a>][6] = {&quot;Vol +&quot;, &quot;Vol -&quot;, &quot;Mute&quot;, &quot;Input&quot;, &quot;Power&quot;}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_options_8h_source.html#l00048">48</a> of file <a class="el" href="_options_8h_source.html">Options.h</a>.</p>
 
 </div>
 </div>

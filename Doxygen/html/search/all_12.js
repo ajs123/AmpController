@@ -1,17 +1,9 @@
 var searchData=
 [
-  ['validatedstate_0',['validatedState',['../class_switch.html#adc991447c6f2557bc641082bbf96cc79',1,'Switch']]],
-  ['vol_5fdb_5ffont_1',['VOL_DB_FONT',['../_amp_display_8h.html#a5c8525030f8847db532bd47ba0190f22',1,'AmpDisplay.h']]],
-  ['vol_5fpct_5ffont_2',['VOL_PCT_FONT',['../_amp_display_8h.html#a9d09b9798d7b3e3404fc24b3cb7340e0',1,'AmpDisplay.h']]],
-  ['vollabarea_3',['volLabArea',['../_amp_display_8h.html#a71010f0f0435448497656a0802187d35',1,'AmpDisplay.h']]],
-  ['volminus_4',['volMinus',['../_remote_handler_8h.html#a1ae1869489169b2e51df2a67fe1c0ce3',1,'volMinus():&#160;RemoteHandler.h'],['../_remote_receive_8h.html#a1ae1869489169b2e51df2a67fe1c0ce3',1,'volMinus():&#160;RemoteReceive.h']]],
-  ['volminus_5fcmd_5',['VOLMINUS_CMD',['../_remote_handler_8h.html#aa53322649a963bbe68b3e070cd7edaff',1,'RemoteHandler.h']]],
-  ['volplus_6',['volPlus',['../_remote_handler_8h.html#a3b35647bccb9db645a636241e5363e8a',1,'volPlus():&#160;RemoteHandler.h'],['../_remote_receive_8h.html#a3b35647bccb9db645a636241e5363e8a',1,'volPlus():&#160;RemoteReceive.h']]],
-  ['volplus_5fcmd_7',['VOLPLUS_CMD',['../_remote_handler_8h.html#a814bb861b515c96e3bb00df568eff84f',1,'RemoteHandler.h']]],
-  ['volspacewidth_8',['volSpaceWidth',['../_amp_display_8cpp.html#a6de8888063455c8926b57fb73ba03cb2',1,'AmpDisplay.cpp']]],
-  ['volume_9',['volume',['../class_amp_display.html#abde56490fad2c789f26fce7eca6e9ba7',1,'AmpDisplay']]],
-  ['volumearea_10',['volumeArea',['../_amp_display_8h.html#ad3e03f4e55376fb932020c8f75b54949',1,'AmpDisplay.h']]],
-  ['volumemode_11',['volumeMode',['../class_amp_display.html#a80b45a90d9bd2f84de9d009c23512803',1,'AmpDisplay::volumeMode(bool dB)'],['../class_amp_display.html#a2a77dd425cc88658652d7ac72ebc0a87',1,'AmpDisplay::volumeMode()']]],
-  ['volumeshown_12',['volumeShown',['../class_amp_display.html#a56bad2be314d2881acc3ba0dcab264f0',1,'AmpDisplay']]],
-  ['volumestate_13',['volumeState',['../class_amp_display.html#aa3312e034bcfc300c2c52735005e7b30',1,'AmpDisplay']]]
+  ['task_0',['Task',['../class_button.html#ab30555050caa816d24ded1f8278003b2',1,'Button::Task()'],['../class_remote.html#a386518bafe5bd08dc412c3b1bf7e915f',1,'Remote::Task()']]],
+  ['task_1',['task',['../class_amp_display.html#a52170f4dfacff6ce87aa423601f02bb9',1,'AmpDisplay']]],
+  ['timeinvalidatedstate_2',['timeInValidatedState',['../class_switch.html#ac467012dd4cb48a113a6f5744ffdd840',1,'Switch']]],
+  ['titlefontname_3',['titleFontName',['../_options_menu_8h.html#aa76815c2fe40929598a852559d3120f1',1,'OptionsMenu.h']]],
+  ['toslink_4',['Toslink',['../_amp_display_8h.html#a68a545a3c23609598d9bf398fc14de95a83f9aea5fb5be35fd29415f5bc365633',1,'AmpDisplay.h']]],
+  ['transientvolume_5',['TRANSIENTVOLUME',['../_amp_display_8h.html#a7406f7f98e32ac42dd612a6c083aa40e',1,'AmpDisplay.h']]]
 ];

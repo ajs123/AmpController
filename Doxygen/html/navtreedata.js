@@ -51,6 +51,14 @@ var NAVTREE =
         [ "Off state (setup) menu", "md__encapsulations.html#autotoc_md18", null ]
       ] ]
     ] ],
+    [ "Namespaces", "namespaces.html", [
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ],
+        [ "Variables", "namespacemembers_vars.html", null ]
+      ] ]
+    ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -80,7 +88,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_amp_display_8cpp.html"
+"_amp_display_8cpp.html",
+"class_remote.html#a50d34dd25124db8ddf8250db9104defb"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

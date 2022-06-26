@@ -1,12 +1,13 @@
 var searchData=
 [
-  ['maxdelaybeforerepeat_0',['maxDelayBeforeRepeat',['../_remote_handler_8h.html#aa84261277fbb8d8bb376085713307477',1,'RemoteHandler.h']]],
-  ['maximum_5fvolume_1',['MAXIMUM_VOLUME',['../_options_8h.html#a15fbe001b7b77c9f6a0236f855861541',1,'Options.h']]],
-  ['messagearea_2',['messageArea',['../_amp_display_8h.html#a2a690c9f3c9785bff5f82604495d5aa9',1,'AmpDisplay.h']]],
-  ['minbarlevel_3',['MINBARLEVEL',['../_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a',1,'Options.h']]],
-  ['msg_5ffont_4',['MSG_FONT',['../_amp_display_8h.html#ac0577c898fd8a7731aa124210bc4dfe3',1,'AmpDisplay.h']]],
-  ['mute_5',['mute',['../class_amp_display.html#a21a4a9d8520b93e84ecc8ed02a49b494',1,'AmpDisplay::mute()'],['../_remote_handler_8h.html#a15c99d8267e3a4eda311264b3c01871e',1,'mute():&#160;RemoteHandler.h'],['../_remote_receive_8h.html#a15c99d8267e3a4eda311264b3c01871e',1,'mute():&#160;RemoteReceive.h']]],
-  ['mute_5fcmd_6',['MUTE_CMD',['../_remote_handler_8h.html#a581d3437d25bef80816c22a942a4f39e',1,'RemoteHandler.h']]],
-  ['mute_5ffont_7',['MUTE_FONT',['../_amp_display_8h.html#a1ed2e0b2103163c89187c60c46b85795',1,'AmpDisplay.h']]],
-  ['mutestate_8',['muteState',['../class_amp_display.html#a60ecff4996971218121ede43466dda05',1,'AmpDisplay']]]
+  ['laststatechangetime_0',['lastStateChangeTime',['../class_switch.html#ade62246047d535b87e56c392c0ff1779',1,'Switch']]],
+  ['learn_1',['learn',['../class_remote.html#a38572b6ac449e50293e3378a66ddc536',1,'Remote']]],
+  ['listen_2',['listen',['../class_remote.html#a50d34dd25124db8ddf8250db9104defb',1,'Remote']]],
+  ['load_3',['load',['../class_options.html#a5f48e7dabdcdf51b13fe6b4745f0a6a0',1,'Options']]],
+  ['loadfromoptions_4',['loadFromOptions',['../class_remote.html#acbfade8772da82adac1053bfc8c30f90',1,'Remote']]],
+  ['long_5fpress_5',['LONG_PRESS',['../class_button.html#a9db6e91b1aa663b40ef96f4cab2177d5a09ba5f0a855c1af6bacd0b25c86aa17f',1,'Button']]],
+  ['long_5fpress_5fpending_6',['LONG_PRESS_PENDING',['../class_button.html#a9db6e91b1aa663b40ef96f4cab2177d5ac57f803bb037a8e2a98240ed2b44ba2b',1,'Button']]],
+  ['long_5fpressed_7',['LONG_PRESSED',['../class_button.html#aeb90239ed9aff11eca31b82b4c0f1de7aba2ed4aa479b00b1ab8c725127126a43',1,'Button']]],
+  ['longpress_8',['longPress',['../_button_8h.html#a1c29424c1ba085d69b393bd0575c825f',1,'Button.h']]],
+  ['longpresspending_9',['longPressPending',['../_button_8h.html#a36b3626998a726ce69c156ad1e8b7f30',1,'Button.h']]]
 ];

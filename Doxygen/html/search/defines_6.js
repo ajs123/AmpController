@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['minbarlevel_0',['MINBARLEVEL',['../_options_8h.html#a7240ab9ea0ed66225ab9b54fcd32d06a',1,'Options.h']]],
-  ['msg_5ffont_1',['MSG_FONT',['../_amp_display_8h.html#ac0577c898fd8a7731aa124210bc4dfe3',1,'AmpDisplay.h']]],
-  ['mute_5fcmd_2',['MUTE_CMD',['../_remote_handler_8h.html#a581d3437d25bef80816c22a942a4f39e',1,'RemoteHandler.h']]],
-  ['mute_5ffont_3',['MUTE_FONT',['../_amp_display_8h.html#a1ed2e0b2103163c89187c60c46b85795',1,'AmpDisplay.h']]]
+  ['icons_5fbinary_5fheight_0',['icons_binary_height',['../_amp_display_8h.html#aeddcf964d22cd44cf8240453002d7d9e',1,'AmpDisplay.h']]],
+  ['icons_5fbinary_5fwidth_1',['icons_binary_width',['../_amp_display_8h.html#a5b7fa4dcb8ac069c9873bc2dfe910cbe',1,'AmpDisplay.h']]],
+  ['ir_5fpin_2',['IR_PIN',['../_configuration_8h.html#a3b0a1d1d72b10a9c0c95adeb235d19f4',1,'Configuration.h']]]
 ];

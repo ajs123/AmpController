@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['sourcearea_0',['sourceArea',['../_amp_display_8h.html#a71ecd81ff0d9c8774fa3cc824a639c8c',1,'AmpDisplay.h']]],
-  ['sourcelabels_1',['sourceLabels',['../_amp_display_8cpp.html#a4d2f814297d433dcd3f4efcc9dae93ca',1,'AmpDisplay.cpp']]],
-  ['sourcestate_2',['sourceState',['../class_amp_display.html#a8a5ba490a926fb63407ca9ec73038f85',1,'AmpDisplay']]]
+  ['ourminidsp_0',['ourMiniDSP',['../_power_control_8h.html#a5c2a8a280a7812e79f5af4eb44610842',1,'PowerControl.h']]],
+  ['ourremote_1',['ourRemote',['../_options_menu_8h.html#ad6ced43b4d04478388dbdb8c285fb855',1,'OptionsMenu.h']]]
 ];

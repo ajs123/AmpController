@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['update_0',['update',['../class_button.html#a475aa75a856bb8f8e95a860c23713a97',1,'Button']]]
+  ['quitremoteop_0',['quitRemoteOp',['../_options_menu_8cpp.html#ad39b435c8282908f821e12f58e7031d9',1,'OptionsMenu.cpp']]]
 ];

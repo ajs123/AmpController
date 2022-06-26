@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ourminidsp_0',['ourMiniDSP',['../_power_control_8h.html#a5c2a8a280a7812e79f5af4eb44610842',1,'PowerControl.h']]]
+  ['laststatechangetime_0',['lastStateChangeTime',['../class_switch.html#ade62246047d535b87e56c392c0ff1779',1,'Switch']]]
 ];

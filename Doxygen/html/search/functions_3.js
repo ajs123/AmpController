@@ -6,6 +6,5 @@ var searchData=
   ['displaylrbargraph_3',['displayLRBarGraph',['../class_amp_display.html#a6d0255f07b3c37927e024688a27f51c8',1,'AmpDisplay']]],
   ['displaymessage_4',['displayMessage',['../class_amp_display.html#afe0859db9865dd483c625124dde25acb',1,'AmpDisplay::displayMessage(const char *message)'],['../class_amp_display.html#a60f2d0c229b50dc39e3477b966a40240',1,'AmpDisplay::displayMessage(const char *message, areaSpec_t area)']]],
   ['drawframe_5',['drawFrame',['../class_amp_display.html#a364f9ee4db9d7c5661351d78582fabda',1,'AmpDisplay']]],
-  ['drawmute_6',['drawMute',['../_amp_display_8cpp.html#a40aa7de7a579234924cc2611924414c3',1,'AmpDisplay.cpp']]],
-  ['dspon_7',['dspOn',['../class_power_control.html#a3e3c0c21e82a7c2442cc83fca2a002b2',1,'PowerControl']]]
+  ['dspon_6',['dspOn',['../class_power_control.html#a3e3c0c21e82a7c2442cc83fca2a002b2',1,'PowerControl']]]
 ];

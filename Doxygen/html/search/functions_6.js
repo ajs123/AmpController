@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['init_0',['Init',['../class_input_sensing.html#a1ce46cd3a52a686e5590ad655371a78c',1,'InputSensing::Init()'],['../class_power_control.html#a701e6372590bc4bffff3b0b41a165ffa',1,'PowerControl::Init()']]]
+  ['handlemaxinitialvolume_0',['handleMaxInitialVolume',['../_options_menu_8cpp.html#a614dd4812d451cad36d757cb43d4f379',1,'OptionsMenu.cpp']]],
+  ['handlemaxvolume_1',['handleMaxVolume',['../_options_menu_8cpp.html#a4a5504c0e987b469c9c425e1591eaa76',1,'OptionsMenu.cpp']]]
 ];

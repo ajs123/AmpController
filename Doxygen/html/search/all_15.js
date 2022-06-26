@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['yb_0',['YB',['../structarea_spec__t.html#a290942dee9b3808f7c6e271f438de339',1,'areaSpec_t']]],
-  ['yt_1',['YT',['../structarea_spec__t.html#ab0a1d2a2e565501ed955001f4afb7477',1,'areaSpec_t']]]
+  ['wakeup_0',['wakeup',['../class_amp_display.html#aee74d69e14edc35d0304b3bb86311be9',1,'AmpDisplay']]],
+  ['wholevolumearea_1',['wholeVolumeArea',['../_amp_display_8h.html#aa2cfaa07d8553bb8be581c4ef1475884',1,'AmpDisplay.h']]]
 ];

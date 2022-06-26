@@ -60,65 +60,27 @@
     void AmpDisplay::eraseVolume()
     {
         if (muteState) return;
-        // To keep any details in displayText, use it with a blank string to clear
-        //displayText("", VOL_DB_FONT, wholeVolumeArea, true);  
         eraseArea(wholeVolumeArea);
         volumeShown = false;
         display->updateDisplay();  // Just redraw (no)
     }
 
-    // Moved to drawVolume
-    void drawMute()
-    {
-        // Write MUTE or its glyph to the volume display area
-        // Call displayUpdate to refresh, set to full brightness, and reset the timer
-    }
-
     const char sourceLabels[2][8] = {
-        "ANALOG",
-        "DIGITAL"
+         "ANALOG",
+         "DIGITAL"
     };
 
-    // Making the labels changeable will require going back to the switch statement, or some alternative
+    // This should guard against the change indicator being beyond the edge of the display
+    // It should possibly handle the case of the source being undetermined
     void AmpDisplay::drawSource(bool changeInd)
     {
-        char label[12];
-        snprintf(label, 12, "%s%s", sourceLabels[sourceState], changeInd ? "-->" : "");
+        char label[MAX_LABEL_LENGTH + 4];
+        char * sourceLabel = (sourceState == Analog) ? ampOptions.analogLabel : ampOptions.digitalLabel;
+        snprintf(label, MAX_LABEL_LENGTH + 4, "%s%s", sourceLabel, changeInd ? "-->" : "");
+        //snprintf(label, 12, "%s%s", sourceLabels[sourceState], changeInd ? "-->" : "");
         displayText(label, SOURCE_FONT, sourceArea, true);
-        // switch (sourceState)
-        // {
-        //     case Analog:
-        //         displayText("ANALOG", SOURCE_FONT, sourceArea, true);
-        //         break;
-        //     case Toslink:
-        //         displayText("DIGITAL", SOURCE_FONT, sourceArea, true);
-        //         break;
-        //     default:
-        //         displayText("", SOURCE_FONT, sourceArea, true);
-        // }
         display->updateDisplay();
     }
-
-    /* void AmpDisplay::displayUpdate()
-    {
-    #ifdef TRANSIENTVOLUME
-        // Re-draw the volume if necessary
-        if (!volumeShown) 
-        {
-            drawVolume(); // Includes a call to updateDisplay
-        }
-        // Otherwise, just write the buffer to the display
-        else
-        {
-            display->updateDisplay();
-        }
-    #else
-         // Write the buffer to the display
-        display->updateDisplay();
-    #endif
-        // Set to full brightness
-        display->setContrast(CONTRAST_FULL);
-    } */
 
     void AmpDisplay::volume(float vol)
     {
@@ -240,7 +202,7 @@
         display->drawBox(area.XL, area.YT, area.XR - area.XL, area.YB - area.YT);
     }
 
-    void AmpDisplay::displayText(const char *text, const uint8_t *font, areaSpec_t area, const bool erase)
+    void AmpDisplay::displayText(const char *text, const uint8_t *font, areaSpec_t area, const bool erase, const uint8_t offset)
     {
         if (erase)
         {
@@ -251,14 +213,17 @@
 
         display->setDrawColor(1);
         display->setFont(font);
+        display->setFontPosBaseline();       // ArduinoMenu sets this to Bottom in the u8g2Out constructor :-(
         if (area.rJust)
         {
             uint8_t vsWidth = display->getStrWidth(text);
-            display->setCursor(area.XR - vsWidth, area.YB);
+            //display->setCursor(area.XR - vsWidth, area.YB);
+            display->setCursor(area.XR - vsWidth, area.YB + offset);
         }
         else
         {
-            display->setCursor(area.XL, area.YB);
+            //display->setCursor(area.XL, area.YB);
+            display->setCursor(area.XL, area.YB + offset);
         }
         display->print(text);
     }

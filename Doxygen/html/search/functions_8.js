@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mute_0',['mute',['../class_amp_display.html#a21a4a9d8520b93e84ecc8ed02a49b494',1,'AmpDisplay']]]
+  ['joystickbtns_0',['joystickBtns',['../_options_menu_8cpp.html#a7709826247d2886ece2220201944d205',1,'OptionsMenu.cpp']]]
 ];
