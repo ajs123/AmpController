@@ -95,6 +95,9 @@ protected:
     uint32_t brightTime;                // Time when dim timer was reset
     bool volumeShown = false;           // Enables selective re-draw of volume in display wakeup 
 
+    bool newContent = false;
+    bool autoRefresh = false;
+
 public:
 
     // Constructor
@@ -170,6 +173,23 @@ public:
     // @brief Never mind the long press
     void cancelLongPress();
 
+    /**
+     * @brief Set the update mode. When set, displayUpdate() will immediately
+     * send the draw buffer to the display. When unset (default), displayUpdate() will note the need
+     * for a refresh but a call to refresh() will be required to copy the buffer.
+     * This provides better control over timing when multiple sources such as callbacks
+     * modify the display. NOTE: When unset, and multiple sources share a display area,
+     * only the last content drawn prior to refresh() will be visible.
+     * 
+     * @param immediate
+     */
+    void setImmediateUpdate(bool immediate);
+
+    /**
+     * @brief Refresh the display if needed, by sending the draw buffer to the display.
+     */
+    void refresh();
+
 private:
 
     Options & ampOptions = Options::instance();      // Access the options store
@@ -198,7 +218,9 @@ private:
      */
     void drawSource(bool changeInd = false);
 
-    // Update the display
+    /**
+     * @brief Update the display. According to the update mode, either copy the draw buffer
+     * to the display, or note that refresh() needs to do so when called.
+     */
     void displayUpdate();
-
 };

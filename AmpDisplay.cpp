@@ -12,16 +12,32 @@
         display->clear();
 
         // Draw whatever dividing lines, etc. we need
-        display->updateDisplay();
+        displayUpdate();
+    }
+
+    void AmpDisplay::displayUpdate() {
+        if (autoRefresh) {
+            display->updateDisplay();
+            newContent = false;
+        } else {
+            newContent = true;
+        }
+    }
+
+    void AmpDisplay::refresh() {
+        if (newContent) {
+            display->updateDisplay();
+            newContent = false;
+        }
+    }
+
+    void AmpDisplay::setImmediateUpdate(bool immediate) {
+        autoRefresh = immediate;
+        if (autoRefresh && newContent) refresh();
     }
 
     void AmpDisplay::drawVolume()
     {
-        // Write new volume indicator, or mute, to the volume display area
-        // Volume is always in dB, displayed according to the dB boolean
-
-        // Display in the selected format.
-        // Include the dB or % indicator. If %, calculate from dB and min/max
         char volString[8];
         uint8_t vsWidth;
 
@@ -46,11 +62,9 @@
             displayText(volString, VOL_PCT_FONT, volumeArea, true);
             displayText("%", PCT_FONT, volLabArea, true);
         }
-        // Call displayUpdate to refresh, set to full brightness, and reset the timer
-        //displayUpdate();
 
         // Update the display
-        display->updateDisplay();
+        displayUpdate();
 
         #ifdef TRANSIENTVOLUME
         volumeShown = true;
@@ -62,7 +76,7 @@
         if (muteState) return;
         eraseArea(wholeVolumeArea);
         volumeShown = false;
-        display->updateDisplay();  // Just redraw (no)
+        displayUpdate();  // Just redraw (no)
     }
 
     const char sourceLabels[2][8] = {
@@ -70,7 +84,7 @@
          "DIGITAL"
     };
 
-    // This should guard against the change indicator being beyond the edge of the display
+    // This ought to guard against the change indicator being beyond the edge of the display
     // It should possibly handle the case of the source being undetermined
     void AmpDisplay::drawSource(bool changeInd)
     {
@@ -79,12 +93,11 @@
         snprintf(label, MAX_LABEL_LENGTH + 4, "%s%s", sourceLabel, changeInd ? "-->" : "");
         //snprintf(label, 12, "%s%s", sourceLabels[sourceState], changeInd ? "-->" : "");
         displayText(label, SOURCE_FONT, sourceArea, true);
-        display->updateDisplay();
+        displayUpdate();
     }
 
     void AmpDisplay::volume(float vol)
     {
-        // If changed, save, call drawVolume with volume and dB and call displayUpdate
         if (volumeState != vol)
         {
             volumeState = vol;
@@ -98,13 +111,13 @@
     // Does not wake up the display from a dimmed state
     void AmpDisplay::displayMessage(const char * message) {
         displayText(message, MSG_FONT, messageArea, true);
-        display->updateDisplay();   // Calling this directly avoids restoring full contrast
+        displayUpdate();   // Calling this directly avoids restoring full contrast
     }
 
     // @brief Displays a message in the specified area.
     void AmpDisplay::displayMessage(const char * message, areaSpec_t area) {
         displayText(message, MSG_FONT, area, true);
-        display->updateDisplay();
+        displayUpdate();
     }
 
     void AmpDisplay::dim() {
@@ -147,7 +160,7 @@
         if (dBDisplay != dB)
         {
             dBDisplay = dB;
-            display->updateDisplay();
+            displayUpdate();
         }
     }
 
@@ -247,5 +260,5 @@
         display->setDrawColor(1);
         display->drawBox(leftAreaXR - leftWidth, area.YT + 2, leftWidth, area.YB - area.YT - 2);
         display->drawBox(rightAreaXL, area.YT + 2, rightWidth, area.YB - area.YT - 2);
-        display->updateDisplay();  // Re-draw only, without full refresh and wakeup
+        displayUpdate();  // Re-draw only, without full refresh and wakeup
     }

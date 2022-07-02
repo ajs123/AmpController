@@ -28,7 +28,7 @@ bool Remote::getCommand() {
     Serial.printf("getCommand got protocol %0X value %0X\r\n", protocolNum, value);
 
     repeat = handleRepeats();
-    Serial.printf("Returning it after checking repeats as %0X\r\n", value);
+    if (repeat) Serial.printf("Returning it after checking repeats as %0X\r\n", value);
 
     lastCommand = value;
     lastProtocol = protocolNum;
