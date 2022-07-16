@@ -98,11 +98,11 @@
 
     void AmpDisplay::volume(float vol)
     {
-        if (volumeState != vol)
-        {
+    //    if (volumeState != vol)
+    //    {
             volumeState = vol;
             drawVolume();
-        }
+    //    }
         wakeup();
     }
 
@@ -190,11 +190,11 @@
 
     void AmpDisplay::source(source_t source)
     {
-        if (sourceState != source)
-        {
+        //if (sourceState != source)
+        //{
             sourceState = source;
             drawSource();
-        }
+        //}
         wakeup();
     }
 

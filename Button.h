@@ -6,10 +6,15 @@
 #pragma once
 
 // Callbacks for button events
-extern void shortPress();
-extern void longPressPending();
-extern void longPress();
-extern void fullHold();
+// extern void shortPress();
+// extern void longPressPending();
+// extern void longPress();
+// extern void fullHold();
+
+extern void onButtonShortPress();
+extern void onButtonLongPressPending();
+extern void onButtonLongPress();
+extern void onButtonFullHold();
 
 /**
  * @brief Provides a simple debounced switch
@@ -114,10 +119,14 @@ private:
 
     const cmdHandler_t * dispatchTable[EVENT_COUNT] = {
         0,
-        shortPress,
-        longPressPending,
-        longPress,
-        fullHold
+        // shortPress,
+        // longPressPending,
+        // longPress,
+        // fullHold
+        onButtonShortPress,
+        onButtonLongPressPending,
+        onButtonLongPress,
+        onButtonFullHold
     };
 
 };

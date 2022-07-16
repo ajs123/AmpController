@@ -30,7 +30,8 @@ typedef void cmdHandler_t();    // Command handlers take nothing and return noth
 
 // Command handlers are externals. They can also be called from other classes, such as the
 // one that handles the control knob.
-extern cmdHandler_t volPlus, volMinus, mute, input, power;
+//extern cmdHandler_t volPlus, volMinus, mute, input, power;
+extern cmdHandler_t onRemoteVolMinus, onRemoteVolPlus, onRemoteMute, onRemoteSource, onRemotePower;
 
 class Remote : public IRrecvPCI, IRdecode {
 
@@ -82,11 +83,11 @@ private:
 
     static const uint8_t tableLength = REMOTE_COMMAND_COUNT;
     cmdEntry_t cmdTable[tableLength] = {
-        {DEFAULT_VOLPLUS_CMD, true, remoteCommandNames[REMOTE_VOLPLUS], volPlus},
-        {DEFAULT_VOLMINUS_CMD, true, remoteCommandNames[REMOTE_VOLMINUS], volMinus},
-        {DEFAULT_MUTE_CMD, false, remoteCommandNames[REMOTE_MUTE], mute},
-        {DEFAULT_INPUT_CMD, false, remoteCommandNames[REMOTE_INPUT], input},
-        {DEFAULT_POWER_CMD, false, remoteCommandNames[REMOTE_POWER], power}  // Callback doesn't matter if the command isn't defined
+        {DEFAULT_VOLPLUS_CMD, true, remoteCommandNames[REMOTE_VOLPLUS], onRemoteVolPlus},
+        {DEFAULT_VOLMINUS_CMD, true, remoteCommandNames[REMOTE_VOLMINUS], onRemoteVolMinus},
+        {DEFAULT_MUTE_CMD, false, remoteCommandNames[REMOTE_MUTE], onRemoteMute},
+        {DEFAULT_INPUT_CMD, false, remoteCommandNames[REMOTE_INPUT], onRemoteSource},
+        {DEFAULT_POWER_CMD, false, remoteCommandNames[REMOTE_POWER], onRemotePower}  
         };
 
     uint32_t receivedTime;
