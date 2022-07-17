@@ -70,7 +70,7 @@ class Options {
         uint8_t maxVolume = 0;
 
         // Maximum volume at startup (avoids getting blasted in the morning)
-        uint8_t maxInitialVolume = 0;
+        uint8_t maxInitialVolume = 10;
 
         // Analog-digital volume difference, to compensate for input level differences
         uint8_t analogDigitalDifference = 0;

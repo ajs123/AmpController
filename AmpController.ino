@@ -21,7 +21,7 @@ USB thisUSB;                                                  // USB via Host Sh
 MiniDSP ourMiniDSP(&thisUSB);                                 // MiniDSP on thisUSB
 
 U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE);  // Adafruit OLED Featherwing display on I2C bus
-AmpDisplay AmpDisp(&display);                                 // Live display on the OLED
+AmpDisplay ampDisp(&display);                                 // Live display on the OLED
 
 // Input devices
 //Remote ourRemote(IR_PIN);                                     // IR receiver
@@ -60,10 +60,10 @@ void BLESetup() {
 void DisplaySetup() {
   display.begin();
   display.setFontMode(0);
-  AmpDisp.displayMessage("START");
-  AmpDisp.scheduleDim();
-  AmpDisp.refresh();
-  AmpDisp.setImmediateUpdate(false);  // Allows multiple sources to write to the display with control over refresh
+  ampDisp.displayMessage("START");
+  ampDisp.scheduleDim();
+  ampDisp.refresh();
+  ampDisp.setImmediateUpdate(false);
 }
 
 // This needs to move to the input sensing handler
@@ -72,36 +72,12 @@ void analogSetup() {
   analogReference(AR_DEFAULT);  // 3.6 V
 }
 
-// Callbacks - MiniDSP
-
-void OnMiniDSPConnected() {
-  AmpDisp.displayMessage("CONNECTED");
-  lastTime = millis();    // Delay the next timed request
-  ourMiniDSP.RequestStatus();
-  //needStatus = true;
-}
-
 // For debugging: Puts the first 8 bytes of received messages on the display.
 void OnParse(uint8_t * buf) {
   char bufStr[25];
   snprintf(bufStr, 25, "%02X %02X %02X %02X %02X %02X %02X %02X", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8]);
-  AmpDisp.displayMessage(bufStr);
+  ampDisp.displayMessage(bufStr);
 }
-
-// float dBSum(float dB1, float dB2) {
-//   return 10 * log10(pow(dB1/10, 10) + pow(dB2/10, 10));
-// }
-
-// // VUMeter should move to AmpDisplay. Then a callback from MiniDSP can call that.
-// void outputVUMeter(float * levels) {
-//   //int leftSum = (int) dbSum(levels[0], levels[1]);
-//   //int rightSum = (int) dbSum(levels[2], levels[3]);
-//   int leftSum = ((int) levels[0] + (int) levels[1]) / 2;    // On L and R, sum the woofer and tweeter levels
-//   int rightSum = ((int) levels[2] + (int) levels[3]) / 2;
-//   uint8_t left = max( leftSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
-//   uint8_t right = max( rightSum - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL);
-//   AmpDisp.displayLRBarGraph(left, right, messageArea);
-// }
 
 constexpr float VUCoeff = 0.32 * INTERVAL / 50; // Approximates std. VU step response 90% at 300 ms
 constexpr float signalFloorDB = -128.0;
@@ -135,57 +111,67 @@ void inputVUMeter(float * levels) {
   uint8_t left = !ourMiniDSP.isMuted() ? max( intLeftLevel - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL) : 0;
   uint8_t right = !ourMiniDSP.isMuted() ? max( intRightLevel - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL) : 0;
 
-  AmpDisp.displayLRBarGraph(left, right, messageArea);
+  ampDisp.displayLRBarGraph(left, right, messageArea);
 }
 
-// Callbacks for response to both the remote and knob.
-bool needStatus = false;    // This will probably go away, since reliance on responses to set commands seems to be reliable.
+// Utility functions for the various callbacks
+
+void setVolume(uint8_t volume) {
+  ourMiniDSP.setVolume(volume);
+  lastTime = millis();
+}
 
 void volPlus() {
-  //AmpDisp.displayMessage("VOL +");
   uint8_t currentVolume = static_cast<uint8_t>(ourMiniDSP.getVolume());
   if (currentVolume > ampOptions.maxVolume) ourMiniDSP.setVolume(--currentVolume);
   if (ourMiniDSP.isMuted()) ourMiniDSP.setMute(false);
-  AmpDisp.wakeup();   // Only really needed if already at maximum
+  ampDisp.wakeup();   // Only really needed if already at maximum
   lastTime = millis();
-  //needStatus = true;
 }
 
 void volMinus() {
-  //AmpDisp.displayMessage("VOL -");
   uint8_t currentVolume = static_cast<uint8_t>(ourMiniDSP.getVolume());
   if (currentVolume != 0xFF) ourMiniDSP.setVolume(++currentVolume);
   if (ourMiniDSP.isMuted()) ourMiniDSP.setMute(false);
   lastTime = millis();
-  //needStatus = true;
+}
+
+void setMute(bool muted) {
+  ourMiniDSP.setMute(muted);
+  lastTime = millis();
 }
 
 void mute() {
-  //AmpDisp.displayMessage("MUTE");
   ourMiniDSP.setMute(!ourMiniDSP.isMuted());
   lastTime = millis();
-  //needStatus = true;
+}
+
+void setSource(uint8_t source) {
+  ourMiniDSP.setSource(source);
+  lastTime = millis();
 }
 
 void input() {
-  //AmpDisp.displayMessage("INPUT");
+  //ampDisp.displayMessage("INPUT");
   ourMiniDSP.setSource(ourMiniDSP.getSource() ? 0 : 1);
   lastTime = millis();
-  //needStatus = true;
 }
 
 // Hold the action button at startup to enter the setup menu
+// TO DO - Need a way to always start at the top
+void menuGo() {
+  ampDisp.displayMessage("Settings...", sourceArea);
+  ampDisp.refresh();
+  while (goButton.switchClosed()) delay(100);
+  ampDisp.displayMessage("", sourceArea);
+  display.setFontPosBottom();   // The ArduinoMenu library expects this.
+  OptionsMenu::menu(&display);
+}
+
 void menuCheck() {
   goButton.switchClosed();      // Returning a validated "closed" requires two samples
   delay(200);
-  if (!goButton.switchClosed()) return;
-
-  AmpDisp.displayMessage("Settings...", sourceArea);
-  while (goButton.switchClosed()) delay(100);
-  AmpDisp.displayMessage("", sourceArea);
-
-  display.setFontPosBottom();   // The ArduinoMenu library expects this.
-  OptionsMenu::menu(&display);
+  if (goButton.switchClosed()) menuGo();
 }
 
 void optionsSetup() {
@@ -205,7 +191,7 @@ void showUSBTaskState() {
   uint16_t USBState = taskState | (vbusState << 8);
   if (USBState != lastUSBState) {
     snprintf(strBuf, sizeof(strBuf), "TASK %02x   VBUS %02x", taskState, vbusState);
-    AmpDisp.displayMessage(strBuf);
+    ampDisp.displayMessage(strBuf);
     lastUSBState = USBState;
   }
 }
@@ -223,7 +209,7 @@ void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
 
   if ((currentTime - lastFrameReport) >= frameReportInterval) {
     snprintf(strBuf, sizeof(strBuf), "Int %d", intervalAccum / intervalCount);
-    AmpDisp.displayMessage(strBuf, sourceArea);
+    ampDisp.displayMessage(strBuf, sourceArea);
     intervalAccum = 0;
     intervalCount = 0;
     lastFrameReport = currentTime;
@@ -264,30 +250,115 @@ class AmpState {
 
 void transitionTo(AmpState * newState);
 
+// The Off state - just watch the remote and button
+class AmpOffState : public AmpState {
+  void onEntry() override {
+    // Amp disable, power off
+    display.clear();
+    display.updateDisplay();
+  }
+  void polls() override {
+    ourRemote.Task();
+    goButton.Task();
+  }
+  void onButtonFullHold() override {
+    menuGo();
+  }
+  void onRemotePower() override; 
+  void onButtonShortPress() override; 
+} ampOffState;
+
+// DSP wait state - power up and watch for the DSP to become connected
+class AmpWaitDSPState : public AmpState {
+  void onEntry() override {
+    // Amp disable, power on
+  }
+  void polls() override {
+    thisUSB.Task();
+    showUSBTaskState();
+    ampDisp.refresh();
+    // Triggers
+    // TEMPORARY - Until power control is implemented, the dsp may already be connected
+    if (ourMiniDSP.connected()) onDSPConnected();
+  }
+  void onDSPConnected() override;
+} ampWaitDSPState;
+
+// Input wait state - as needed per the triggers, ensure that we're set to the correct input
+class AmpWaitSourceState : public AmpState {
+  void polls() override {
+    thisUSB.Task();
+  }
+  void requests() override {
+    ourMiniDSP.requestSource(); // Could be requestSource()
+  }
+  void toWaitVolume();
+  void onDSPSource(uint8_t source) override {
+    // Check input against what's wanted per the triggers
+    if (source != 0) ourMiniDSP.setSource(0); // For now, force to analog
+    else toWaitVolume();
+  }
+} ampWaitSourceState;
+
+// Volume wait state - ensure that the volume is within range (generally, and for startup)
+class AmpWaitVolumeState : public AmpState {
+  void polls() override {
+    thisUSB.Task();
+  }
+  void requests() override {
+    ourMiniDSP.requestVolume(); // Could be requestVolume();
+  }
+  void toWaitMute();
+  void onDSPVolume(uint8_t volume) override {
+    Serial.printf("WaitVolumeState: volume received %d\n", volume);
+    if (volume < ampOptions.maxInitialVolume) setVolume(ampOptions.maxInitialVolume);
+    else toWaitMute();
+  }
+} ampWaitVolumeState;
+
+// Mute wait state - ensure that the DSP is unmuted
+class AmpWaitMuteState : public AmpState {
+  //void onEntry() override { setMute(false); }
+  void polls() override {
+    thisUSB.Task();
+  }
+  void requests() override { 
+    ourMiniDSP.requestMute(); // Could be requestMute();
+  }
+  void toOn();
+  void onDSPMute(bool isMuted) override {
+    if (isMuted) setMute(false);
+    else toOn();
+  }
+} ampWaitMuteState;
+
 // The ON state: respond to the remote, knob, button, and triggers, and maintain the display
 class AmpOnState : public AmpState {
   void onEntry() override {
-    ourMiniDSP.RequestStatus();
-    lastTime = millis();
+    //Amp enable, unmute, display on, draw display
+    ampDisp.source((source_t) ourMiniDSP.getSource());
+    ampDisp.volume(-ourMiniDSP.getVolume()/2.0);
+    Serial.printf("Volume per MiniDSP is %d\n", ourMiniDSP.getVolume());
+    ampDisp.mute(ourMiniDSP.isMuted());
+    //lastTime = millis();
   }
   void polls() override {
     thisUSB.Task();
     ourRemote.Task();
     goButton.Task();
-    //showUSBTaskState();
-    AmpDisp.checkDim();
-    AmpDisp.refresh();
+    ampDisp.checkDim();
+    ampDisp.refresh();
   };
 
   void requests() override { ourMiniDSP.RequestInputLevels(); }
 
-  void onDSPVolume(uint8_t volume) override { AmpDisp.volume(-volume/2.0); }
-  void onDSPMute(bool isMuted) { AmpDisp.mute(isMuted); }
-  void onDSPSource(uint8_t source) { AmpDisp.source((source_t) source); }
+  void onDSPVolume(uint8_t volume) override { ampDisp.volume(-volume/2.0); }
+  void onDSPMute(bool isMuted) { ampDisp.mute(isMuted); }
+  void onDSPSource(uint8_t source) { ampDisp.source((source_t) source); }
   void onDSPInputLevels(float * levels) { inputVUMeter(levels); }
 
   void onButtonShortPress() override { mute(); }
-  void onButtonLongPressPending() override { AmpDisp.cueLongPress(); }
+  void onButtonLongPressPending() override { ampDisp.cueLongPress(); }
   void onButtonLongPress() override { input(); }
   void onButtonFullHold() override;
 
@@ -298,36 +369,21 @@ class AmpOnState : public AmpState {
   void onRemotePower() override;
 
   //void onKnobTurned() override {}
+
+  //virtual void onTriggerOn() override {}
+  //virtual void onTriggerOff() override {}
+
 } ampOnState;
 
-class AmpOffState : public AmpState {
-  void onEntry() override {
-    display.clear();
-    display.updateDisplay();
-  }
-  void polls() override {
-    ourRemote.Task();
-    goButton.Task();
-  }
-  void onRemotePower() override; 
-  void onButtonShortPress() override; 
-} ampOffState;
-
-class AmpWaitDSPState : public AmpState {
-  void polls() override {
-    thisUSB.Task();
-    showUSBTaskState();
-    AmpDisp.refresh();
-    // TEMPORARY - Until power control is implemented, the dsp may already be connected
-    if (ourMiniDSP.connected()) onDSPConnected();
-  }
-  void onDSPConnected() override { transitionTo(&ampOnState); }
-} ampWaitDSPState;
-
-void AmpOffState::onRemotePower() { transitionTo(&ampWaitDSPState); }
-void AmpOffState::onButtonShortPress() { transitionTo(&ampWaitDSPState); }
-void AmpOnState::onButtonFullHold() { transitionTo(&ampOffState); }
-void AmpOnState::onRemotePower() { transitionTo(&ampOffState); }
+// State transitions
+void AmpOffState::        onRemotePower()       { transitionTo(&ampWaitDSPState); }
+void AmpOffState::        onButtonShortPress()  { transitionTo(&ampWaitDSPState); }
+void AmpWaitDSPState::    onDSPConnected()      { transitionTo(&ampWaitSourceState); }
+void AmpWaitSourceState:: toWaitVolume()        { transitionTo(&ampWaitVolumeState); }  // when source verified to match triggers
+void AmpWaitVolumeState:: toWaitMute()          { transitionTo(&ampWaitMuteState); }    // when volume verified to be within limits
+void AmpWaitMuteState::   toOn()                { transitionTo(&ampOnState); }          // when mute verified to be off
+void AmpOnState::         onRemotePower()       { transitionTo(&ampOffState); }
+void AmpOnState::         onButtonFullHold()    { transitionTo(&ampOffState); }
 
 // The state pattern context
 
@@ -365,8 +421,8 @@ void setup() {
   BLESetup();
 
   if(thisUSB.Init() == -1) {
-    AmpDisp.displayMessage("USB didn't start.");
-    AmpDisp.refresh();
+    ampDisp.displayMessage("USB didn't start.");
+    ampDisp.refresh();
     while(1); // Halt
   }
 
