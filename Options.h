@@ -14,16 +14,16 @@
 // In MiniDSP units of -0.5 dB.
 // This might be set to other than 0 to preclude amplifier clipping or driver overextension.
 // This will be removed in favor of a configurable option
-constexpr uint8_t MAXIMUM_VOLUME = 0;
+const uint8_t MAXIMUM_VOLUME = 0;
 
 // Time (ms) after wich the volume indicator will go away and the diplay will dim
-constexpr uint16_t DIM_TIME = 5 * 1000;   
+const uint16_t DIM_TIME = 5 * 1000;   
 
 // Minimum level in dB for the VU meter
-#define MINBARLEVEL -60
+const uint8_t MINBARLEVEL = -60;
 
 // Setup menu timeout (sec)
-constexpr uint16_t MENU_TIMEOUT = 120;
+const uint16_t MENU_TIMEOUT = 120;
 
 // Default remote codes
 // These are for a particular Apple remote. The last two hex digits are the individual remote ID.

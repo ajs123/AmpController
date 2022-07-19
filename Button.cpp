@@ -64,8 +64,8 @@ Button::Button(uint32_t pin_) : Switch(pin_) {
     };
 
 
-// The button FSM could be implemented with an array of pointers to state functions corresponding to the elements
-// of the state enum. But with only four states, it's easier to read this way!
+// Here, we could have used a state pattern or dispatch table, but for this very simple FSM
+// the switch form is straightforward and easy to read.
 Button::buttonEvent_t Button::update() {
 
     checkPin();
@@ -109,19 +109,5 @@ Button::buttonEvent_t Button::Task() {
     if (event >= EVENT_COUNT) return NONE;
     if (!dispatchTable[event]) return NONE;
     dispatchTable[event]();
-    // switch (event) {
-    //     case SHORT_PRESS:
-    //         shortPress();
-    //         break;
-    //     case LONG_PRESS_PENDING:
-    //         longPressPending();
-    //         break;
-    //     case LONG_PRESS:
-    //         longPress();
-    //         break;
-    //     case FULL_HOLD:
-    //         fullHold();
-    //         break;
-    // };
     return event;
 }

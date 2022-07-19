@@ -1,7 +1,6 @@
 // Relay control of power to DSP and amps
 
 #include "PowerControl.h"
-#include <MiniDSP.h>
 
 void PowerControl::Init() {
 

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <MiniDSP.h>
+#include "USB_Host_Shield/MiniDSP.h"
 #include "AmpDisplay.h"
 #include "PowerControl.h"
 #include "RemoteHandler.h"
@@ -218,9 +218,9 @@ void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
 
 // The main state machine - uses a classic state pattern.
 // Each state has a method invoked upon entry, 
-// a poll method invoked each time around the loop,
-// a request method invoked on each tick, and
-// a callback for each possible event
+//   a poll method invoked each time around the loop,
+//   a request method invoked on each tick, and
+//   a callback for each possible event.
 // Naming convention for callbacks is on<source><event>(...)
 
 class AmpState {
@@ -243,9 +243,9 @@ class AmpState {
     virtual void onRemoteMute(){}
     virtual void onRemoteSource(){}
     virtual void onRemotePower(){}
-    virtual void onKnobTurned(){}
-    virtual void onTriggerOn(){}
-    virtual void onTriggerOff(){}
+    virtual void onKnobTurned(int8_t change){}
+    virtual void onTriggerOn(uint8_t source){}
+    virtual void onTriggerOff(uint8_t source){}
 };
 
 void transitionTo(AmpState * newState);
@@ -368,10 +368,10 @@ class AmpOnState : public AmpState {
   void onRemoteSource() override { input(); }
   void onRemotePower() override;
 
-  //void onKnobTurned() override {}
+  //void onKnobTurned(int8_t change) override {}
 
-  //virtual void onTriggerOn() override {}
-  //virtual void onTriggerOff() override {}
+  //virtual void onTriggerOn(uint8_t source) override {}
+  //virtual void onTriggerOff(uint8_t source) override {}
 
 } ampOnState;
 
@@ -387,7 +387,7 @@ void AmpOnState::         onButtonFullHold()    { transitionTo(&ampOffState); }
 
 // The state pattern context
 
-AmpState * ampState{&ampOffState}; 
+AmpState * ampState {&ampOffState}; 
 
 void polls() { ampState->polls(); }
 void requests() { ampState->requests(); }
@@ -405,7 +405,9 @@ void onRemoteVolMinus(){ ampState->onRemoteVolMinus(); }
 void onRemoteMute() { ampState->onRemoteMute(); }
 void onRemoteSource() { ampState->onRemoteSource(); }
 void onRemotePower() { ampState->onRemotePower(); }
-void onKnobTurned() { ampState->onKnobTurned(); }
+void onTriggerOn(uint8_t source) { ampState->onTriggerOn(source); }
+void onTriggerOff(uint8_t source) { ampState->onTriggerOff(source); }
+void onKnobTurned(int8_t change) { ampState->onKnobTurned(change); }
 
 void transitionTo(AmpState * newState) {
   ampState = newState;

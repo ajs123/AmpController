@@ -4,7 +4,7 @@
 #pragma once
 
 #include <Arduino.h>
-#include <MiniDSP.h>
+#include "USB_Host_Shield/MiniDSP.h"
 
 #define PIN_DSP_RELAY 10
 #define PIN_AMP_RELAY 11
