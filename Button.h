@@ -5,12 +5,6 @@
 
 #pragma once
 
-// Callbacks for button events
-// extern void shortPress();
-// extern void longPressPending();
-// extern void longPress();
-// extern void fullHold();
-
 extern void onButtonShortPress();
 extern void onButtonLongPressPending();
 extern void onButtonLongPress();
@@ -62,10 +56,13 @@ private:
     uint32_t lastChangeTime;        // Last millis() at which contact state changed
 };
 
+/**
+ * @brief A button with short press, long press, and hold functions
+ */
 class Button : public Switch {
 
-const uint16_t LONG_PRESS_T = 750;
-const uint16_t FULL_HOLD_T = 4000;
+const uint16_t LONG_PRESS_T = 750;  // ms
+const uint16_t FULL_HOLD_T = 3000;
 
 public:
     /**

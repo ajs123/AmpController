@@ -13,9 +13,6 @@
 //#include <menuIO/serialIn.h>
 #include "RemoteHandler.h"
 
-// Access the options
-extern Options & ampOptions; // = Options::instance();
-extern Remote & ourRemote;
 
 namespace OptionsMenu {
 

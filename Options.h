@@ -105,17 +105,17 @@ class Options {
 
         // This holds a reference to each variable with its name in the filesystem and its size
         const writableOption_t optionTable[11] = {
-            {&maxVolume, "Vol_max", sizeof(maxVolume)},
-            {&maxInitialVolume, "Vol_init", sizeof(maxInitialVolume)},
-            {&analogDigitalDifference, "AD_diff", sizeof(analogDigitalDifference)},
-            {&analogLabel, "A_label", sizeof(analogLabel)},
-            {&digitalLabel, "D_label", sizeof(digitalLabel)},
-            {&autoOffTime, "Auto_off", sizeof(autoOffTime)},
-            {&volPlusCmd, "Vol_plus", sizeof(volPlusCmd)},
-            {&volMinusCmd, "Vol_minus", sizeof(volMinusCmd)},
-            {&muteCmd, "Mute_cmd", sizeof(muteCmd)},
-            {&inputCmd, "Input_cmd", sizeof(inputCmd)},
-            {&powerCmd, "Power_cmd", sizeof(powerCmd)}
+            {&maxVolume,               "Vol_max",   sizeof(maxVolume)},
+            {&maxInitialVolume,        "Vol_init",  sizeof(maxInitialVolume)},
+            {&analogDigitalDifference, "AD_diff",   sizeof(analogDigitalDifference)},
+            {&analogLabel,             "A_label",   sizeof(analogLabel)},
+            {&digitalLabel,            "D_label",   sizeof(digitalLabel)},
+            {&autoOffTime,             "Auto_off",  sizeof(autoOffTime)},
+            {&volPlusCmd,              "Vol_plus",  sizeof(volPlusCmd)},
+            {&volMinusCmd,             "Vol_minus", sizeof(volMinusCmd)},
+            {&muteCmd,                 "Mute_cmd",  sizeof(muteCmd)},
+            {&inputCmd,                "Input_cmd", sizeof(inputCmd)},
+            {&powerCmd,                "Power_cmd", sizeof(powerCmd)}
         };
 
         // The parameters are saved in a folder in the filesystem, just in case the device is used
@@ -132,14 +132,12 @@ class Options {
 
         /**
          * @brief Initialize the filesystem and be sure the parameter folder is there.
-         * 
          * @return true if successful
          */
         bool begin();
 
         /**
          * @brief Read values from flash
-         * 
          * @return Filesystem error 
          */
         bool load();
@@ -177,7 +175,6 @@ class Options {
 
         /**
          * @brief Construct a full filename from a parameter name
-         * 
          */
         void makePath(char * path, const char * name, const uint8_t maxLen);
 

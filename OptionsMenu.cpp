@@ -2,6 +2,11 @@
 
 #include "Options.h"
 #include "OptionsMenu.h"
+
+// These should be declared in narrower scopes
+extern Options & ampOptions; // = Options::instance();
+extern Remote & ourRemote;
+//static Remote & ourRemote {Remote::instance()}; // Also works. Linker error in absence of static
 extern U8G2 display;
 
 // The menu is defined using macros, requiring some functions referred to in them to be forward declared
@@ -109,13 +114,15 @@ altMENU(altTitle, volumeMenu, "Volume", setVolumeVals, (eventMask)(enterEvent | 
 char analogBuf[MAX_LABEL_LENGTH + 1];
 char digitalBuf[MAX_LABEL_LENGTH + 1];
 
+// Pads with spaces, so that the menu system cursor can move past the end of the current string
 void padString(char * string, const uint8_t length) {
     uint8_t currentLength = strlen(string);
-    if (currentLength >= MAX_LABEL_LENGTH) return;
-    uint8_t len = min(length, MAX_LABEL_LENGTH);
-    memset(string + currentLength, 32, MAX_LABEL_LENGTH - currentLength);
+    if (currentLength >= MAX_LABEL_LENGTH) return;  // Strings already longer than the limit are left as is
+    uint8_t desiredLength = min(length, MAX_LABEL_LENGTH);
+    memset(string + currentLength, 32, desiredLength - currentLength);
 }
 
+// Removes trailing spaces
 void fixString(char * string, const char * defaultLabel) {
     if (string[0] == 32) {
         strncpy(string, defaultLabel, MAX_LABEL_LENGTH);
@@ -217,11 +224,10 @@ Menu::keyMap joystickBtn_map[]={
 };
 keyIn<3> joystickBtns(joystickBtn_map);
 
+// NOTE: This may be replaced by separate polls of the knob/button, and calls to nav events
 MENU_INPUTS(in, &joystickBtns);
 
-// NOTES:
-// (1) This macro isn't very useful when there's just one input (e.g., requires two)
-// (2) We might replace it with separate checks of the encoder and programmed navigation calls
+// NOTE: This macro isn't very useful when there's just one output (e.g., requires two)
 MENU_OUTPUTS(out, MAX_DEPTH
   ,U8G2_OUT(display, OptionsMenu::colors, fontX, fontY, offsetX, offsetY, {0, 0, U8_Width/fontX, U8_Height/fontY})
   ,NONE
