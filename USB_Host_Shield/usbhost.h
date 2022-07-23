@@ -92,6 +92,11 @@ public:
 };
 
 /* SPI pin definitions. see avrpins.h   */
+#if defined(ARDUINO_NRF52840_FEATHER)   
+        // As wired for the amp controller
+        // The remaining pins are definedin variant.h for the Feather nrf52840 Express
+        #define PIN_SPI_SS (1)
+#endif
 #if defined(PIN_SPI_SCK) && defined(PIN_SPI_MOSI) && defined(PIN_SPI_MISO) && defined(PIN_SPI_SS)
 // Use pin defines: https://github.com/arduino/Arduino/pull/4814
 // Based on: https://www.mikeash.com/pyblog/friday-qa-2015-03-20-preprocessor-abuse-and-optional-parentheses.html
@@ -108,7 +113,7 @@ typedef SPi< MAKE_PIN(PIN_SPI_SCK), MAKE_PIN(PIN_SPI_MOSI), MAKE_PIN(PIN_SPI_MIS
 typedef SPi< Pb1, Pb2, Pb3, Pb0 > spi;
 #elif  defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
 typedef SPi< Pb5, Pb3, Pb4, Pb2 > spi;
-#elif defined(__AVR_ATmega644__) || defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__)
+#elif defined(__AVR_ATmega644__) ||  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__)
 typedef SPi< Pb7, Pb5, Pb6, Pb4 > spi;
 #elif (defined(CORE_TEENSY) && (defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__) || defined(__MKL26Z64__))) || defined(__ARDUINO_ARC__) || defined(__ARDUINO_X86__) || defined(__MIPSEL__) || defined(STM32F4)
 typedef SPi< P13, P11, P12, P10 > spi;
@@ -121,7 +126,8 @@ typedef SPi< P14, P13, P12, P15 > spi;
 #elif defined(ESP32)
 typedef SPi< P18, P23, P19, P5 > spi;
 #elif defined(ARDUINO_NRF52840_FEATHER)
-typedef SPi< P26, P25, P24, P10 > spi; //These are D26, D25, D24 in variant.cpp = P14, P13, P15 = 14, 13, 15
+//typedef SPi< P26, P25, P24, P10 > spi; //These are D26, D25, D24 in variant.cpp = P14, P13, P15 = 14, 13, 15
+typedef SPi< P26, P25, P24, P1 > spi;  // Don't know why these matter with HW SPI
 //#elif defined(ARDUINO_SAMD_FEATHER)
 //typedef SPi
 #else

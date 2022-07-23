@@ -6,8 +6,8 @@
 
 // Quadrature rotary encoder with pushbutton
 #define ENCODER_BUTTON  5   
-#define ENCODER_A       11
-#define ENCODER_B       10
+#define ENCODER_A       10
+#define ENCODER_B       11
 
 // Amp controls: power relay and ICEPower EN pins
 #define AMP_ENABLE_PIN  13

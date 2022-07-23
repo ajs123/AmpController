@@ -4,50 +4,40 @@
 #pragma once
 
 #include <Arduino.h>
-#include "USB_Host_Shield/MiniDSP.h"
-
-#define PIN_DSP_RELAY 10
-#define PIN_AMP_RELAY 11
-
-extern MiniDSP ourMiniDSP;      // This may be better as a pointer provided to the constructor.
+#include "Configuration.h"
 
 class PowerControl {
 
-    /**
-     * @brief Construct a new PowerControl object
-     * 
-     */
-    PowerControl() {
-        Init();
-    }
-
     public:
+        PowerControl();
 
-        /** @brief Turn the DSP on or off */
-        void dspOn(bool on);
+        void begin();
 
-        /** Turn the amps on or off.
-         *  Turn on is contingent upon the dsp being connected.
-         *  Turn off is unconditional.
-         * @param on Turn on (true) or off (false)
-         * @return on/off state: 0 = off, 1 = on
-        */
-        uint8_t ampsOn(bool on);
+        /**
+         * @brief Power on to DSP and amps, disabling the amps first if necessary
+         */
+        void powerOn();
 
-        /** Turn the amps on or off.
-         *  Turn on is contingent upon the dsp being connected.
-         *  Turn off is unconditional.
-         * @param on Turn on (true) or off (false)
-         * @param schedule If the dsp isn't connected, schedule amp turn-on for when it is.
-         * @return on/off state: 0 = off, 1 = on, 2 = scheduled
-        */
-        uint8_t ampsOn(bool on, bool schedule);
+        /**
+         * @brief Power off the DSP and amps. As necessary, disables the amps first,
+         * and waits for the disable to take effect.
+         */
+        void powerOff();
 
-    protected:
+        /**
+         * @brief Enable the amps. As necessary, waits for powerup to finish first.
+         */
+        void ampEnable();
 
-        //MiniDSP * dsp;
-        bool ampsOnScheduled;
-        bool dspPowerOn;
-        void Init();
+        /**
+         * @brief Disable the amps.
+         */
+        void ampDisable();
 
+    private:
+        static const uint32_t powerOnDelay {1000};     // ms from line power to amps fully powered
+        static const uint32_t enableDelay {100};       // ms from pulling EN down to amps quiet
+
+        uint32_t whenPowerOn;
+        uint32_t whenDisabled;
 };

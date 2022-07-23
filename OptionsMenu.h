@@ -37,9 +37,7 @@ namespace OptionsMenu {
 
     using namespace Menu;
 
-
-    // define menu colors --------------------------------------------------------
-    //each color is in the format:
+    // Each color is in the format:
     //  {{disabled normal,disabled selected},{enabled normal,enabled selected, enabled editing}}
     // this is a monochromatic color table
     const Menu::colorDef<uint8_t> colors[6] MEMMODE={
@@ -51,10 +49,28 @@ namespace OptionsMenu {
     {{0,0},{0,1,1}},//titleColor (inverted - see menuIo.cpp at --->titleStart)
     };
 
-    /**
-     * @brief Provide the setup menu on the designated display
-     * 
-     */
+    /// Provide the setup menu on the designated display
     void menu(U8G2 * display);
+
+    /// Set up and start the menu
+    void begin();
+
+    /// Process
+    void task();
+
+    /// Set the menu back to the top
+    void reset();
+
+    /// Cursor or value up
+    void cursorUp();
+
+    /// Cursor or value down
+    void cursorDown();
+
+    /// Enter
+    void enter();
+
+    /// Navigation helper
+    void navigate(enum Menu::navCmds command);
 
 };

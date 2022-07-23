@@ -4,6 +4,8 @@
 #include "PowerControl.h"
 #include "RemoteHandler.h"
 #include "Button.h"
+#include "Knob.h"
+#include <RotaryEncoder.h>
 #include "OptionsMenu.h"
 #include <Wire.h>   // For the I2C display. Also provides Serial.
 #include <SPI.h>    // This doesn't seem to matter, at least not for the Adafruit nrf52840
@@ -27,6 +29,10 @@ AmpDisplay ampDisp(&display);                                 // Live display on
 //Remote ourRemote(IR_PIN);                                     // IR receiver
 Remote & ourRemote = Remote::instance();                      // IR receiver - singleton form
 Button goButton(ENCODER_BUTTON);                              // Encoder action button
+Knob knob(ENCODER_A, ENCODER_B);                              // Rotary encoder
+
+// Amp control
+PowerControl powerControl;
 
 // Interval (ms) between queries to the dsp.
 // The update rate is mostly limited by display updates, which take 36 ms for the nrf52840 and generic OLED display.
@@ -121,6 +127,14 @@ void setVolume(uint8_t volume) {
   lastTime = millis();
 }
 
+void volChange(int8_t change) {
+  int currentVolume = ourMiniDSP.getVolume();
+  int newVolume = currentVolume - change;     // + change is - change in the MiniDSP setting
+  newVolume = min( max(newVolume, ampOptions.maxVolume), 0xFF);
+  if (newVolume != currentVolume) setVolume(static_cast<uint8_t>(newVolume));
+  ampDisp.wakeup();
+}
+
 void volPlus() {
   uint8_t currentVolume = static_cast<uint8_t>(ourMiniDSP.getVolume());
   if (currentVolume > ampOptions.maxVolume) ourMiniDSP.setVolume(--currentVolume);
@@ -165,6 +179,7 @@ void menuGo() {
   while (goButton.switchClosed()) delay(100);
   ampDisp.displayMessage("", sourceArea);
   display.setFontPosBottom();   // The ArduinoMenu library expects this.
+  OptionsMenu::reset();
   OptionsMenu::menu(&display);
 }
 
@@ -172,6 +187,19 @@ void menuCheck() {
   goButton.switchClosed();      // Returning a validated "closed" requires two samples
   delay(200);
   if (goButton.switchClosed()) menuGo();
+}
+
+// Temporary
+void knobTask() {
+  const uint32_t minKnobPollTime {20};
+  static uint32_t lastT {0};
+  if ( (millis() - lastT) < minKnobPollTime ) return;
+  int delta = RotaryEncoder.read();
+  if (delta) {
+    digitalToggle(LED_RED);
+    Serial.printf("Knob %d\n", delta);
+    onKnobTurned(delta);
+  }
 }
 
 void optionsSetup() {
@@ -190,8 +218,9 @@ void showUSBTaskState() {
   uint8_t vbusState = thisUSB.getVbusState();
   uint16_t USBState = taskState | (vbusState << 8);
   if (USBState != lastUSBState) {
-    snprintf(strBuf, sizeof(strBuf), "TASK %02x   VBUS %02x", taskState, vbusState);
-    ampDisp.displayMessage(strBuf);
+    //snprintf(strBuf, sizeof(strBuf), "TASK %02x   VBUS %02x", taskState, vbusState);
+    //ampDisp.displayMessage(strBuf);
+    if ((taskState != 0x90) || (vbusState != 0x02)) ampDisp.displayMessage("WAIT..."); 
     lastUSBState = USBState;
   }
 }
@@ -238,6 +267,7 @@ class AmpState {
     virtual void onButtonLongPressPending(){}
     virtual void onButtonLongPress(){}
     virtual void onButtonFullHold(){}
+    virtual void onKnobTurned(){}
     virtual void onRemoteVolPlus(){}
     virtual void onRemoteVolMinus(){}
     virtual void onRemoteMute(){}
@@ -246,6 +276,7 @@ class AmpState {
     virtual void onKnobTurned(int8_t change){}
     virtual void onTriggerOn(uint8_t source){}
     virtual void onTriggerOff(uint8_t source){}
+    virtual void onMenuExit(){}
 };
 
 void transitionTo(AmpState * newState);
@@ -253,7 +284,8 @@ void transitionTo(AmpState * newState);
 // The Off state - just watch the remote and button
 class AmpOffState : public AmpState {
   void onEntry() override {
-    // Amp disable, power off
+    powerControl.ampDisable();
+    powerControl.powerOff();
     display.clear();
     display.updateDisplay();
   }
@@ -261,27 +293,54 @@ class AmpOffState : public AmpState {
     ourRemote.Task();
     goButton.Task();
   }
-  void onButtonFullHold() override {
-    menuGo();
-  }
-  void onRemotePower() override; 
-  void onButtonShortPress() override; 
+  void onButtonFullHold() override;
+  void onButtonShortPress() override; // See transition table
+
+  void onRemotePower() override;      // See transition table below
 } ampOffState;
+
+// Menu state
+class AmpMenuState : public AmpState {
+  void onEntry() override {
+    ampDisp.displayMessage("Settings...", sourceArea);
+    ampDisp.refresh();
+    while (goButton.switchClosed()) delay(100);
+    ampDisp.displayMessage("", sourceArea);
+    display.setFontPosBottom();   // The ArduinoMenu library expects this.
+    OptionsMenu::reset();
+    OptionsMenu::begin();
+    //OptionsMenu::menu(&display);
+  }
+
+  void polls() {
+    knob.task();
+    goButton.Task();
+    OptionsMenu::task();
+  }
+  
+  void onKnobTurned(int8_t change) override {
+    if (!change) return;
+    if (change > 0) OptionsMenu::cursorUp(); else OptionsMenu::cursorDown(); 
+  }
+  void onButtonShortPress() override { OptionsMenu::enter(); }
+  void onMenuExit() override;
+} ampMenuState;
 
 // DSP wait state - power up and watch for the DSP to become connected
 class AmpWaitDSPState : public AmpState {
   void onEntry() override {
-    // Amp disable, power on
+    powerControl.ampDisable();
+    powerControl.powerOn();
   }
   void polls() override {
     thisUSB.Task();
     showUSBTaskState();
     ampDisp.refresh();
     // Triggers
-    // TEMPORARY - Until power control is implemented, the dsp may already be connected
+    // TEMPORARY: Until power control is implemented, the dsp may already be connected
     if (ourMiniDSP.connected()) onDSPConnected();
   }
-  void onDSPConnected() override;
+  void onDSPConnected() override;   // See transition table
 } ampWaitDSPState;
 
 // Input wait state - as needed per the triggers, ensure that we're set to the correct input
@@ -306,11 +365,10 @@ class AmpWaitVolumeState : public AmpState {
     thisUSB.Task();
   }
   void requests() override {
-    ourMiniDSP.requestVolume(); // Could be requestVolume();
+    ourMiniDSP.requestVolume(); 
   }
   void toWaitMute();
   void onDSPVolume(uint8_t volume) override {
-    Serial.printf("WaitVolumeState: volume received %d\n", volume);
     if (volume < ampOptions.maxInitialVolume) setVolume(ampOptions.maxInitialVolume);
     else toWaitMute();
   }
@@ -335,16 +393,17 @@ class AmpWaitMuteState : public AmpState {
 // The ON state: respond to the remote, knob, button, and triggers, and maintain the display
 class AmpOnState : public AmpState {
   void onEntry() override {
-    //Amp enable, unmute, display on, draw display
+    RotaryEncoder.read();
+    powerControl.ampEnable();
     ampDisp.source((source_t) ourMiniDSP.getSource());
     ampDisp.volume(-ourMiniDSP.getVolume()/2.0);
-    Serial.printf("Volume per MiniDSP is %d\n", ourMiniDSP.getVolume());
     ampDisp.mute(ourMiniDSP.isMuted());
-    //lastTime = millis();
   }
   void polls() override {
     thisUSB.Task();
     ourRemote.Task();
+    knob.task();
+    //knobTask();
     goButton.Task();
     ampDisp.checkDim();
     ampDisp.refresh();
@@ -360,15 +419,15 @@ class AmpOnState : public AmpState {
   void onButtonShortPress() override { mute(); }
   void onButtonLongPressPending() override { ampDisp.cueLongPress(); }
   void onButtonLongPress() override { input(); }
-  void onButtonFullHold() override;
+  void onButtonFullHold() override;       // See transition table
 
   void onRemoteVolPlus() override { volPlus(); }
   void onRemoteVolMinus() override { volMinus(); }
   void onRemoteMute() override { mute(); }
   void onRemoteSource() override { input(); }
-  void onRemotePower() override;
+  void onRemotePower() override;          // See transition table
 
-  //void onKnobTurned(int8_t change) override {}
+  void onKnobTurned(int8_t change) override { volChange(change); }
 
   //virtual void onTriggerOn(uint8_t source) override {}
   //virtual void onTriggerOff(uint8_t source) override {}
@@ -378,6 +437,8 @@ class AmpOnState : public AmpState {
 // State transitions
 void AmpOffState::        onRemotePower()       { transitionTo(&ampWaitDSPState); }
 void AmpOffState::        onButtonShortPress()  { transitionTo(&ampWaitDSPState); }
+void AmpOffState::        onButtonFullHold()    { transitionTo(&ampMenuState);    }
+void AmpMenuState::       onMenuExit()          { transitionTo(&ampOffState);     }
 void AmpWaitDSPState::    onDSPConnected()      { transitionTo(&ampWaitSourceState); }
 void AmpWaitSourceState:: toWaitVolume()        { transitionTo(&ampWaitVolumeState); }  // when source verified to match triggers
 void AmpWaitVolumeState:: toWaitMute()          { transitionTo(&ampWaitMuteState); }    // when volume verified to be within limits
@@ -400,6 +461,7 @@ void onButtonShortPress() { ampState->onButtonShortPress(); }
 void onButtonLongPressPending() { ampState->onButtonLongPressPending(); }
 void onButtonLongPress() { ampState->onButtonLongPress(); }
 void onButtonFullHold() { ampState->onButtonFullHold(); }
+void onKnobTurned(int8_t change) { ampState->onKnobTurned(change); }
 void onRemoteVolPlus() { ampState->onRemoteVolPlus(); }
 void onRemoteVolMinus(){ ampState->onRemoteVolMinus(); }
 void onRemoteMute() { ampState->onRemoteMute(); }
@@ -407,7 +469,7 @@ void onRemoteSource() { ampState->onRemoteSource(); }
 void onRemotePower() { ampState->onRemotePower(); }
 void onTriggerOn(uint8_t source) { ampState->onTriggerOn(source); }
 void onTriggerOff(uint8_t source) { ampState->onTriggerOff(source); }
-void onKnobTurned(int8_t change) { ampState->onKnobTurned(change); }
+void onMenuExit() { ampState->onMenuExit(); }
 
 void transitionTo(AmpState * newState) {
   ampState = newState;
@@ -418,9 +480,14 @@ void setup() {
   Serial.begin(115200);
   //while(!Serial) delay(10);
 
+  powerControl.begin();
   optionsSetup();
   DisplaySetup();
   BLESetup();
+
+  knob.begin();
+  //RotaryEncoder.begin(ENCODER_A, ENCODER_B);
+  //RotaryEncoder.start();
 
   if(thisUSB.Init() == -1) {
     ampDisp.displayMessage("USB didn't start.");
@@ -428,7 +495,7 @@ void setup() {
     while(1); // Halt
   }
 
-  menuCheck();
+  //menuCheck();
 
   // Register callbacks.
   ourMiniDSP.attachOnInit(&onDSPConnected);

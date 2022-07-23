@@ -2,19 +2,23 @@
 
 #include "Options.h"
 #include "OptionsMenu.h"
+#include "Knob.h"
+#include "Button.h"
 
 // These should be declared in narrower scopes
 extern Options & ampOptions; // = Options::instance();
 extern Remote & ourRemote;
 //static Remote & ourRemote {Remote::instance()}; // Also works. Linker error in absence of static
 extern U8G2 display;
+extern Knob knob;
+
+extern void onMenuExit();   // Menu exit callback
 
 // The menu is defined using macros, requiring some functions referred to in them to be forward declared
 uint32_t remoteLearn(remoteCommands command);
 result saveRemoteCodesOp(eventMask event, prompt &item);
 result quitRemoteOp(eventMask event, prompt &item); 
 void saveValues();
-
 
 float f_maxVolume;
 float f_maxInitialVolume, saved_f_maxInitialVolume;
@@ -316,7 +320,7 @@ void OptionsMenu::menu(U8G2 * _display) {
     nav.timeOut = MENU_TIMEOUT;
     options->invertFieldKeys = true;
     joystickBtns.begin();
-    nav.useUpdateEvent = true;
+    nav.useUpdateEvent = true; // Check: would false streamline use of the menu?
     nav.idleOff();
 
     do {
@@ -329,4 +333,35 @@ void OptionsMenu::menu(U8G2 * _display) {
 
     display.clear();
 }
+
+void OptionsMenu::begin() {
+    display.setFont(fontName);  // Presently, display is a global 
+    nav.timeOut = MENU_TIMEOUT;
+    options->invertFieldKeys = false;
+    //joystickBtns.begin();
+    nav.useUpdateEvent = true; 
+    nav.idleOff();
+}
+
+void OptionsMenu::navigate(enum Menu::navCmds command) {
+    nav.doNav(command);
+    if (nav.changed(0)) {
+        nav.doOutput();
+        display.updateDisplay();
+    }
+}
+
+void OptionsMenu::task() {
+    bool changed;
+    if (nav.changed(0)) {
+        nav.doOutput();
+        display.updateDisplay();
+    }
+    if (nav.sleepTask) onMenuExit();
+}
+
+void OptionsMenu::cursorUp() { nav.doNav(upCmd); }
+void OptionsMenu::cursorDown() { nav.doNav(downCmd); }
+void OptionsMenu::enter() { nav.doNav(enterCmd); }
+void OptionsMenu::reset() { nav.reset(); }
 

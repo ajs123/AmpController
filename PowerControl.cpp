@@ -2,33 +2,53 @@
 
 #include "PowerControl.h"
 
-void PowerControl::Init() {
+// Hardware-level functions
+bool powerIsOn()    { return digitalRead(RELAY_PIN) == HIGH; }
+bool ampsEnabled()  { return digitalRead(AMP_ENABLE_PIN) == LOW; }  // Pin HIGH pulls down the amp /EN lines
+void turnOff()      { digitalWrite(RELAY_PIN, LOW); }
+void turnOn()       { digitalWrite(RELAY_PIN, HIGH); }
+void disable()      { digitalWrite(AMP_ENABLE_PIN, HIGH); }
+void enable()       { digitalWrite(AMP_ENABLE_PIN, LOW); }
 
-    pinMode(PIN_DSP_RELAY, OUTPUT);
-    pinMode(PIN_AMP_RELAY, OUTPUT);
+void limitedDelay(uint32_t ms, uint32_t max) { delay(ms > max ? max : ms ); }
 
-    ampsOn(false);
-    dspOn(false);
-}
+PowerControl::PowerControl() {}
 
-void PowerControl::dspOn(bool on) {
+void PowerControl::begin() {
+    turnOff();                  // Load the register before setting as output
+    pinMode(RELAY_PIN, OUTPUT);
+    turnOff();                  // Should be redundant - just in case someone mucks with the library
 
-    if (on) {
-        digitalWrite(PIN_DSP_RELAY, HIGH);  // Assumes HIGH is on
-        dspPowerOn = true;
-    } else {
-        digitalWrite(PIN_DSP_RELAY, LOW);
+    pinMode(AMP_ENABLE_PIN, OUTPUT);
+    disable(); 
+    whenDisabled = millis();
+    whenPowerOn = millis();     // Should init with first powerOn
     }
-}
 
-uint8_t PowerControl::ampsOn(bool on) {
-
-    if (digitalRead(PIN_DSP_RELAY) && ourMiniDSP.connected()) // connected() should be sufficient
-    {
-        digitalWrite(PIN_AMP_RELAY, HIGH);   // Assumes HIGH is on
-        return 1;
-    } else {
-        digitalWrite(PIN_AMP_RELAY, LOW);
-        return 0;
+void PowerControl::powerOn() { 
+    if (powerIsOn()) return;
+    if (ampsEnabled()) ampDisable();  // We assume it's OK to power on immediately with EN low
+    turnOn(); 
+    whenPowerOn = millis();
     }
-}
+
+void PowerControl::powerOff() { 
+    if (!powerIsOn()) return;
+    if (ampsEnabled) ampDisable();
+    uint32_t howLong = millis() - whenDisabled;
+    if (howLong < enableDelay) limitedDelay(enableDelay - howLong, enableDelay);
+    turnOff(); 
+    }
+
+void PowerControl::ampEnable() { 
+    if (ampsEnabled()) return;
+    uint32_t howLong = millis() - whenPowerOn;
+    if (howLong < powerOnDelay) limitedDelay(powerOnDelay - howLong, powerOnDelay);
+    enable(); 
+    }
+
+void PowerControl::ampDisable() { 
+    if (!ampsEnabled()) return;
+    disable(); 
+    whenDisabled = millis();
+    }
