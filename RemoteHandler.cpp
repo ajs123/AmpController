@@ -1,17 +1,22 @@
 // Take input from the IR receiver
+// The library we're using directly exposes globals that hold the results of decoding:
+//      uint8_t protocolNum - the protocol detected
+//      uint32_t value - the received command
 
 #include <Arduino.h>
 #include "RemoteHandler.h"
 
-bool Remote::handleRepeats() {
+bool Remote::mapRepeatCodes() {
     // NEC repeat flag (provided by the IRRemote library)
+    const uint32_t NECRepeatWindow = 300;   // Actual NEC interval is speced at 108 ms.
     if ((protocolNum == NEC) && 
         (lastProtocol == NEC) &&
         (value == REPEAT_CODE) &&
-        (receivedTime - lastReceiveTime <= maxDelayBeforeRepeat)) {
+        (receivedTime - lastReceiveTime < NECRepeatWindow)) {
             value = lastCommand;
             return true;
         }
+    // Leave unmodified
     return false;
 }
 
@@ -21,19 +26,30 @@ bool Remote::getCommand() {
 
     receivedTime = millis();
     decode();
-    enableIRIn();
+    enableIRIn();                   // The library requires re-enable each time a code is received.
+    if (!protocolNum) return false; // Unrecognizable code
 
-    if (!protocolNum) return false;
+    //Serial.printf("getCommand got protocol %0X value %0X\r\n", protocolNum, value);
 
-    Serial.printf("getCommand got protocol %0X value %0X\r\n", protocolNum, value);
-
-    repeat = handleRepeats();
-    if (repeat) Serial.printf("Returning it after checking repeats as %0X\r\n", value);
-
-    lastCommand = value;
-    lastProtocol = protocolNum;
-    lastReceiveTime = receivedTime;
-    return true;
+    if ((receivedTime - lastReceiveTime) > commandGap) {
+        // A fresh command
+        //Serial.println("Qualifies as a fresh command.");
+        lastCommand = value;
+        lastProtocol = protocolNum;
+        lastReceiveTime = receivedTime;
+        lastNewReceiveTime = receivedTime;
+        repeat = false;
+        return true;
+    } else {
+        // A repeat (or noise)
+        repeat = mapRepeatCodes();
+        //if (repeat) Serial.printf("Returning it after checking repeats as %0X\r\n", value);
+        repeat = repeat || ( (protocolNum == lastProtocol) && (value == lastCommand) );
+        bool ret = (receivedTime - lastNewReceiveTime) > repeatDelay;
+        //Serial.println(ret ? "Past the repeat delay." : "Prior to the repeat delay.");
+        lastReceiveTime = receivedTime;
+        return ret;
+    }
 }
 
 // Per the brief, this returns true if the comand was found in the table, even if
@@ -42,7 +58,7 @@ bool Remote::dispatch(uint32_t command, bool repeat) {
 
     for (uint8_t i = 0; i < tableLength; i++) {
         if (command == cmdTable[i].command) {
-            Serial.printf("Recognized %s\r\n", cmdTable[i].name);
+            //Serial.printf("Recognized %s\r\n", cmdTable[i].name);
             if (!repeat || cmdTable[i].repeatable) cmdTable[i].handler();
             return true;
         }
@@ -52,7 +68,7 @@ bool Remote::dispatch(uint32_t command, bool repeat) {
 
 void Remote::Task() {
     if (!getCommand()) return;
-    Serial.printf("Task: got protocol %0X, command %0X\r\n", protocolNum, value);
+    //Serial.printf("Task: got protocol %0X, command %0X\r\n", protocolNum, value);
     dispatch(value, repeat);
 }
 
@@ -67,15 +83,14 @@ void Remote::stopListening() {
 
 uint32_t Remote::getRawCommand(uint16_t wait) {
 
+    getResults();       // Ensure empty buffer
     uint32_t startTime = millis();
-
     enableIRIn();
     while (!getResults()) {
         if (millis() - startTime > wait) return 0;
     }
     decode();
     receivedTime = millis();
-
     return value;
 }
 
@@ -104,7 +119,6 @@ uint8_t Remote::nextMenuItem(bool forward, bool wrap) {
 const char * Remote::currentItemName() {
     return cmdTable[menuItem].name;
 }
-
 
 void Remote::set(remoteCommands item, uint32_t command) {
     if (item > REMOTE_COMMAND_COUNT) return;

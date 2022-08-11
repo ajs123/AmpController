@@ -5,12 +5,8 @@
 #include "Options.h"
 #include <menu.h>
 #include <menuIO/u8g2Out.h>
-// #include <menuIO/encoderIn.h>
-// #include <menuIO/keyIn.h>
 #include <menuIO/altKeyIn.h>
 #include <menuIO/chainStream.h>
-//#include <menuIO/serialOut.h>
-//#include <menuIO/serialIn.h>
 #include "RemoteHandler.h"
 
 
@@ -18,10 +14,6 @@ namespace OptionsMenu {
 
     // The following gives a linker error because things in the .ino are in the global namespace.
     //Remote ourRemote = Remote::instance();
-
-    #define BTN_SEL 5       // Temporary - until the encoder is defined
-    #define BTN_UP 6 
-    #define BTN_DOWN 9
 
     #define fontName u8g2_font_7x13_mf
     //#define titleFontName u8g2_font_7x13_mf
@@ -49,8 +41,9 @@ namespace OptionsMenu {
     {{0,0},{0,1,1}},//titleColor (inverted - see menuIo.cpp at --->titleStart)
     };
 
-    /// Provide the setup menu on the designated display
-    void menu(U8G2 * display);
+    /// Provide a blocking version of the setup menu on the designated display.
+    /// Depricated in favor of integration with the state machine
+    void menu(U8G2 * display);  
 
     /// Set up and start the menu
     void begin();
@@ -69,8 +62,4 @@ namespace OptionsMenu {
 
     /// Enter
     void enter();
-
-    /// Navigation helper
-    void navigate(enum Menu::navCmds command);
-
 };

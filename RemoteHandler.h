@@ -23,8 +23,19 @@
 //#include <IRLib_HashRaw.h>       // If all we want is a unique code for each key
 #include <IRLibCombo.h>            // Uses the first protocol that appears to match
 
-// How long after a full code is a repeat taken to be valid
-constexpr int maxDelayBeforeRepeat = 1000;
+// A button press on a remote will send a command, followed by repeats if the button is held down.
+// Repeats transmit at ~50-100 ms intervals, so even an intentionally quick click can produce multiple codes.
+// In addition, some remotes retransmit each button press. Sony remotes are said to retransmit 3 times. 
+// Some buttons can be marked here as non-repeatable. See the dispatch table.
+// For others, we provide a short time after each fresh command during which repeats are not acted upon.
+
+// Gap after which a command received is considered to be new (not checked for repeats)
+constexpr int commandGap = 300;     // ms
+
+// Minimum time after a received code before a repeat will be acted upon. This makes a single press 
+// easier for the user, and absorbs the reported 3x repeats by Sony remotes. Sony repeats should be finished in 135 ms.
+// Received codes are still noted for the purpose of checking for gaps between fresh commands.
+constexpr int repeatDelay = 250;    // ms
 
 typedef void cmdHandler_t();    // Command handlers take nothing and return nothing
 
@@ -92,13 +103,15 @@ private:
 
     uint32_t receivedTime;
     bool repeat;
-    uint32_t lastCommand;
-    uint32_t lastProtocol;
-    uint32_t lastReceiveTime;
+    uint32_t lastCommand {0};
+    uint32_t lastProtocol {0};
+    uint32_t lastReceiveTime {0};       // Timestamp - most recent (new or repeat) command
+    uint32_t lastNewReceiveTime {0};    // Timestamp - new (non-repeat) command
     uint8_t menuItem;
 
     /**
-     * @brief Look for a command in the dispatch table and call the correspondng funciton.
+     * @brief Look for a command in the dispatch table. Unless it's a repeat of a command
+     * marked non-repeatable in the table, call the correspondng function.
      * @param command the received IR command
      * @param repeat the command was a repeat (key held)
      * @return true if there was a match in the table
@@ -107,35 +120,32 @@ private:
 
     /**
      * @brief Turn any special repeat code into a duplicate of the original code, if 
-     * received soon after the original.
+     * received within the proper time window.
      * Presently, handles only the NEC 0xFFFFFFFF repeat code.
+     * Other remotes, such as Roku, also use special codes.
      * @return true if a repeat was found
      */
-    bool handleRepeats();
+    bool mapRepeatCodes();
 
 public:
     /**
      * @brief Checks for any command received and invokes the corresponding handler.
-     * 
      */
     void Task();
 
     /**
      * @brief Starts the receiver listenting
-     * 
      */
     void listen();
 
     /**
      * @brief Clears any pending received codes and stops listening. 
-     * 
      */
     void stopListening();
 
     /**
      * @brief Ensures that there is nothing in the input buffer, waits for a fresh command (button press), 
      * and identifies the command received. Does not handle repeat codes. Used when learning a new remote.
-     * @param pcommand - pointer to the receive buffer
      * @param wait (ms) - how long to wait for the initial button press
      * @return command code received, or 0 for timeout.  
      */
@@ -144,8 +154,7 @@ public:
     /**
      * @brief Checks for anything received, handles any special repeat codes, and re-enables the input.
      * Used in normal "always listening" operation.
-     * @param pcommand - pointer to the receive buffer
-     * @return command received. 
+     * @return A command was received. If a repeat of the prior command, it was past the repeatDelay window. 
      */
     bool getCommand();
 

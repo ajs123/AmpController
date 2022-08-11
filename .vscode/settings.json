@@ -8,6 +8,8 @@
         "atomic": "cpp",
         "cstdint": "cpp",
         "nrf.h": "c",
-        "limits": "cpp"
+        "limits": "cpp",
+        "*.tcc": "cpp",
+        "cstdlib": "cpp"
     }
 }

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021 Kristian Sloth Lauszus and Dennis Frett. All rights reserved.
+/* Original Copyright (C) 2021 Kristian Sloth Lauszus, Dennis Frett. All rights reserved.
 
  This software may be distributed and modified under the terms of the GNU
  General Public License version 2 (GPL2) as published by the Free Software
@@ -32,8 +32,6 @@
 #define MINIDSP_PID 0x0011 // MiniDSP 2x4HD
 
 /**
- * Arduino MiniDSP 2x4HD USB Host Driver by Dennis Frett.
- *
  * This class implements support for the MiniDSP 2x4HD via USB.
  * Based on NodeJS implementation by Mathieu Rene:
  * https://github.com/mrene/node-minidsp and the Python implementation by Mark
@@ -41,6 +39,14 @@
  *
  * It uses the HIDUniversal class for all the USB communication.
  */
+
+enum class source_t {
+        Analog = 0,
+        Toslink = 1,
+        Usb = 2,
+        Unset = 3
+};
+
 class MiniDSP : public HIDUniversal {
 public:
 
@@ -70,16 +76,16 @@ public:
 
         /**
          * Used to call your own function when receiving source data
-         * The source is passed as an unsigned integer with 0 = Analog, 1 = Toslink, 2 = USB (shouldn't occur).
+         * The source is passed as an unsigned 8-bit integer with 0 = Analog, 1 = Toslink, 2 = USB (shouldn't occur).
          * @param funcOnSourceChange Function to call.
          */
-        void attachOnSourceChange(void (*funcOnSourceChange)(uint8_t)) {
+        void attachOnSourceChange(void (*funcOnSourceChange)(source_t)) {
                 pFuncOnSourceChange = funcOnSourceChange;
         }
 
         /**
          * Used to call your own function when receiving volume data
-         * The volume is passed as an unsigned integer that represents twice the
+         * The volume is passed as an unsigned 8-bit integer that represents twice the
          * -dB value. Example: 19 represents -9.5dB.
          * @param funcOnVolumeChange Function to call.
          */
@@ -124,15 +130,15 @@ public:
          * @return Current volume.
          */
         int getVolume() const {
-                return volume;
+                return (volume - volumeOffset);
         }
 
         /**
-         * Retrieve the current volume of the MiniDSP in -dB.
+         * Retrieve the current volume of the MiniDSP in dB.
          * @return Current volume.
          */
         float getVolumeDB() const {
-                return volume / -2.0;
+                return (volume + volumeOffset) / -2.0;
         }
 
         /**
@@ -147,8 +153,22 @@ public:
          * @brief Retrieve the current source
          * @return 0 for analog, 1 for digital, 3 for unset (only at startup)
          */
-        uint8_t getSource() {
+        source_t getSource() {
                 return source;
+        }
+
+        /**
+         * @brief Retrieve the current volume offset
+         */
+        uint8_t getVolumeOffset() {
+                return volumeOffset;
+        }
+
+        /**
+         * @brief Retrieve the current volume offset in dB
+         */
+        float getVolumeOffsetDB() {
+                return volumeOffset / -2.0;
         }
 
         /**
@@ -173,14 +193,6 @@ public:
         void RequestLevels() const;
 
         /**
-         * Retrieve pointer to current output levels
-         * 
-         */
-        //float * Levels() {
-        //        return levels;
-        //}
-
-        /**
          * @brief Set master volume
          * @param volume Volume in dB
          */
@@ -193,6 +205,14 @@ public:
         void setVolume(uint8_t volume);
 
         /**
+         * @brief Set the volume offset. The offset is applied when setting the volume in the MiniDSP.
+         * This provides compensation for different inputs (analog in particular) having different
+         * maximum levels. 
+         * @param offset
+         */
+        void setVolumeOffset(uint8_t offset);
+
+        /**
          * @brief Set mute
          * @brief muteOn true to mute the output
          */
@@ -202,7 +222,7 @@ public:
          * @brief Set the input source
          * @param source
          */
-        void setSource(uint8_t source);
+        void setSource(source_t source);
 
         /**
          * @brief Invoke the received data callbacks only when the corresponding values have changed
@@ -213,6 +233,28 @@ public:
          * @brief Invoke the received data callbacks on every response
          */
         void callbackOnResponse() {callbackAlways = true;}
+
+        /**
+         * Send the "Request status" command to the MiniDSP. The response
+         * includes the current source, volume, and the muted status.
+         */
+        void
+        RequestStatus() const;
+
+        /**
+         * @brief Request the volume from the MiniDSP
+         */
+        void requestVolume() const;
+
+        /**
+         * @brief Request the mute status from the MiniDSP
+         */
+        void requestMute() const;
+
+        /**
+         * @brief Request the current input from the MiniDSP
+         */
+        void requestSource() const;
 
 protected:
         /** @name HIDUniversal implementation */
@@ -256,30 +298,7 @@ private:
          * @param data_length Length of the buffer.
          */
         uint8_t Checksum(const uint8_t *data, uint8_t data_length) const;
-public:
-        /**
-         * Send the "Request status" command to the MiniDSP. The response
-         * includes the current source, volume, and the muted status.
-         */
-        void
-        RequestStatus() const;
 
-        /**
-         * @brief Request the volume from the MiniDSP
-         */
-        void requestVolume() const;
-
-        /**
-         * @brief Request the mute status from the MiniDSP
-         */
-        void requestMute() const;
-
-        /**
-         * @brief Request the current input from the MiniDSP
-         */
-        void requestSource() const;
-
-private:
         /**
          * Send the given MiniDSP command. This function will create a buffer
          * with the expected header and checksum and send it to the MiniDSP.
@@ -330,7 +349,7 @@ private:
         void (*pFuncOnInit)(void) = nullptr;
 
         // Pointer to function called on change in the source
-        void (*pFuncOnSourceChange)(uint8_t) = nullptr;
+        void (*pFuncOnSourceChange)(source_t) = nullptr;
 
         // Pointer to function called when volume changes.
         void (*pFuncOnVolumeChange)(uint8_t) = nullptr;
@@ -351,12 +370,15 @@ private:
 
         // MiniDSP state. 
 
-        // The volume is stored as an unsigned integer that represents twice the
-        // -dB value. Example: 19 represents -9.5dB.
+        // The volume is stored in the DSP as an unsigned integer that represents twice the
+        // -dB value. Example: 19 represents -9.5dB. We use 16 bits here to allow an "unknown" value.
         uint8_t preset = 4;     // Start out with "unkown" values so that callbacks will be triggered on the first update
-        uint8_t source = 3;
+        source_t source = source_t::Unset;
         uint16_t volume = 0x100; 
         uint8_t muted = 2;
+
+        // Volume offset - decreases the volume on the digital input to match the analog
+        uint8_t volumeOffset = 0;
 
         // Whether to invoke callbacks even if a value hasn't changed
         bool callbackAlways = true;

@@ -20,7 +20,7 @@ const uint8_t MAXIMUM_VOLUME = 0;
 const uint16_t DIM_TIME = 5 * 1000;   
 
 // Minimum level in dB for the VU meter
-const uint8_t MINBARLEVEL = -60;
+const int8_t MINBARLEVEL = -60;
 
 // Setup menu timeout (sec)
 const uint16_t MENU_TIMEOUT = 120;
@@ -63,7 +63,7 @@ class Options {
     //Remote & ourRemote = Remote::instance();
 
     public:
-        // The individual options are public, so they're accessed directly (not thread safe) by any client.
+        // The individual options are public, so they're accessed directly by any client.
         // The defaults for these options are set in initialization.
 
         // Maximum volume at any time (protects the neighbors)
@@ -73,7 +73,7 @@ class Options {
         uint8_t maxInitialVolume = 10;
 
         // Analog-digital volume difference, to compensate for input level differences
-        uint8_t analogDigitalDifference = 0;
+        int8_t analogDigitalDifference = 0;
 
         // Label for the analog input
         char analogLabel[MAX_LABEL_LENGTH + 1] = "ANALOG";
@@ -152,13 +152,20 @@ class Options {
          */
         bool save();
 
+        /**
+         * @brief True if current values are different from what's in flash. Any
+         * missing files or errors count as changed.
+         */
+        bool changed();
+
+
     private:
         /**
          * @brief Read a parameter from the filesystem, if a corresponding file exists
          * 
          * @param name the file name
          * @param value pointer to the value
-         * @param length bytelength of the value
+         * @param length expected length (bytes) of the value
          * @return 0 - read, 1 - no file, -1 - couldn't open, -2 - unexpected length
          */
         int8_t readParamFile(const char * name, void * value, const uint8_t length);

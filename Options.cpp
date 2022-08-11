@@ -2,12 +2,7 @@
 
 #include "Options.h"
 
-// The File object should be allocated inside the Options class.
-// Allocating it in the global namespace duplicates what's in the Adafruit examples
-// and in KBikeBLE. Move it after initial testing.
-
-using namespace Adafruit_LittleFS_Namespace;
-File file(InternalFS);  // Stream class on the filesystem
+Adafruit_LittleFS_Namespace::File file(InternalFS);  // Stream class on the filesystem
 
 bool Options::begin() {
   if (!InternalFS.begin()) return false;
@@ -26,14 +21,14 @@ int8_t Options::readParamFile(const char * name, void * value, const uint8_t len
     char path[MAX_PATH_LENGTH];
     makePath(path, name, MAX_PATH_LENGTH);
 
-    Serial.printf("\nChecking for %s...\n", path);
+    //Serial.printf("\nChecking for %s...\n", path);
     if (!InternalFS.exists(path)) return 1;
-    if (!file.open(path, FILE_O_READ)) return -1;
+    if (!file.open(path, Adafruit_LittleFS_Namespace::FILE_O_READ)) return -1;
 
     uint8_t trimmedLength = min(length, MAX_VARIABLE_SIZE);
     uint8_t nRead = file.read(value, trimmedLength);
     file.close();
-    Serial.printf("Read %d bytes (expected %d).\n", nRead, trimmedLength); 
+    //Serial.printf("Read %d bytes (expected %d).\n", nRead, trimmedLength); 
     if (nRead != trimmedLength) return -2;
 
     return 0;
@@ -43,14 +38,14 @@ int8_t Options::writeParamFile(const char * name, const void * value, uint8_t le
     char path[MAX_PATH_LENGTH];
     makePath(path, name, MAX_PATH_LENGTH);
 
-    Serial.printf("\nWriting %s...\n", path);
+    //Serial.printf("\nWriting %s...\n", path);
     if (InternalFS.exists(path)) InternalFS.remove(path);  // Remove and replace preferred over open and seek (?)
-    if (!file.open(path, FILE_O_WRITE)) return -1;
+    if (!file.open(path, Adafruit_LittleFS_Namespace::FILE_O_WRITE)) return -1;
 
     uint8_t trimmedLength = min(length, MAX_VARIABLE_SIZE);
     uint8_t nWritten = file.write((const char *) value, trimmedLength);
     file.close();
-    Serial.printf("Wrote %d bytes (expected %d)\n", nWritten, trimmedLength);
+    //Serial.printf("Wrote %d bytes (expected %d)\n", nWritten, trimmedLength);
     if (nWritten != trimmedLength) return -2;
 
     return 0;
@@ -72,6 +67,26 @@ void printHex(char * value, uint8_t length) {
     Serial.println("");
 }
 
+bool Options::changed() {
+    char buf[MAX_VARIABLE_SIZE];
+    //char bufPrint[MAX_VARIABLE_SIZE];
+    //Serial.println("Checking for changes...");
+    for (uint8_t i = 0; i < sizeof(optionTable)/sizeof(writableOption_t); i++) {
+        uint8_t trimmedLength = min(optionTable[i].size, MAX_VARIABLE_SIZE);
+        int8_t result = readParamFile(optionTable[i].name, &buf, trimmedLength);
+        //Serial.printf("\nParameter %s:\nTable: ", optionTable[i].name);
+        //memcpy(bufPrint, optionTable[i].value, optionTable[i].size);
+        //printHex(bufPrint, optionTable[i].size);
+        //Serial.print("Flash: ");
+        //printHex(buf, optionTable[i].size);
+        if (result || memcmp(buf, optionTable[i].value, optionTable[i].size)) {
+            //Serial.printf("Change in %s\n", optionTable[i].name);
+            return true; 
+        }
+    }
+    return false;
+}
+
 bool Options::save() {
     char buf[MAX_VARIABLE_SIZE];
     bool error = false;
@@ -87,20 +102,18 @@ bool Options::save() {
             continue;
         }
         else if (result == 0) {
-            Serial.printf("\nsave() of %s found \n", optionTable[i].name);
-            Serial.print("Flash: ");
-            printHex(buf, optionTable[i].size);
-            Serial.print("Current: ");
-            char bufCurrent[MAX_VARIABLE_SIZE];
-            memcpy(bufCurrent, optionTable[i].value, optionTable[i].size);
-            printHex(bufCurrent, optionTable[i].size);
+            //Serial.printf("\nsave() of %s found \n", optionTable[i].name);
+            //Serial.print("Flash: ");
+            //printHex(buf, optionTable[i].size);
+            //Serial.print("Current: ");
+            //char bufCurrent[MAX_VARIABLE_SIZE];
+            //memcpy(bufCurrent, optionTable[i].value, optionTable[i].size);
+            //printHex(bufCurrent, optionTable[i].size);
             // If what's written there is the same as the current value, nothing to write.
             if (!memcmp(buf, optionTable[i].value, optionTable[i].size)) continue;
         }
-
         result = writeParamFile(optionTable[i].name, optionTable[i].value, optionTable[i].size);
         error |= (result < 0);
     }
-
     return error;
 }

@@ -2,6 +2,6 @@
     "configuration": "softdevice=s140v6,debug=l0,debug_output=serial",
     "board": "adafruit:nrf52:feather52840",
     "sketch": "AmpController.ino",
-    "output": "/tmp/build/",
-    "port": "/dev/tty.usbmodem141301"
+    "output": "../AmpController_build",
+    "port": "/dev/tty.usbmodem14101"
 }

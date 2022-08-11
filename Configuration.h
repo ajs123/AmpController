@@ -13,6 +13,10 @@
 #define AMP_ENABLE_PIN  13
 #define RELAY_PIN       12
 
+// Trigger inputs
+#define ANALOG_TRIGGER_PIN  A1
+#define DIGITAL_TRIGGER_PIN A2
+
 // Buttons on the Featherwing OLED
 #define BUTTON_A 9
 #define BUTTON_B 6

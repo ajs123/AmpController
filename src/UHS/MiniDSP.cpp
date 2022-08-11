@@ -94,8 +94,8 @@ void MiniDSP::parseDirectSetResponse(const uint8_t * buf) {
                                 }
                         break;
                 case 0x34:
-                        sourceChanged = data != source;
-                        source = data;
+                        sourceChanged = (source_t) data != source;
+                        source = (source_t) data;
                         if ((callbackAlways || sourceChanged) && (pFuncOnSourceChange != nullptr)) {
                                 pFuncOnSourceChange(source);
                                 }
@@ -127,8 +127,8 @@ void MiniDSP::parseByteReadResponse(const uint8_t * buf) {
                                 // if (pFuncOnPresetChange != nullptr && presetChanged) pFuncOnPresetChange(preset);
                         case 0xA9:
                         case 0xD9:
-                                sourceChanged = data != source;
-                                source = data;
+                                sourceChanged = (source_t) data != source;
+                                source = (source_t) data;
                                 if ((callbackAlways || sourceChanged) && (pFuncOnSourceChange != nullptr)) {
                                         pFuncOnSourceChange(source);
                                 }
@@ -328,9 +328,17 @@ void MiniDSP::setVolume(float volume)
 void MiniDSP::setVolume(uint8_t volume)
 {
         uint8_t buf[2];
+        uint8_t vol = 0xFF - volume > volumeOffset ? volume + volumeOffset : 0xFF;
+        Serial.printf("Vol req %d, offset %d, sending %d\n", volume, volumeOffset, vol);
         buf[0] = 0x42;
-        buf[1] = volume;
+        buf[1] = vol;
         SendCommand(buf, 2);
+}
+
+void MiniDSP::setVolumeOffset(uint8_t offset)
+{
+        Serial.printf("Volume offset %d\n", offset);
+        volumeOffset = offset;
 }
 
 void MiniDSP::setMute(bool muteOn)
@@ -341,11 +349,11 @@ void MiniDSP::setMute(bool muteOn)
         SendCommand(buf, 2);
 }
 
-void MiniDSP::setSource(uint8_t source)
+void MiniDSP::setSource(source_t source)
 {
-        if (source > 1) return;
+        if ((source != source_t::Analog) && (source != source_t::Toslink)) return;
         uint8_t buf[2];
         buf[0] = 0x34;
-        buf[1] = source;
+        buf[1] = (uint8_t)source;
         SendCommand(buf, 2);
 }

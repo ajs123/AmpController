@@ -89,7 +89,7 @@
     void AmpDisplay::drawSource(bool changeInd)
     {
         char label[MAX_LABEL_LENGTH + 4];
-        char * sourceLabel = (sourceState == Analog) ? ampOptions.analogLabel : ampOptions.digitalLabel;
+        char * sourceLabel = (sourceState == source_t::Analog) ? ampOptions.analogLabel : ampOptions.digitalLabel;
         snprintf(label, MAX_LABEL_LENGTH + 4, "%s%s", sourceLabel, changeInd ? "-->" : "");
         //snprintf(label, 12, "%s%s", sourceLabels[sourceState], changeInd ? "-->" : "");
         displayText(label, SOURCE_FONT, sourceArea, true);

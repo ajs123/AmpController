@@ -2,80 +2,79 @@
 
 #include <Arduino.h>
 #include "InputSensing.h"
-#include <MiniDSP.h>
+//#include <MiniDSP.h>
 
-void InputSensing::Init() {
+//template <> int IIR<int>::next(int u) { return _x += (_coeff * (u - _x)) / 100; };
+
+        bool SampleTrigger::next(int input) {
+            if (_state) {
+                if (input < _threshold) {
+                    _howLong++;
+                    if (_howLong >= _samplesLow) {
+                        _state = false;
+                        _howLong = 0;
+                    }
+                } else _howLong = 0; 
+            } else {
+                if (input > _threshold) {
+                    _howLong++;
+                    if (_howLong >= _samplesHigh) {
+                        _state = true;
+                        _howLong = 0;
+                    }
+                } else _howLong = 0;
+            }
+            return _state;
+        };
+
+
+void TriggerSensing::begin() {
 
     // Pins
-    pinMode(PIN_DIGITAL_TRIGGER, INPUT_PULLUP);  // Open collector
-    pinMode(PIN_ANALOG_TRIGGER, INPUT_PULLUP);
-    pinMode(PIN_ANALOG_L, INPUT);
-    pinMode(PIN_ANALOG_R, INPUT);
+    pinMode(ANALOG_TRIGGER_PIN, INPUT);
+    pinMode(DIGITAL_TRIGGER_PIN, INPUT);
 
     // Use 12-bit resolution, 3.6V reference
     // 1 LSB = 0.88 mV
     analogReadResolution(12);
     analogReference(AR_DEFAULT);
-
-    // Init signal history
-    analogLastL = 0;
-    analogLastR = 0;
-    lastSignalTime = millis();
-
-    // Do initial signal checks
-    signalChecks(); 
-
 };
 
-void InputSensing::signalChecks() {
-
-    // Triggers
-    digitalTriggerPresent = !digitalRead(PIN_DIGITAL_TRIGGER);
-    analogTriggerPresent = !digitalRead(PIN_ANALOG_TRIGGER);
-    
-    // Analog levels
-    // The simplest approach is that anything over threshold counts
-    // This is not robust against little spikes, etc.
-
-    bool analogDetected = false;
-
-    uint16_t aSignal = max(analogRead(PIN_ANALOG_L), analogRead(PIN_ANALOG_R));
-    if (aSignal >= ANALOG_SIGNAL_THRESHOLD) {
-        lastSignalTime = millis();
-        analogDetected = true;
-        analogSignalPresent = true;
-    } else {
-        analogSignalPresent = !( (millis() - lastSignalTime) > ANALOG_SIGNAL_HOLDUP );
-    }
-
-    if (analogDetected) {
-        analogImpedanceLow = true;
-    } else {
-        analogImpedanceLow = analogImpedanceTest();
-    }
-
+trigger_t TriggerSensing::update() {
+    lastTriggers = triggers;
+    triggers = {analogTrigger.next(filteredAnalog.next(analogRead(ANALOG_TRIGGER_PIN))),
+                digitalTrigger.next(filteredDigital.next(analogRead(DIGITAL_TRIGGER_PIN)))};
+    return triggers;
 }
 
-bool InputSensing::analogImpedanceTest() {
+trigger_t TriggerSensing::task() {
+    trigger_t rose{false, false};
+    trigger_t fell{false, false};
+    update();
+    if (lastTriggers == triggers) return triggers;
+    rose = triggers & !lastTriggers;
+    fell = !triggers & lastTriggers;
+    if (rose) onTriggerRise(rose);
+    if (fell) onTriggerFall(fell);
+    lastTriggers = triggers;
+    return triggers;
+}
 
-    // If an input is disconnected, or connected to a high-impedance (turned off)
-    // source, then turning on the input pullup should bring the pin voltage very close
-    // to Vdd. Otherwise, it must be connected to a source.
-    // 
-    // This will read incorrectly if the signal came on right before this was called,
-    // but that will get corrected on the next update.
-
-    uint16_t baseline;
-    uint16_t purturbed;
-    constexpr uint16_t thresh = (uint16_t) (4096 * 3.3 / 3.6 * ANALOG_IMPEDANCE_THRESHOLD);
-
-    pinMode(PIN_ANALOG_L, INPUT_PULLUP);
-    pinMode(PIN_ANALOG_R, INPUT_PULLUP);
-    delay(10);
-    bool high = (analogRead(PIN_ANALOG_L) > thresh) && (analogRead(PIN_ANALOG_R) > thresh);
-    pinMode(PIN_ANALOG_L, INPUT);
-    pinMode(PIN_ANALOG_R, INPUT);
-
-    return !high;
-
+bool InputMonitor::task(float leftLevel, float rightLevel) {
+    if (_silentTime < oneMinute) return false; 
+    uint32_t time = millis();
+    //int rightLevel = filtRightLevel.next(levels[0]);
+    //int leftLevel = filtLeftLevel.next(levels[1]);
+    bool ret = false;
+    if (max(rightLevel, leftLevel) < DSPSilence) {
+        uint32_t howLong = time - lastSound;
+        if (howLong > _silentTime) {
+            onSilence();
+            lastSound = time;
+            ret = true;
+        }
+    } else {
+        lastSound = time;
+    }
+    return ret;
 }

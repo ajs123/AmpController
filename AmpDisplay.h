@@ -9,9 +9,9 @@
 
 #include "Options.h"
 #include <U8g2lib.h>
+#include "src/UHS/MiniDSP.h"
 
 // Display settings of most interest to the user
-#define BRIGHT_TIME (10 * 1000) // 10 seconds
 #define CONTRAST_FULL 128
 #define CONTRAST_DIM 0
 
@@ -73,10 +73,10 @@ static unsigned char icons_binary[] = {
    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 // Inputs
-enum source_t { 
-    Analog = 0,
-    Toslink = 1,
-    Unset = 2};
+// enum source_t { 
+//     Analog = 0,
+//     Toslink = 1,
+//     Unset = 2};
 
 class AmpDisplay
 {
@@ -88,12 +88,12 @@ protected:
     bool dBDisplay = DBDISPLAY;      // Show dB (true) or %
 
     // State - supports updates only when necessary
-    uint8_t muteState = 3;              // Muted? 0 = no; 1 = yes; 3 = undetermined
-    float volumeState = -129;           // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
-    source_t sourceState = Unset;       // Current source. 
-    bool dimState;                      // True if dimmed.
-    uint32_t brightTime;                // Time when dim timer was reset
-    bool volumeShown = false;           // Enables selective re-draw of volume in display wakeup 
+    uint8_t muteState = 3;                      // Muted? 0 = no; 1 = yes; 3 = undetermined
+    float volumeState = -129;                   // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
+    source_t sourceState = source_t::Unset;     // Current source. 
+    bool dimState;                              // True if dimmed.
+    uint32_t brightTime;                        // Time when dim timer was reset
+    bool volumeShown = false;                   // Enables selective re-draw of volume in display wakeup 
 
     bool newContent = false;
     bool autoRefresh = false;
