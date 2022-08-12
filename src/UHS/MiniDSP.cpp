@@ -114,33 +114,35 @@ void MiniDSP::parseByteReadResponse(const uint8_t * buf) {
         bool mutedChanged = false;
 
         uint8_t dataLength = buf[0] - 4;
-        uint8_t baseAddr = buf[3];
+        //uint8_t baseAddr = buf[3];
+        uint16_t baseAddr = buf[2] << 8 | buf[3];
         for (uint8_t i = 0; i < dataLength; i++) // run through the address range
         {
-                uint8_t addr = baseAddr + i;
+                //uint8_t addr = baseAddr + i;
+                uint16_t addr = baseAddr + i;
                 uint8_t data = buf[i + 4];
                 switch (addr) {
-                        case 0xD8:
+                        case 0xFFD8:
                                 presetChanged = data != preset;
                                 preset = data;
                                 break;
                                 // if (pFuncOnPresetChange != nullptr && presetChanged) pFuncOnPresetChange(preset);
-                        case 0xA9:
-                        case 0xD9:
+                        case 0xFFA9:
+                        case 0xFFD9:
                                 sourceChanged = (source_t) data != source;
                                 source = (source_t) data;
                                 if ((callbackAlways || sourceChanged) && (pFuncOnSourceChange != nullptr)) {
                                         pFuncOnSourceChange(source);
                                 }
                                 break;
-                        case 0xDA:
+                        case 0xFFDA:
                                 volumeChanged = static_cast<int>(data) != volume;
                                 volume = static_cast<int>(data);
                                 if ((callbackAlways || volumeChanged) && (pFuncOnVolumeChange != nullptr)) {
                                         pFuncOnVolumeChange(volume);
                                 }
                                 break;
-                        case 0xDB:
+                        case 0xFFDB:
                                 mutedChanged = data != muted;
                                 muted = data;
                                 if ((callbackAlways || mutedChanged) && (pFuncOnMutedChange != nullptr)) {
@@ -196,12 +198,49 @@ void MiniDSP::parseFloatReadResponse(const uint8_t * buf) {
         if (pFuncOnNewInputLevels != nullptr && newInputLevels) pFuncOnNewInputLevels(inputLevels);
 }
 
+void MiniDSP::parseDSPWriteResponse(const uint8_t * buf) {
+        bool newInputGains = false; 
+
+        // The write response provides no data length - just a confirmation - but the
+        // receive buffer includes the full command. We provide some added reliability,
+        // perhaps, by parsing the receive buffer.
+        //uint8_t dataLength = buf[0] - 5;        // bytes of data = message length - 5
+        //if ( (dataLength % 4) != 0 ) return;    // Ought to be a multiple of 4
+
+        //uint8_t nFloats = dataLength / 4;
+        //Serial.printf("Data length %d floats\n", nFloats);
+        uint8_t baseAddr = buf[3] << 8 | buf[4];
+        
+        uint8_t nFloats = 2;
+        for (uint8_t i = 0; i < nFloats; i++)
+        {
+                uint8_t addr = baseAddr + i;                    
+                float data = getFloatLE(buf + 5 + (i << 2));    // Step through the buffer in 4-byte (i << 2) steps
+                switch (addr) {
+                        case 0x001A:              // 0x1A and 0x1B are the two inputs (at least for 2x4HD)
+                                if ((inputGains[0] != data) || callbackAlways) newInputGains = true;
+                                inputGains[0] = data;
+                                break;
+                        case 0x001B:
+                                if ((inputGains[1] != data) || callbackAlways) newInputGains = true;
+                                inputGains[1] = data;
+                                break;
+                }
+        }
+        if (pFuncOnNewInputGains != nullptr && newInputGains) pFuncOnNewInputGains(inputGains);
+}
+
 void MiniDSP::ParseHIDData(USBHID *hid __attribute__ ((unused)), bool is_rpt_id __attribute__ ((unused)), uint8_t len, uint8_t *buf) {
 
+        // Serial.printf("parsing ");
+        // for (int i=0; i < 12; i++) Serial.printf("%X ", buf[i]);
+        // Serial.println();
+
         constexpr uint8_t readByteCommand = 0x05;       // Opcode and known high address for read bytes
-        constexpr uint8_t readByteHighAddr = 0xFF;
+        //constexpr uint8_t readByteHighAddr = 0xFF;
         constexpr uint8_t readFloatCommand = 0x14;      // Opcode and known high address for read floats
         constexpr uint8_t readFloatHighAddr = 0x00;
+        constexpr uint8_t dspWriteCommand = 0x13;
 
         // Only care about valid data for the MiniDSP 2x4HD. 
         if (HIDUniversal::VID != MINIDSP_VID || HIDUniversal::PID != MINIDSP_PID || buf == nullptr) return;
@@ -211,19 +250,29 @@ void MiniDSP::ParseHIDData(USBHID *hid __attribute__ ((unused)), bool is_rpt_id 
 
         // Check if this is a response to a direct set command
         // This is the only case in which buf[0] isn't the length of the whole message
-        if (buf[0] == 0x01) parseDirectSetResponse(buf);
+        if ((buf[0] == 0x01) && (buf[1] != dspWriteCommand)) parseDirectSetResponse(buf);
         
         // ... or a byte read.
-        else if ((buf[1] == readByteCommand) && (buf[2] == readByteHighAddr)) parseByteReadResponse(buf);
+        else if ((buf[1] == readByteCommand) /*&& (buf[2] == readByteHighAddr)*/) parseByteReadResponse(buf);
 
         // ...or a floating point read
         else if ((buf[1] == readFloatCommand) && (buf[2] == readFloatHighAddr)) parseFloatReadResponse(buf);
+
+        // ...or the response to a DSP memory (fp) write
+        else if (buf[1] == dspWriteCommand) {
+                Serial.println("Parsing dsp write response");
+                parseDSPWriteResponse(buf);
+        }
 }; 
 
 float MiniDSP::getFloatLE(const uint8_t * buf) {
         float floater;
         memcpy(&floater, buf, 4);
         return floater;
+}
+
+void MiniDSP::putFloatLE(uint8_t * buf, const float floater) {
+        memcpy(buf, &floater, 4);
 }
 
 uint8_t MiniDSP::OnInitSuccessful() {
@@ -304,7 +353,14 @@ void MiniDSP::requestMute() const {
         SendCommand(requestMuteOutputCommand, sizeof(requestMuteOutputCommand));
 }
 
+void MiniDSP::requestInputGains() const {
+        //Sent: [13, 80, 00, 1b, 00, 00, f0, c1] - set ch1 gain to -30
+        constexpr uint8_t requestInputGainsCommand[] = {0x02, 0x80, 0x00, 0x1A, 0x04};     // 3-byte address 80 00 1A
+        SendCommand(requestInputGainsCommand, sizeof(requestInputGainsCommand));
+}
+
 void MiniDSP::RequestOutputLevels() const {
+        //Sent: [13, 80, 00, 1b, 00, 00, f0, c1]
         constexpr uint8_t RequestOutputLevelsCommand[] = {0x14, 0x00, 0x4a, 0x04};      // Four floats starting at 0x4A
         SendCommand(RequestOutputLevelsCommand, sizeof (RequestOutputLevelsCommand));
 }
@@ -328,18 +384,18 @@ void MiniDSP::setVolume(float volume)
 void MiniDSP::setVolume(uint8_t volume)
 {
         uint8_t buf[2];
-        uint8_t vol = 0xFF - volume > volumeOffset ? volume + volumeOffset : 0xFF;
-        Serial.printf("Vol req %d, offset %d, sending %d\n", volume, volumeOffset, vol);
+        //uint8_t vol = 0xFF - volume > volumeOffset ? volume + volumeOffset : 0xFF;
+        //Serial.printf("Vol req %d, offset %d, sending %d\n", volume, volumeOffset, vol);
         buf[0] = 0x42;
-        buf[1] = vol;
+        buf[1] = volume;
         SendCommand(buf, 2);
 }
 
-void MiniDSP::setVolumeOffset(uint8_t offset)
-{
-        Serial.printf("Volume offset %d\n", offset);
-        volumeOffset = offset;
-}
+// void MiniDSP::setVolumeOffset(uint8_t offset)
+// {
+//         Serial.printf("Volume offset %d\n", offset);
+//         volumeOffset = offset;
+// }
 
 void MiniDSP::setMute(bool muteOn)
 {
@@ -356,4 +412,27 @@ void MiniDSP::setSource(source_t source)
         buf[0] = 0x34;
         buf[1] = (uint8_t)source;
         SendCommand(buf, 2);
+}
+
+void MiniDSP::setInputGains(const float gains[]) {
+        uint8_t buf[12];
+        buf[0] = 0x13;
+        buf[1] = 0x80;
+        buf[2] = 0x00;
+        buf[3] = 0x1A;
+        putFloatLE(&buf[4], gains[0]);
+        putFloatLE(&buf[8], gains[1]);
+        SendCommand(buf, 12);
+}
+
+void MiniDSP::setInputGain(const float gain) {
+        uint8_t buf[12];
+        buf[0] = 0x13;
+        buf[1] = 0x80;
+        buf[2] = 0x00;
+        buf[3] = 0x1A;
+        putFloatLE(&buf[4], gain);
+        putFloatLE(&buf[8], gain);
+        SendCommand(buf, 12);
+
 }

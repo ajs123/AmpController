@@ -123,6 +123,10 @@ public:
                 pFuncOnNewInputLevels = funcOnNewInputLevels;
         }
 
+        void attachOnNewInputGains(void (*funcOnNewInputGains)(float *)) {
+                pFuncOnNewInputGains = funcOnNewInputGains;
+        }
+
         /**
          * Retrieve the current volume of the MiniDSP.
          * The volume is passed as an unsigned integer that represents twice the
@@ -130,7 +134,7 @@ public:
          * @return Current volume.
          */
         int getVolume() const {
-                return (volume - volumeOffset);
+                return (volume);// - volumeOffset);
         }
 
         /**
@@ -138,7 +142,7 @@ public:
          * @return Current volume.
          */
         float getVolumeDB() const {
-                return (volume + volumeOffset) / -2.0;
+                return volume / -2.0;
         }
 
         /**
@@ -160,16 +164,16 @@ public:
         /**
          * @brief Retrieve the current volume offset
          */
-        uint8_t getVolumeOffset() {
-                return volumeOffset;
-        }
+        // uint8_t getVolumeOffset() {
+        //         return volumeOffset;
+        // }
 
         /**
          * @brief Retrieve the current volume offset in dB
          */
-        float getVolumeOffsetDB() {
-                return volumeOffset / -2.0;
-        }
+        // float getVolumeOffsetDB() {
+        //         return volumeOffset / -2.0;
+        // }
 
         /**
          * Request output levels
@@ -210,7 +214,7 @@ public:
          * maximum levels. 
          * @param offset
          */
-        void setVolumeOffset(uint8_t offset);
+        //void setVolumeOffset(uint8_t offset);
 
         /**
          * @brief Set mute
@@ -223,6 +227,18 @@ public:
          * @param source
          */
         void setSource(source_t source);
+
+        /**
+         * @brief Set the input gains
+         * @param gains 
+         */
+        void setInputGains(const float * gains);
+
+        /**
+         * @brief Set the input gain. Left and right are set to the single value
+         * @param gain 
+         */
+        void setInputGain(const float gain);
 
         /**
          * @brief Invoke the received data callbacks only when the corresponding values have changed
@@ -255,6 +271,11 @@ public:
          * @brief Request the current input from the MiniDSP
          */
         void requestSource() const;
+
+        /**
+         * @brief Request current input gains
+         */
+        void requestInputGains() const;
 
 protected:
         /** @name HIDUniversal implementation */
@@ -315,6 +336,14 @@ private:
         float getFloatLE(const uint8_t * bytes);
 
         /**
+         * @brief command byte sequence from floating point
+         * 
+         * @param buf command buffer
+         * @param floater fp value
+         */
+        void putFloatLE(uint8_t * buf, const float floater);
+
+        /**
          * Writes byte values to the MiniDSP.
          * @param addr Location
          * @param values Pointer to values
@@ -343,6 +372,13 @@ private:
          */
         void parseFloatReadResponse(const uint8_t * buf);
 
+        /**
+         * @brief Parse the response to a write to DSP values
+         * 
+         * @param buf the response packet from the dsp
+         */
+        void parseDSPWriteResponse(const uint8_t * buf);
+
         // Callbacks
 
         // Pointer to function called in onInit().
@@ -366,6 +402,9 @@ private:
         // Pointer to function called when new input level data are available.
         void (*pFuncOnNewInputLevels)(float *) = nullptr;
 
+        // Pointer to function called when new input gains are available
+        void (*pFuncOnNewInputGains)(float *) = nullptr;
+
         // -----------------------------------------------------------------------------
 
         // MiniDSP state. 
@@ -378,7 +417,7 @@ private:
         uint8_t muted = 2;
 
         // Volume offset - decreases the volume on the digital input to match the analog
-        uint8_t volumeOffset = 0;
+        //uint8_t volumeOffset = 0;
 
         // Whether to invoke callbacks even if a value hasn't changed
         bool callbackAlways = true;
@@ -386,4 +425,6 @@ private:
         float outputLevels[4] = { 0.0, 0.0, 0.0, 0.0 };
 
         float inputLevels[2] = { 0.0, 0.0 };
+
+        float inputGains[2] = { -128.0, -128.0 };
 };

@@ -80,8 +80,8 @@ void DisplaySetup() {
 
 // For debugging: Puts the first 8 bytes of received messages on the display.
 void OnParse(uint8_t * buf) {
-  char bufStr[25];
-  snprintf(bufStr, 25, "%02X %02X %02X %02X %02X %02X %02X %02X", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8]);
+  char bufStr[28];
+  snprintf(bufStr, 28, "%02X %02X %02X %02X %02X %02X %02X %02X %02X", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8], buf[9]);
   ampDisp.displayMessage(bufStr);
 }
 
@@ -90,6 +90,10 @@ constexpr float signalFloorDB = -128.0;
 
 IIR<float> leftLevel(VUCoeff, signalFloorDB);
 IIR<float> rightLevel(VUCoeff, signalFloorDB);
+
+float sourceGain(source_t source) {
+  return (source == source_t::Analog) ? (float)ampOptions.analogDigitalDifference : 0.0;
+}
 
 void handleInputLevels(float * levels) {
   float left = leftLevel.next(levels[1]);
@@ -104,8 +108,8 @@ void handleInputLevels(float * levels) {
  * @param levels The two inputs, in dB.
  */
 void inputVUMeter(float leftLevel, float rightLevel) {
-  int intLeftLevel = round(leftLevel + ourMiniDSP.getVolumeDB() + ourMiniDSP.getVolumeOffsetDB());
-  int intRightLevel = round(rightLevel + ourMiniDSP.getVolumeDB() + ourMiniDSP.getVolumeOffsetDB());
+  int intLeftLevel = round(leftLevel + ourMiniDSP.getVolumeDB() + sourceGain(ourMiniDSP.getSource()));// + ourMiniDSP.getVolumeOffsetDB());
+  int intRightLevel = round(rightLevel + ourMiniDSP.getVolumeDB() + sourceGain(ourMiniDSP.getSource()));// + ourMiniDSP.getVolumeOffsetDB());
   uint8_t left = !ourMiniDSP.isMuted() ? max( intLeftLevel - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL) : 0;
   uint8_t right = !ourMiniDSP.isMuted() ? max( intRightLevel - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL) : 0;
   ampDisp.displayLRBarGraph(left, right, messageArea);
@@ -163,13 +167,22 @@ void mute() {
 
 void setSource(source_t source) {
   ourMiniDSP.setSource(source);
-  ourMiniDSP.setVolumeOffset(source == source_t::Analog ? 0 : ampOptions.analogDigitalDifference);
+  //ourMiniDSP.setVolumeOffset(source == source_t::Analog ? 0 : ampOptions.analogDigitalDifference);
   lastTime = millis();
 }
 
-void source() {
+source_t flipSource() {
   //ampDisp.displayMessage("INPUT");
-  setSource(ourMiniDSP.getSource() == source_t::Analog ? source_t::Toslink : source_t::Analog);
+  source_t newSource = ourMiniDSP.getSource() == source_t::Analog ? source_t::Toslink : source_t::Analog;
+  //setSource(newSource);
+  //lastTime = millis();
+  return newSource;
+}
+
+void setInputGain(source_t source) {
+  //const float aGains[] = {6.0, 6.0};
+  //const float dGains[] = {0.0, 0.0};
+  ourMiniDSP.setInputGain(sourceGain(source));
   lastTime = millis();
 }
 
@@ -241,6 +254,7 @@ class AmpState {
     virtual void onDSPMute(bool mute){}
     virtual void onDSPSource(source_t source){}
     virtual void onDSPInputLevels(float * levels){}
+    virtual void onDSPInputGains(float * gains) {}
     virtual void onButtonShortPress(){}
     virtual void onButtonLongPressPending(){}
     virtual void onButtonLongPress(){}
@@ -349,10 +363,17 @@ class AmpCyclePowerState : public AmpState {
 } ampCylcePowerState;
 
 // Source wait state - as needed per the triggers, ensure that we're set to the correct input
+// or if entered via the button or remote, just switch inputs regardless of the triggers
 class AmpWaitSourceState : public AmpState {
+  private:
+    source_t desiredSource {source_t::Unset};
+  public:
+    void setDesiredSource(source_t source) { desiredSource = source; }
+
   void onEntry() override { 
-    ampDisp.displayMessage("1"); 
+    ampDisp.displayMessage(".."); 
     ampDisp.refresh();
+    if (desiredSource != source_t::Unset) setSource(desiredSource);
     }
   void polls() override {
     thisUSB.Task();
@@ -360,12 +381,22 @@ class AmpWaitSourceState : public AmpState {
   void requests() override {
     ourMiniDSP.requestSource(); // Could be requestSource()
   }
-  void toWaitVolume();
+  void toSetGain();
   void onDSPSource(source_t source) override {
+    if (desiredSource != source_t::Unset) {
+      //Serial.printf("Handling desired source %d and actual %d\n", (uint8_t)desiredSource, (uint8_t)source);
+      if (source == desiredSource) {
+        toSetGain();
+        desiredSource = source_t::Unset;
+      } else {
+        setSource(desiredSource);
+      }
+      return;
+    }
     // Check input against what's called for by the triggers
     trigger_t triggers = triggerMonitor.getTriggers();
     if (triggers.analog && triggers.digital) {              // If both, leave source as is
-      toWaitVolume();
+      toSetGain();
       return;
     }
     if (triggers.analog && (source != source_t::Analog)) {
@@ -376,15 +407,38 @@ class AmpWaitSourceState : public AmpState {
       setSource(source_t::Toslink);
       return;
     }
-    toWaitVolume();
-    // NEED TO BE SURE THAT THE OFFSET IS SET
+    toSetGain();
   }
 } ampWaitSourceState;
+
+inline bool fEqual(float x, float y, float p = 0.1) {
+  return (abs(x - y) < p);
+}
+
+// Set gain state - ensure that input gains match the options settings
+class AmpSetGainState : public AmpState {
+  void onEntry() override { 
+    ampDisp.displayMessage("..G"); 
+    ampDisp.refresh();
+    }
+  void polls() override {
+    thisUSB.Task();
+  }
+  void requests() override {
+    setInputGain(ourMiniDSP.getSource());
+  }
+  void toWaitVolume();
+  void onDSPInputGains(float * gains) {
+    //Serial.printf("Gains set to %f, %f\n", gains[0], gains[1]);
+    float reqGain = sourceGain(ourMiniDSP.getSource());
+    if (fEqual(gains[1], reqGain) && fEqual(gains[1], reqGain)) toWaitVolume();   
+  }
+} ampSetGainState;
 
 // Volume wait state - ensure that the volume is within range (generally, and for startup)
 class AmpWaitVolumeState : public AmpState {
   void onEntry() override { 
-    ampDisp.displayMessage("2"); 
+    ampDisp.displayMessage("..."); 
     ampDisp.refresh();
     }
   void polls() override {
@@ -404,7 +458,7 @@ class AmpWaitVolumeState : public AmpState {
 // Mute wait state - ensure that the DSP is unmuted
 class AmpWaitMuteState : public AmpState {
   void onEntry() override { 
-    ampDisp.displayMessage("3"); 
+    ampDisp.displayMessage("...."); 
     ampDisp.refresh();
     }
     //setMute(false); }
@@ -451,21 +505,28 @@ class AmpOnState : public AmpState {
   void onDSPSource(source_t source) { ampDisp.source((source_t) source); }
   void onDSPInputLevels(float * levels) { handleInputLevels(levels); }
 
+  void toOff();
+  void toSource();
+
   void onButtonShortPress() override { mute(); }
   void onButtonLongPressPending() override { ampDisp.cueLongPress(); }
-  void onButtonLongPress() override { source(); }
+  void onButtonLongPress() override { 
+    ampWaitSourceState.setDesiredSource(flipSource());
+    toSource();
+  }
   void onButtonFullHold() override;                         // --> Off - See transition table
 
   void onRemoteVolPlus() override { volPlus(); }
   void onRemoteVolMinus() override { volMinus(); }
   void onRemoteMute() override { mute(); }
-  void onRemoteSource() override { source(); }
+  void onRemoteSource() override { 
+    ampWaitSourceState.setDesiredSource(flipSource());
+    toSource();
+  }
   void onRemotePower() override;                            // --> Off - See transition table
 
   void onKnobTurned(int8_t change) override { volChange(change); }
 
-  void toOff();
-  void toSource();
   void onTriggerFall(trigger_t triggers) override {
     // triggers indicates which has fallen
     source_t source = ourMiniDSP.getSource();
@@ -516,7 +577,8 @@ void AmpMenuState::       onMenuExit()              { transitionTo(&ampOffState)
 void AmpWaitDSPState::    onDSPConnected()          { transitionTo(&ampWaitSourceState); }
 void AmpWaitDSPState::    onDSPTimeout()            { transitionTo(&ampCylcePowerState); }
 void AmpCyclePowerState:: onTime()                  { transitionTo(&ampWaitDSPState); }
-void AmpWaitSourceState:: toWaitVolume()            { transitionTo(&ampWaitVolumeState); }  // when source verified to match triggers
+void AmpWaitSourceState:: toSetGain()               { transitionTo(&ampSetGainState); }
+void AmpSetGainState::    toWaitVolume()            { transitionTo(&ampWaitVolumeState); }  // when source verified to match triggers
 void AmpWaitVolumeState:: toWaitMute()              { transitionTo(&ampWaitMuteState); }    // when volume verified to be within limits
 void AmpWaitMuteState::   toOn()                    { transitionTo(&ampOnState); }          // when mute verified to be off
 void AmpOnState::         onRemotePower()           { transitionTo(&ampOffState); }
@@ -535,6 +597,7 @@ void onDSPVolume(uint8_t volume) { ampState->onDSPVolume(volume); }
 void onDSPMute(bool mute) { ampState->onDSPMute(mute); }
 void onDSPSource(source_t source) { ampState->onDSPSource(source); }
 void onDSPInputLevels(float * levels) { ampState->onDSPInputLevels(levels); }
+void onDSPInputGains(float * gains) { ampState->onDSPInputGains(gains); }
 void onButtonShortPress() { ampState->onButtonShortPress(); }
 void onButtonLongPressPending() { ampState->onButtonLongPressPending(); }
 void onButtonLongPress() { ampState->onButtonLongPress(); }
@@ -584,6 +647,7 @@ void setup() {
   ourMiniDSP.attachOnSourceChange(&onDSPSource);
   //ourMiniDSP.attachOnParse(&OnParse);
   ourMiniDSP.attachOnNewInputLevels(&onDSPInputLevels);
+  ourMiniDSP.attachOnNewInputGains(&onDSPInputGains);
   // Remote and knob callbacks have fixed names so they don't need to be registered.
   ourMiniDSP.callbackOnResponse();
 
