@@ -96,6 +96,33 @@ class SampleTrigger {
         bool _state {false};
 };
 
+// Timed trigger. Goes high on exceeding threshold and stays high for specified time
+template <class T> class TimedTrigger {
+    public:
+        TimedTrigger(T threshold, uint32_t minTime) :
+            _threshold {threshold}, _minTime {minTime} {}
+
+        // @brief takes input and returns the current state
+        bool next(T input) {
+            if (input >= _threshold) {
+                _state = true;
+                _whenHigh = millis();
+            } else {
+                _state = ((millis() - _whenHigh) < _minTime);
+            }
+            return _state;
+        }
+
+        // @brief gets the current state
+        bool get() { return _state; }
+
+    private:
+        T _threshold;
+        uint32_t _whenHigh { 0 };
+        uint32_t _minTime { 2000 };
+        bool _state {false};
+};
+
 const IIIR filteredInput0(dTrigger);
 const SampleTrigger trigger0(triggerADC, 5, 10);
 

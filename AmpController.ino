@@ -39,6 +39,7 @@ PowerControl powerControl;
 // Input and trigger monitoring
 InputMonitor inputMonitor(1);  // Arg is minutes. Will get set to the actual option value
 TriggerSensing triggerMonitor;
+TimedTrigger<float> clipSensor(clipThreshold, clipIndicatorTime);
 
 // Interval (ms) between queries to the dsp.
 // Limited mainly by the 36 ms for refresh of the nrf52840 and generic OLED display.
@@ -97,9 +98,10 @@ float sourceGain(source_t source) {
 
 void handleInputLevels(float * levels) {
   float left = leftLevel.next(levels[1]);
-  float right = rightLevel.next(levels[1]);
+  float right = rightLevel.next(levels[0]);
   inputVUMeter(left, right);
   inputMonitor.task(left, right);
+  digitalWrite(LED_RED, clipSensor.next(max(left, right)) ? HIGH : LOW);
 }
 
 /**
@@ -108,8 +110,8 @@ void handleInputLevels(float * levels) {
  * @param levels The two inputs, in dB.
  */
 void inputVUMeter(float leftLevel, float rightLevel) {
-  int intLeftLevel = round(leftLevel + ourMiniDSP.getVolumeDB() + sourceGain(ourMiniDSP.getSource()));// + ourMiniDSP.getVolumeOffsetDB());
-  int intRightLevel = round(rightLevel + ourMiniDSP.getVolumeDB() + sourceGain(ourMiniDSP.getSource()));// + ourMiniDSP.getVolumeOffsetDB());
+  int intLeftLevel = round(leftLevel + ourMiniDSP.getVolumeDB());
+  int intRightLevel = round(rightLevel + ourMiniDSP.getVolumeDB());
   uint8_t left = !ourMiniDSP.isMuted() ? max( intLeftLevel - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL) : 0;
   uint8_t right = !ourMiniDSP.isMuted() ? max( intRightLevel - MINBARLEVEL, 0) * 100 / -(MINBARLEVEL) : 0;
   ampDisp.displayLRBarGraph(left, right, messageArea);
@@ -181,7 +183,8 @@ source_t flipSource() {
 
 void setInputGain(source_t source) {
   //const float aGains[] = {6.0, 6.0};
-  //const float dGains[] = {0.0, 0.0};
+  //const float dGains[] = {-40.0, 0.0};
+  //if (source == source_t::Toslink) ourMiniDSP.setInputGains(dGains);
   ourMiniDSP.setInputGain(sourceGain(source));
   lastTime = millis();
 }
@@ -418,7 +421,7 @@ inline bool fEqual(float x, float y, float p = 0.1) {
 // Set gain state - ensure that input gains match the options settings
 class AmpSetGainState : public AmpState {
   void onEntry() override { 
-    ampDisp.displayMessage("..G"); 
+    ampDisp.displayMessage("..."); 
     ampDisp.refresh();
     }
   void polls() override {
@@ -438,7 +441,7 @@ class AmpSetGainState : public AmpState {
 // Volume wait state - ensure that the volume is within range (generally, and for startup)
 class AmpWaitVolumeState : public AmpState {
   void onEntry() override { 
-    ampDisp.displayMessage("..."); 
+    ampDisp.displayMessage("...."); 
     ampDisp.refresh();
     }
   void polls() override {
@@ -458,7 +461,7 @@ class AmpWaitVolumeState : public AmpState {
 // Mute wait state - ensure that the DSP is unmuted
 class AmpWaitMuteState : public AmpState {
   void onEntry() override { 
-    ampDisp.displayMessage("...."); 
+    ampDisp.displayMessage("....."); 
     ampDisp.refresh();
     }
     //setMute(false); }

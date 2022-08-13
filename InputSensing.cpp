@@ -27,7 +27,6 @@
             return _state;
         };
 
-
 void TriggerSensing::begin() {
 
     // Pins

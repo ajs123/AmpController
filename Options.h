@@ -25,6 +25,10 @@ const int8_t MINBARLEVEL = -60;
 // Setup menu timeout (sec)
 const uint16_t MENU_TIMEOUT = 120;
 
+// Clipping detector threshold and persistence
+const float clipThreshold = -6;
+const uint32_t clipIndicatorTime = 500;
+
 // Default remote codes
 // These are for a particular Apple remote. The last two hex digits are the individual remote ID.
 #define DEFAULT_VOLPLUS_CMD     0x77E1507C // Apple remote UP

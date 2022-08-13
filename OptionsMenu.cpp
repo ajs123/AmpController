@@ -129,54 +129,81 @@ public:
   void edits(bool ed) { editFlag = ed; }
 };
 
-//-----------------------------------------------
-// For testing of events
-//-----------------------------------------------
-void showPath(navRoot& root) {
-  Serial.print("nav level:");
-  Serial.print(root.level);
-  Serial.print(" path:[");
-  for(int n=0;n<=root.level;n++) {
-    Serial.print(n?",":"");
-    Serial.print(root.path[n].sel);
-  }
-  Serial.println("]");
-}
+// //-----------------------------------------------
+// // For testing of events
+// //-----------------------------------------------
+// void showPath(navRoot& root) {
+//   Serial.print("nav level:");
+//   Serial.print(root.level);
+//   Serial.print(" path:[");
+//   for(int n=0;n<=root.level;n++) {
+//     Serial.print(n?",":"");
+//     Serial.print(root.path[n].sel);
+//   }
+//   Serial.println("]");
+// }
 
-result showEvent(eventMask e,navNode& nav,prompt& item) {
-  Serial.println();
-  Serial.println("========");
-  Serial.print("Event for target: 0x");
-  Serial.println((long)nav.target,HEX);
-  showPath(*nav.root);
-  Serial.print(e);
-  switch(e) {
-    case noEvent://just ignore all stuff
-      Serial.println(" noEvent");break;
-    case activateEvent://this item is about to be active (system event)
-      Serial.println(" activateEvent");break;
-    case enterEvent://entering navigation level (this menu is now active)
-      Serial.println(" enterEvent");break;
-    case exitEvent://leaving navigation level
-      Serial.println(" exitEvent");break;
-    case returnEvent://TODO:entering previous level (return)
-      Serial.println(" returnEvent");break;
-    case focusEvent://element just gained focus
-      Serial.println(" focusEvent");break;
-    case blurEvent://element about to lose focus
-      Serial.println(" blurEvent");break;
-    case selFocusEvent://TODO:child just gained focus
-      Serial.println(" selFocusEvent");break;
-    case selBlurEvent://TODO:child about to lose focus
-      Serial.println(" selBlurEvent");break;
-    case updateEvent://Field value has been updated
-      Serial.println(" updateEvent");break;
-    case anyEvent:
-      Serial.println(" anyEvent");break;
+// result showEvent(eventMask e,navNode& nav,prompt& item) {
+//   Serial.println();
+//   Serial.println("========");
+//   Serial.print("Event for target: 0x");
+//   Serial.println((long)nav.target,HEX);
+//   showPath(*nav.root);
+//   Serial.print(e);
+//   switch(e) {
+//     case noEvent://just ignore all stuff
+//       Serial.println(" noEvent");break;
+//     case activateEvent://this item is about to be active (system event)
+//       Serial.println(" activateEvent");break;
+//     case enterEvent://entering navigation level (this menu is now active)
+//       Serial.println(" enterEvent");break;
+//     case exitEvent://leaving navigation level
+//       Serial.println(" exitEvent");break;
+//     case returnEvent://TODO:entering previous level (return)
+//       Serial.println(" returnEvent");break;
+//     case focusEvent://element just gained focus
+//       Serial.println(" focusEvent");break;
+//     case blurEvent://element about to lose focus
+//       Serial.println(" blurEvent");break;
+//     case selFocusEvent://TODO:child just gained focus
+//       Serial.println(" selFocusEvent");break;
+//     case selBlurEvent://TODO:child about to lose focus
+//       Serial.println(" selBlurEvent");break;
+//     case updateEvent://Field value has been updated
+//       Serial.println(" updateEvent");break;
+//     case anyEvent:
+//       Serial.println(" anyEvent");break;
+//   }
+//   return proceed;
+// }
+// //------------------------------------------------
+
+//custom field print
+//implementing a customized menu component
+//this numeric field prints formatted number with leading zeros
+template<typename T>
+class offField:public menuField<T> {
+public:
+  using menuField<T>::menuField;
+  Used printTo(navRoot &root,bool sel,menuOut& out, idx_t idx,idx_t len,idx_t panelNr=0) override {
+    menuField<T>::reflex=menuField<T>::target();
+    prompt::printTo(root,sel,out,idx,len);
+    bool ed=this==root.navFocus;
+    out.print((root.navFocus==this&&sel)?(menuField<T>::tunning?'>':':'):' ');
+    out.setColor(valColor,sel,menuField<T>::enabled,ed);
+    char buffer[]="      ";
+    T value = menuField<T>::reflex;
+    if (value == (T)0) {
+        out.print(" NONE");
+    } else {
+        snprintf(buffer, 7, "%3d", menuField<T>::reflex);
+        out.print(buffer);
+    }
+    out.setColor(unitColor,sel,menuField<T>::enabled,ed);
+    if (value != (T)0) print_P(out,menuField<T>::units(),len);
+    return len;
   }
-  return proceed;
-}
-//------------------------------------------------
+};
 
 // Build the menus
 
@@ -188,7 +215,7 @@ altMENU(altTitle, volumeMenu, "Volume", setVolumeVals, (eventMask)(enterEvent | 
     );
 
 altMENU(altTitle, autoOffMenu, "Auto off", setupEntry, exitEvent, noStyle, (Menu::_menuData|Menu::_canNav),
-    FIELD(ampOptions.autoOffTime, "Auto off", " minutes", 0, 60, 1, 0, doNothing, noEvent, noStyle),
+    altFIELD(offField, ampOptions.autoOffTime, "Auto off", " min", 0, 60, 1, 0, doNothing, noEvent, noStyle),
     EXIT("<< BACK")
     );
 
@@ -212,7 +239,8 @@ altMENU(altTitle,remoteMenu, "Remote", setupEntry, exitEvent, noStyle,(Menu::_me
 
 // setupEntry isn't invoked because the top level has no enterEvent. 
 // We handle this by including setupEntry in the exitEvent callbacks for the sub-menus
-altMENU(altTitle, ampSetup, "SETUP", setupEntry, enterEvent, noStyle, (Menu::_menuData|Menu::_canNav),
+altMENU(altTitle, ampSetup, "SETUP", doNothing, noEvent, noStyle, (Menu::_menuData|Menu::_canNav),
+//altMENU(altTitle, ampSetup, "SETUP", setupEntry, enterEvent, noStyle, (Menu::_menuData|Menu::_canNav),
 //altMENU(altTitle, ampSetup, "SETUP", showEvent, anyEvent, noStyle, (Menu::_menuData|Menu::_canNav),
     SUBMENU(volumeMenu),
     SUBMENU(autoOffMenu),
@@ -254,18 +282,18 @@ void postVolumeVals() {
     uint8_t maxVolume = f_maxVolume / -0.5;
     if (maxVolume != ampOptions.maxVolume) {
         ampOptions.maxVolume = maxVolume;
-        ampSetup.edits(true);
+        //ampSetup.edits(true);
     }
     uint8_t maxInitialVolume = f_maxInitialVolume / -0.5;
     if (maxInitialVolume != ampOptions.maxInitialVolume) {
         ampOptions.maxInitialVolume = maxInitialVolume;
-        ampSetup.edits(true);
+        //ampSetup.edits(true);
     }
     int8_t analogDigitalDifference = f_analogDigitalDifference / 0.5;
     //Serial.printf("AD diff was %d, now %d\n", ampOptions.analogDigitalDifference, analogDigitalDifference);
     if (analogDigitalDifference != ampOptions.analogDigitalDifference) {
         ampOptions.analogDigitalDifference = analogDigitalDifference;
-        ampSetup.edits(true);
+        //ampSetup.edits(true);
     }
     //Note: kludge to cover lack of enterEvent activation in the top level menu
     setupEntry(enterEvent);
@@ -339,8 +367,7 @@ void postLabels() {
         strncpy(ampOptions.digitalLabel, digitalBuf, MAX_LABEL_LENGTH);
         ampSetup.edits(true);
     }
-    //Note: kludge to cover lack of enterEvent activation in the top level menu
-    setupEntry(enterEvent);
+    setupEntry(enterEvent);     // Top-level menu has no enterEvent
 }
 
 result fixLabels(eventMask event) {
@@ -352,8 +379,7 @@ result fixLabels(eventMask event) {
             postLabels(); 
             break;
     }
-    //Note: kludge to cover lack of enterEvent activation in the top level menu
-    setupEntry(enterEvent);
+    setupEntry(enterEvent);     // Top-level menu has no enterEvent
     return proceed;
 }
 
