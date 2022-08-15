@@ -15,6 +15,12 @@ extern void onMenuExit();   // Menu exit callback
 float f_maxVolume;
 float f_maxInitialVolume, saved_f_maxInitialVolume;
 float f_analogDigitalDifference;
+float f_clippingHeadroom;
+
+float f_silence;
+
+uint8_t fullExp;
+uint8_t dimExp;
 
 // Private utility functions and menu callbacks
 
@@ -49,6 +55,18 @@ result handleMaxInitialVolume(eventMask event);
 
 /// @brief main callback for the volume menu
 result setVolumeVals(eventMask event);
+
+/// @brief main callback for the auto off menu
+result setAutoOffVals(eventMask event);
+
+/// @brief handle changes to the high brightness setting
+result handlHighBrightness(eventMask event);
+
+/// @brief handle changes to the low brightness setting
+result handleLowBrightness(eventMask event);
+
+/// @brief main callback for the display menu
+result setDispVals(eventMask event);
 
 /// @brief Pad with spaces, so that the cursor can move past the end of the current string
 void padString(char * string, const uint8_t length);
@@ -211,11 +229,13 @@ altMENU(altTitle, volumeMenu, "Volume", setVolumeVals, (eventMask)(enterEvent | 
     altFIELD(decPlaces<1>::menuField, f_maxVolume, "Max", " dB", -40, 0, 0.5, 0, handleMaxVolume, anyEvent, noStyle),
     altFIELD(decPlaces<1>::menuField, f_maxInitialVolume, "Max start", " dB", -40, 0, 0.5, 0, handleMaxInitialVolume, updateEvent, noStyle),
     altFIELD(decPlaces<1>::menuField, f_analogDigitalDifference, "A boost", " dB", 0, 12, 0.5, 0, doNothing, noEvent, noStyle),
+    altFIELD(decPlaces<1>::menuField, f_clippingHeadroom, "Headroom", " dB", 0, 12, 1.0, 0, doNothing, noEvent, noStyle),
     EXIT("<< BACK")
     );
 
-altMENU(altTitle, autoOffMenu, "Auto off", setupEntry, exitEvent, noStyle, (Menu::_menuData|Menu::_canNav),
+altMENU(altTitle, autoOffMenu, "Auto off", setAutoOffVals, /*setupEntry, exitEvent*/ (eventMask)(enterEvent | exitEvent), noStyle, (Menu::_menuData|Menu::_canNav),
     altFIELD(offField, ampOptions.autoOffTime, "Auto off", " min", 0, 60, 1, 0, doNothing, noEvent, noStyle),
+    altFIELD(decPlaces<1>::menuField, f_silence, "Level", " dB", -80, -30, 5, 0, doNothing, noEvent, noStyle),
     EXIT("<< BACK")
     );
 
@@ -225,6 +245,13 @@ altMENU(altTitle, labelMenu, "Input labels", fixLabels, (eventMask)(enterEvent |
     EDIT("Digital ", digitalBuf, uCase, doNothing, noEvent, noStyle),
     EXIT("<< BACK")
     );
+
+altMENU(altTitle, displayMenu, "Display", setDispVals, (eventMask)(enterEvent | exitEvent), noStyle, (Menu::_menuData|Menu::_canNav),
+    FIELD(fullExp, "Full", "", 1, 8, 1, 0, handlHighBrightness, anyEvent, noStyle),
+    FIELD(dimExp, "Dim", "", 1, 8, 1, 0, handleLowBrightness, anyEvent, noStyle),
+    FIELD(ampOptions.dimTime, "Time", " sec", 5, 30, 5, 0, doNothing, noEvent, noStyle),
+    EXIT("<< BACK")
+);
 
 //Note: setupEntry on exit is a kludge to cover lack of enterEvent activation in the top level menu
 altMENU(altTitle,remoteMenu, "Remote", setupEntry, exitEvent, noStyle,(Menu::_menuData|Menu::_canNav),
@@ -244,6 +271,7 @@ altMENU(altTitle, ampSetup, "SETUP", doNothing, noEvent, noStyle, (Menu::_menuDa
 //altMENU(altTitle, ampSetup, "SETUP", showEvent, anyEvent, noStyle, (Menu::_menuData|Menu::_canNav),
     SUBMENU(volumeMenu),
     SUBMENU(autoOffMenu),
+    SUBMENU(displayMenu),
     SUBMENU(remoteMenu),
     SUBMENU(labelMenu),
     OP("SAVE", saveValues, enterEvent),
@@ -272,6 +300,7 @@ result setupEntry(eventMask event) {
 void prepVolumeVals() {
     f_maxVolume = ampOptions.maxVolume * -0.5;
     f_maxInitialVolume = ampOptions.maxInitialVolume * -0.5;
+    f_clippingHeadroom = (float)ampOptions.clippingHeadroom;
     saved_f_maxInitialVolume = f_maxInitialVolume;
     f_analogDigitalDifference = ampOptions.analogDigitalDifference * 0.5; // Analog boost is positive
 }
@@ -295,12 +324,13 @@ void postVolumeVals() {
         ampOptions.analogDigitalDifference = analogDigitalDifference;
         //ampSetup.edits(true);
     }
+    ampOptions.clippingHeadroom = (uint8_t)f_clippingHeadroom;
     //Note: kludge to cover lack of enterEvent activation in the top level menu
     setupEntry(enterEvent);
 }
 
 result setVolumeVals(eventMask event) {
-    Serial.flush();
+    //Serial.flush();
     switch (event) {
         case enterEvent:
             prepVolumeVals();
@@ -326,6 +356,82 @@ result handleMaxVolume(eventMask event) {
 result handleMaxInitialVolume(eventMask event) {
     f_maxInitialVolume = min(f_maxInitialVolume, f_maxVolume);
     saved_f_maxInitialVolume = f_maxInitialVolume;
+    return proceed;
+}
+
+// uint8_t log2(const uint8_t num) {
+//     if (num < 2) return 0;
+//     uint8_t log2 = 0;
+//     uint8_t n = num;
+//     while (n = n >> 1) log2++;
+//     return log2;
+// }
+
+result setAutoOffVals(eventMask event) {
+    switch (event) {
+        case enterEvent:
+            f_silence = ampOptions.silence * -0.5;
+            break;
+        case exitEvent:
+            ampOptions.silence = f_silence / -0.5;
+            setupEntry(exitEvent);
+            break;
+    }
+    return proceed;
+}
+
+uint8_t initFullExp {8};
+uint8_t initDimExp {1};
+
+result setDispVals(eventMask event) {
+    switch(event) {
+        case enterEvent:
+            fullExp = ampOptions.brightness.highBrightness;
+            dimExp = ampOptions.brightness.lowBrightness;
+            initFullExp = fullExp;
+            initDimExp = dimExp;
+            break;
+        case exitEvent:
+            ampOptions.brightness.highBrightness = fullExp;
+            ampOptions.brightness.lowBrightness = dimExp;
+            break;
+    }
+    return proceed;
+}
+
+inline void setContrast(uint8_t level) { display.setContrast(contrast(level)); }
+
+result handlHighBrightness(eventMask event) {
+    switch(event) {
+        case focusEvent:
+            initDimExp = dimExp;
+            break;
+        case enterEvent:
+        case updateEvent:
+            dimExp = min(initDimExp, fullExp);
+            //display.setContrast(1 << (fullExp - 1));
+            setContrast(fullExp);
+    }
+    return proceed;
+}
+
+result handleLowBrightness(eventMask event) {
+    switch(event) {
+        case focusEvent:
+            initFullExp = fullExp;
+            break;
+        case exitEvent:
+            fullExp = max(initFullExp, dimExp);
+            //display.setContrast(1 << (fullExp - 1));
+            setContrast(fullExp);
+            break;
+        case enterEvent:
+        case updateEvent:
+            fullExp = max(initFullExp, dimExp);
+            //display.setContrast(1 << (dimExp - 1));
+            setContrast(dimExp);
+            break;
+    }
     return proceed;
 }
 

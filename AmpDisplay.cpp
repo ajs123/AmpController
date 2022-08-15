@@ -88,9 +88,9 @@
     // It should possibly handle the case of the source being undetermined
     void AmpDisplay::drawSource(bool changeInd)
     {
-        char label[MAX_LABEL_LENGTH + 4];
+        char label[MAX_LABEL_LENGTH + 5];
         char * sourceLabel = (sourceState == source_t::Analog) ? ampOptions.analogLabel : ampOptions.digitalLabel;
-        snprintf(label, MAX_LABEL_LENGTH + 4, "%s%s", sourceLabel, changeInd ? "-->" : "");
+        snprintf(label, MAX_LABEL_LENGTH + 4, "%s%s", sourceLabel, changeInd ? " >>>" : "");
         //snprintf(label, 12, "%s%s", sourceLabels[sourceState], changeInd ? "-->" : "");
         displayText(label, SOURCE_FONT, sourceArea, true);
         displayUpdate();
@@ -122,7 +122,7 @@
 
     void AmpDisplay::dim() {
         if (dimState) return;
-        display->setContrast(CONTRAST_DIM);
+        display->setContrast(contrast(ampOptions.brightness.lowBrightness - 1));
         dimState = true;
     #ifdef TRANSIENTVOLUME
         if (!muteState) eraseVolume();
@@ -140,7 +140,7 @@
     void AmpDisplay::checkDim() {
     if (dimState) return;
     uint32_t currentTime = millis();
-    if ((currentTime - brightTime) > DIM_TIME) {
+    if ((currentTime - brightTime) > ampOptions.dimTime * 1000) {
         dim();
         }
     }
@@ -149,7 +149,7 @@
     #ifdef TRANSIENTVOLUME
         if (!volumeShown) drawVolume();
     #endif
-        display->setContrast(CONTRAST_FULL);
+        display->setContrast(contrast(ampOptions.brightness.highBrightness));
         dimState = false;
         scheduleDim();
     }

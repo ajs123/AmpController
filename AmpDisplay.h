@@ -10,10 +10,11 @@
 #include "Options.h"
 #include <U8g2lib.h>
 #include "src/UHS/MiniDSP.h"
+#include "util.h"
 
 // Display settings of most interest to the user
 #define CONTRAST_FULL 128
-#define CONTRAST_DIM 0
+#define CONTRAST_DIM 16
 
 // Options
 #define DBDISPLAY true  // Display volume in dB (instead of %). Potentially a live option.

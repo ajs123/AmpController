@@ -39,7 +39,8 @@ PowerControl powerControl;
 // Input and trigger monitoring
 InputMonitor inputMonitor(1);  // Arg is minutes. Will get set to the actual option value
 TriggerSensing triggerMonitor;
-TimedTrigger<float> clipSensor(clipThreshold, clipIndicatorTime);
+//TimedTrigger<float> clipSensor(clipThreshold, clipIndicatorTime);
+TimedTrigger<float> clipSensor(-defaultClippingHeadroom, clipIndicatorTime, LED_RED);
 
 // Interval (ms) between queries to the dsp.
 // Limited mainly by the 36 ms for refresh of the nrf52840 and generic OLED display.
@@ -53,21 +54,23 @@ BLEDfu bledfu;      // Device firmware update
 BLEDis bledis;      // Device information service
 
 void BLESetup() {
-  Bluefruit.begin();
-  Bluefruit.setName("LXMini");
+  if (goButton.rawClosed()) {
+    Bluefruit.begin();
+    Bluefruit.setName("LXMini");
 
-  bledfu.begin();
+    bledfu.begin();
 
-  bledis.setManufacturer("BistroDad");  // Not sure that we need dis if using only dfu
-  bledis.setModel("LXMini Amp");
-  bledis.begin();
+    bledis.setManufacturer("BistroDad");  // Not sure that we need dis if using only dfu
+    bledis.setModel("LXMini Amp");
+    bledis.begin();
 
-  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
-  Bluefruit.Advertising.addService(bledfu);
-  Bluefruit.Advertising.restartOnDisconnect(true);
-  Bluefruit.Advertising.setInterval(32, 244);
-  Bluefruit.Advertising.setFastTimeout(30);
-  Bluefruit.Advertising.start(300);
+    Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+    Bluefruit.Advertising.addService(bledfu);
+    Bluefruit.Advertising.restartOnDisconnect(true);
+    Bluefruit.Advertising.setInterval(32, 244);
+    Bluefruit.Advertising.setFastTimeout(30);
+    Bluefruit.Advertising.start(60);
+  }
 }
 
 void DisplaySetup() {
@@ -101,7 +104,8 @@ void handleInputLevels(float * levels) {
   float right = rightLevel.next(levels[0]);
   inputVUMeter(left, right);
   inputMonitor.task(left, right);
-  digitalWrite(LED_RED, clipSensor.next(max(left, right)) ? HIGH : LOW);
+  clipSensor.next(max(left, right));
+  //digitalWrite(LED_RED, clipSensor.next(max(left, right)) ? HIGH : LOW);
 }
 
 /**
@@ -135,6 +139,7 @@ void volChange(int8_t change) {
   int newVolume = currentVolume - change;     // + change is - change in the MiniDSP setting
   newVolume = limit(newVolume, int(ampOptions.maxVolume), 0xFF); //min( max(newVolume, ampOptions.maxVolume), 0xFF);
   if (newVolume != currentVolume) ourMiniDSP.setVolume(static_cast<uint8_t>(newVolume));
+  if (ourMiniDSP.isMuted()) ourMiniDSP.setMute(false);
   ampDisp.wakeup();
   lastTime = millis();
 }
@@ -236,6 +241,16 @@ void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
     intervalCount = 0;
     lastFrameReport = currentTime;
   }
+}
+
+// TEST: To experiment with display brighness
+uint8_t brightness {128};
+void changeBrighness(int8_t change) {
+  int b = brightness;
+  //Serial.printf("Brightness was %d\n", brightness);
+  brightness = limit<int>((b + change), 0, 255);
+  Serial.printf("Change %d, Brightness %d\n", change, brightness);
+  display.setContrast(brightness);
 }
 
 // The main state machine - uses a classic state pattern.
@@ -485,6 +500,7 @@ class AmpOnState : public AmpState {
     powerControl.ampEnable();
     inputMonitor.setTimout(ampOptions.autoOffTime);
     inputMonitor.resetTimer();
+    clipSensor.setThreshold(-(float)ampOptions.clippingHeadroom);
     display.clear();
     ampDisp.source((source_t) ourMiniDSP.getSource());
     ampDisp.volume(-ourMiniDSP.getVolume()/2.0);
@@ -535,6 +551,7 @@ class AmpOnState : public AmpState {
     source_t source = ourMiniDSP.getSource();
     if (triggers.analog && (source == source_t::Analog)) {
       if (!triggerMonitor.getTriggers().digital) {
+        clipSensor.clearIndicator();
         toOff();                                            // --> Off - see transition table
         return;
       }
@@ -542,6 +559,7 @@ class AmpOnState : public AmpState {
     }
     if (triggers.digital && (source == source_t::Toslink)) {
       if (!triggerMonitor.getTriggers().analog) {
+        clipSensor.clearIndicator();
         toOff();                                            // --> Off - see transition table
         return;
       }
@@ -556,6 +574,7 @@ class AmpOnState : public AmpState {
         toSource();                                     // Silence with other trigger present
         return;
       }
+      clipSensor.clearIndicator();
       toOff();                                          // Silence with no triggers
       return;
     } else{
@@ -564,6 +583,7 @@ class AmpOnState : public AmpState {
         toSource();
         return;
       }
+      clipSensor.clearIndicator();
       toOff();
       return;
     }

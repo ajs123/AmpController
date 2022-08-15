@@ -33,6 +33,12 @@ public:
     bool switchClosed();
 
     /**
+     * @brief Get the raw switch state, bypassing debounce
+     * 
+     */
+    bool rawClosed() { return !digitalRead(pin); }
+
+    /**
      * @brief Check if the switch is closed, and for how long
      * @return number of ms closed, or 0 for open
      */

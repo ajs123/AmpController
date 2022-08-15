@@ -4,13 +4,11 @@
 
 #include <Arduino.h>
 #include "Configuration.h"
-#include <math.h>
+#include "Options.h"
+//#include <math.h>
 
 // Minimum voltage on a trigger input
 constexpr float triggerVoltage = 3.0;
-
-// DSP input level below this value counts as silence
-const float DSPSilence = -70.0;
 
 constexpr int x = 1;
 constexpr float analogRef = 3.3; 
@@ -75,7 +73,7 @@ class IIIR {
         int _coeff;
 };
 
-// Persistence filter. Changes state on high or low for N samples
+// Persistence filter. Changes state on high or low for N samples. Used for the triggers.
 class SampleTrigger {
     public:
         SampleTrigger(int threshold, int samplesHigh, int samplesLow) : 
@@ -96,13 +94,14 @@ class SampleTrigger {
         bool _state {false};
 };
 
-// Timed trigger. Goes high on exceeding threshold and stays high for specified time
+// Timed trigger. Goes high on exceeding threshold and stays high for specified time. Used for the clipping indicator.
 template <class T> class TimedTrigger {
     public:
-        TimedTrigger(T threshold, uint32_t minTime) :
-            _threshold {threshold}, _minTime {minTime} {}
+        TimedTrigger(T threshold, uint32_t minTime, uint32_t indicator = 0) :
+            _threshold {threshold}, _minTime {minTime}, _indicator {indicator} {}
 
-        // @brief takes input and returns the current state
+        // @brief takes input and returns the current state. If an indicator pin
+        // was set, sets or clears it
         bool next(T input) {
             if (input >= _threshold) {
                 _state = true;
@@ -110,7 +109,18 @@ template <class T> class TimedTrigger {
             } else {
                 _state = ((millis() - _whenHigh) < _minTime);
             }
+            if (_indicator) digitalWrite(_indicator, _state ? HIGH : LOW);
             return _state;
+        }
+
+        // @brief sets the threshold
+        void setThreshold(T threshold) {
+            _threshold = threshold;
+        }
+
+        // @brief clears the indicator
+        void clearIndicator() {
+            if (_indicator) digitalWrite(_indicator, LOW);
         }
 
         // @brief gets the current state
@@ -121,6 +131,7 @@ template <class T> class TimedTrigger {
         uint32_t _whenHigh { 0 };
         uint32_t _minTime { 2000 };
         bool _state {false};
+        uint32_t _indicator { 0 };
 };
 
 const IIIR filteredInput0(dTrigger);

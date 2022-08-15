@@ -4,6 +4,8 @@
 #include "InputSensing.h"
 //#include <MiniDSP.h>
 
+extern Options & ampOptions; // = Options::instance();
+
 //template <> int IIR<int>::next(int u) { return _x += (_coeff * (u - _x)) / 100; };
 
         bool SampleTrigger::next(int input) {
@@ -65,7 +67,8 @@ bool InputMonitor::task(float leftLevel, float rightLevel) {
     //int rightLevel = filtRightLevel.next(levels[0]);
     //int leftLevel = filtLeftLevel.next(levels[1]);
     bool ret = false;
-    if (max(rightLevel, leftLevel) < DSPSilence) {
+    //if (max(rightLevel, leftLevel) < DSPSilence) {
+    if (max(rightLevel, leftLevel) < (ampOptions.silence * -0.5)) {
         uint32_t howLong = time - lastSound;
         if (howLong > _silentTime) {
             onSilence();

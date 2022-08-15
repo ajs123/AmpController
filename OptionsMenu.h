@@ -3,11 +3,12 @@
 
 #include <Arduino.h>
 #include "Options.h"
-#include <menu.h>
-#include <menuIO/u8g2Out.h>
-#include <menuIO/altKeyIn.h>
-#include <menuIO/chainStream.h>
+#include "src/Menu/menu.h" // <menu.h>
+#include "src/Menu/u8g2Out.h" //<menuIO/u8g2Out.h>
+//#include "src/Menu/altKeyIn.h" //<menuIO/altKeyIn.h>
+#include "src/Menu/MenuIO/chainStream.h" //<menuIO/chainStream.h>
 #include "RemoteHandler.h"
+#include "util.h"
 
 
 namespace OptionsMenu {

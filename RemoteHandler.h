@@ -5,11 +5,11 @@
 #include <Arduino.h>
 #include "Options.h"
 #include "Configuration.h"
-#include <IRLibRecvPCI.h>         // Use the pin change interrupt receiver
-#include <IRLibDecodeBase.h>      // Base class for the decoder
+#include "src/IR/IRLibRecvPCI.h"         // Use the pin change interrupt receiver
+#include "src/IR/IRLibDecodeBase.h"//   <IRLibDecodeBase.h>      // Base class for the decoder
                                   // Decoder protocols
-#include <IRLib_P01_NEC.h>
-#include <IRLib_P02_Sony.h>
+#include "src/IR/IRLib_P01_NEC.h"// <IRLib_P01_NEC.h>
+#include "src/IR/IRLib_P02_Sony.h"  // <IRLib_P02_Sony.h>
 // #include <IRLib_P03_RC5.h>
 // #include <IRLib_P04_RC6.h>
 // #include <IRLib_P05_Panasonic_Old.h>
@@ -21,7 +21,7 @@
 // #include <IRLib_P11_RCMM.h>
 // #include <IRLib_P12_CYKM.h>
 //#include <IRLib_HashRaw.h>       // If all we want is a unique code for each key
-#include <IRLibCombo.h>            // Uses the first protocol that appears to match
+#include "src/IR/IRLibCombo.h" // <IRLibCombo.h>            // Uses the first protocol that appears to match
 
 // A button press on a remote will send a command, followed by repeats if the button is held down.
 // Repeats transmit at ~50-100 ms intervals, so even an intentionally quick click can produce multiple codes.

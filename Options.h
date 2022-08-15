@@ -16,9 +16,6 @@
 // This will be removed in favor of a configurable option
 const uint8_t MAXIMUM_VOLUME = 0;
 
-// Time (ms) after wich the volume indicator will go away and the diplay will dim
-const uint16_t DIM_TIME = 5 * 1000;   
-
 // Minimum level in dB for the VU meter
 const int8_t MINBARLEVEL = -60;
 
@@ -26,7 +23,7 @@ const int8_t MINBARLEVEL = -60;
 const uint16_t MENU_TIMEOUT = 120;
 
 // Clipping detector threshold and persistence
-const float clipThreshold = -6;
+const float defaultClippingHeadroom = 6.0;
 const uint32_t clipIndicatorTime = 500;
 
 // Default remote codes
@@ -70,6 +67,7 @@ class Options {
         // The individual options are public, so they're accessed directly by any client.
         // The defaults for these options are set in initialization.
 
+        // For better or for worse, volume options are in MiniDSP units (-0.5 dB).
         // Maximum volume at any time (protects the neighbors)
         uint8_t maxVolume = 0;
 
@@ -79,14 +77,20 @@ class Options {
         // Analog-digital volume difference, to compensate for input level differences
         int8_t analogDigitalDifference = 0;
 
+        // Headroom for the clipping indicator
+        uint8_t clippingHeadroom = defaultClippingHeadroom;
+
         // Label for the analog input
         char analogLabel[MAX_LABEL_LENGTH + 1] = "ANALOG";
 
         // Label for the digital input
         char digitalLabel[MAX_LABEL_LENGTH + 1] = "DIGITAL";
 
-        // Auto-off time, in minutes. May need to revisit the units.
+        // Auto-off time, in minutes. 
         uint8_t autoOffTime = 30;  
+
+        // Definition of silence - low enough to be inaudible; high enough to accomodate any noise from the analog source
+        uint8_t silence = 140; // -70.0 dB
 
         // Remote codes
         uint32_t volPlusCmd = DEFAULT_VOLPLUS_CMD;
@@ -94,6 +98,17 @@ class Options {
         uint32_t muteCmd = DEFAULT_MUTE_CMD;
         uint32_t inputCmd = DEFAULT_INPUT_CMD;
         uint32_t powerCmd = DEFAULT_POWER_CMD;
+
+        // Display brightness
+        typedef struct {
+            uint8_t lowBrightness;
+            uint8_t highBrightness;
+        } dispBrightness_t;
+
+        dispBrightness_t brightness = { 1, 8 };
+
+        // Display dim time
+        uint8_t dimTime = 5;
 
         static Options & instance() {
             static Options _instance;
@@ -108,18 +123,25 @@ class Options {
         } writableOption_t;
 
         // This holds a reference to each variable with its name in the filesystem and its size
-        const writableOption_t optionTable[11] = {
+        // To add a variable to nonvolatile storage, add it here.
+        // There is no cleanup of nonvolatile storage, so if a name is changed or an entry is removed,
+        // there will be an orphaned file in the filesystem.
+        const writableOption_t optionTable[15] = {
             {&maxVolume,               "Vol_max",   sizeof(maxVolume)},
             {&maxInitialVolume,        "Vol_init",  sizeof(maxInitialVolume)},
             {&analogDigitalDifference, "AD_diff",   sizeof(analogDigitalDifference)},
+            {&clippingHeadroom,        "Headroom",  sizeof(clippingHeadroom)},
             {&analogLabel,             "A_label",   sizeof(analogLabel)},
             {&digitalLabel,            "D_label",   sizeof(digitalLabel)},
             {&autoOffTime,             "Auto_off",  sizeof(autoOffTime)},
+            {&silence,                 "Silence",   sizeof(silence)},
             {&volPlusCmd,              "Vol_plus",  sizeof(volPlusCmd)},
             {&volMinusCmd,             "Vol_minus", sizeof(volMinusCmd)},
             {&muteCmd,                 "Mute_cmd",  sizeof(muteCmd)},
             {&inputCmd,                "Input_cmd", sizeof(inputCmd)},
-            {&powerCmd,                "Power_cmd", sizeof(powerCmd)}
+            {&powerCmd,                "Power_cmd", sizeof(powerCmd)},
+            {&brightness,              "Brightness",sizeof(brightness)},
+            {&dimTime,                 "Dim_time",  sizeof(dimTime)}
         };
 
         // The parameters are saved in a folder in the filesystem, just in case the device is used
