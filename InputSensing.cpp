@@ -4,7 +4,7 @@
 #include "InputSensing.h"
 //#include <MiniDSP.h>
 
-extern Options & ampOptions; // = Options::instance();
+extern Options & ampOptions;
 
 //template <> int IIR<int>::next(int u) { return _x += (_coeff * (u - _x)) / 100; };
 
@@ -35,10 +35,9 @@ void TriggerSensing::begin() {
     pinMode(ANALOG_TRIGGER_PIN, INPUT);
     pinMode(DIGITAL_TRIGGER_PIN, INPUT);
 
-    // Use 12-bit resolution, 3.6V reference
     // 1 LSB = 0.88 mV
     analogReadResolution(12);
-    analogReference(AR_DEFAULT);
+    analogReference(AR_DEFAULT);    // 3.6V
 };
 
 trigger_t TriggerSensing::update() {
@@ -64,8 +63,6 @@ trigger_t TriggerSensing::task() {
 bool InputMonitor::task(float leftLevel, float rightLevel) {
     if (_silentTime < oneMinute) return false; 
     uint32_t time = millis();
-    //int rightLevel = filtRightLevel.next(levels[0]);
-    //int leftLevel = filtLeftLevel.next(levels[1]);
     bool ret = false;
     //if (max(rightLevel, leftLevel) < DSPSilence) {
     if (max(rightLevel, leftLevel) < (ampOptions.silence * -0.5)) {

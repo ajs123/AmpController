@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "src/UHS/MiniDSP.h"
+//#include <MiniDSP.h>
 #include "AmpDisplay.h"
 #include "PowerControl.h"
 #include "RemoteHandler.h"
@@ -14,7 +15,6 @@
 #include "Configuration.h"
 #include "logo.h"
 #include "InputSensing.h"
-#include "util.h"
 
 // Options store
 Options & ampOptions = Options::instance();                   // Options store - singleton form
@@ -41,7 +41,7 @@ TriggerSensing triggerMonitor;
 TimedTrigger<float> clipSensor(-defaultClippingHeadroom, clipIndicatorTime, LED_RED);
 
 // Interval (ms) between queries to the dsp.
-// Limited mainly by the 36 ms for refresh of the OLED display.
+// Limited mainly by the 36 ms for refresh of the nrf52840 and generic OLED display.
 constexpr uint32_t INTERVAL = 50;   
 
 // Persistent state
@@ -72,6 +72,7 @@ void BLESetup() {
 void DisplaySetup() {
   display.begin();
   display.setFontMode(0);
+  //ampDisp.displayMessage("START");
   ampDisp.scheduleDim();
   ampDisp.refresh();
   ampDisp.setImmediateUpdate(false);
@@ -91,22 +92,24 @@ constexpr float signalFloorDB = -128.0;
 IIR<float> leftLevel(VUCoeff, signalFloorDB);
 IIR<float> rightLevel(VUCoeff, signalFloorDB);
 
-// MiniDSP input gain setting according to the selected source
+// Provide the gain corresponding to the identified source
 float sourceGain(source_t source) {
   return (source == source_t::Analog) ? (float)ampOptions.analogDigitalDifference : 0.0;
 }
 
-// Callback for new input levels
+// Callback for new input levels from the MiniDSP: VU meter, silence monitor, clipping sensor
 void handleInputLevels(float * levels) {
   float left = leftLevel.next(levels[1]);
   float right = rightLevel.next(levels[0]);
   inputVUMeter(left, right);
   inputMonitor.task(left, right);
-  clipSensor.next(max(left, right));  // The clipping sensor includes an LED indicator
+  clipSensor.next(max(left, right));
+  //digitalWrite(LED_RED, clipSensor.next(max(left, right)) ? HIGH : LOW);
 }
 
 /**
  * @brief Provides a VU meter based on input levels and the volume setting.
+ * 
  * @param levels The two inputs, in dB.
  */
 void inputVUMeter(float leftLevel, float rightLevel) {
@@ -117,26 +120,24 @@ void inputVUMeter(float leftLevel, float rightLevel) {
   ampDisp.displayLRBarGraph(left, right, messageArea);
 }
 
-// Utility functions for the various callbacks
-
-// Set the volume in the DSP, respecting limits
+// Set the volume in the MiniDSP, respecting limits
 void setVolume(uint8_t volume) {
   ourMiniDSP.setVolume(limit(volume, ampOptions.maxVolume, uint8_t(0xFF)));   // Unsigned int representing negative dB, so min is maxVolume
   lastTime = millis();
 }
 
-// Callback for the knob: Increase or decrease volume
+// Change volume by the specified amount
 void volChange(int8_t change) {
   int currentVolume = ourMiniDSP.getVolume();
   int newVolume = currentVolume - change;     // + change is - change in the MiniDSP setting
-  newVolume = limit(newVolume, int(ampOptions.maxVolume), 0xFF); 
+  newVolume = limit(newVolume, int(ampOptions.maxVolume), 0xFF); //min( max(newVolume, ampOptions.maxVolume), 0xFF);
   if (newVolume != currentVolume) ourMiniDSP.setVolume(static_cast<uint8_t>(newVolume));
   if (ourMiniDSP.isMuted()) ourMiniDSP.setMute(false);
   ampDisp.wakeup();
   lastTime = millis();
 }
 
-// Callback for remote Vol+
+// Increase the volume by one tick
 void volPlus() {
   uint8_t currentVolume = static_cast<uint8_t>(ourMiniDSP.getVolume());
   if (currentVolume > ampOptions.maxVolume) ourMiniDSP.setVolume(--currentVolume);
@@ -145,7 +146,7 @@ void volPlus() {
   lastTime = millis();
 }
 
-// Callback for remote Vol-
+// Decrease the volume by one tick
 void volMinus() {
   uint8_t currentVolume = static_cast<uint8_t>(ourMiniDSP.getVolume());
   if (currentVolume != 0xFF) ourMiniDSP.setVolume(++currentVolume);
@@ -153,14 +154,14 @@ void volMinus() {
   lastTime = millis();
 }
 
-// Set the mute state in the DSP
+// Set the mute in the MiniDSP
 void setMute(bool muted) {
   ourMiniDSP.setMute(muted);
   lastTime = millis();
 }
 
-// Callback for remote Mute and the button: Toggle the mute state
-void mute() {
+// Toggle the mute state
+void toggleMute() {
   ourMiniDSP.setMute(!ourMiniDSP.isMuted());
   lastTime = millis();
   //static bool m {false};
@@ -168,20 +169,20 @@ void mute() {
   //if (m) powerControl.ampDisable(); else powerControl.ampEnable();
 }
 
-// Set the source in the DSP
+// Set the source in the MiniDSP
 void setSource(source_t source) {
   ourMiniDSP.setSource(source);
+  //ourMiniDSP.setVolumeOffset(source == source_t::Analog ? 0 : ampOptions.analogDigitalDifference);
   lastTime = millis();
 }
 
-// For remote Input and button Long Press callbacks: Provide the new intended source.
-// We don't call setSource here, because it's called from the WaitSource state
+// Identify the currently unselected
 source_t flipSource() {
   source_t newSource = ourMiniDSP.getSource() == source_t::Analog ? source_t::Toslink : source_t::Analog;
   return newSource;
 }
 
-// Set input gain in the DSP
+// Set the input gains in the MiniDSP (L/R to the same value)
 void setInputGain(source_t source) {
   //const float aGains[] = {6.0, 6.0};
   //const float dGains[] = {-40.0, 0.0};
@@ -190,16 +191,12 @@ void setInputGain(source_t source) {
   lastTime = millis();
 }
 
-// Start up the options store
 void optionsSetup() {
-  // These could possibly be done in the private constructor, as long as 
-  // dependencies such as (when debugging) Serial are initialized first.
   ampOptions.begin();
   ampOptions.load();
   ourRemote.loadFromOptions();
 }
 
-// Show the logo
 void showLogo() {
   display.clear();
   display.drawXBMP(0, (64 - logo_height) / 2, logo_width, logo_height, logo_bits);
@@ -247,7 +244,7 @@ void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
 //   a poll method invoked each time around the loop,
 //   a request method invoked on each tick, and
 //   a callback for each possible event.
-// The naming convention for callbacks is on<Source><Event>(...)
+// Naming convention for callbacks is on<Source><Event>(...)
 
 class AmpState {
   public:
@@ -515,7 +512,7 @@ class AmpOnState : public AmpState {
   void toOff();
   void toSource();
 
-  void onButtonShortPress() override { mute(); }
+  void onButtonShortPress() override { toggleMute(); }
   void onButtonLongPressPending() override { ampDisp.cueLongPress(); }
   void onButtonLongPress() override { 
     ampWaitSourceState.setDesiredSource(flipSource());
@@ -525,7 +522,7 @@ class AmpOnState : public AmpState {
 
   void onRemoteVolPlus() override { volPlus(); }
   void onRemoteVolMinus() override { volMinus(); }
-  void onRemoteMute() override { mute(); }
+  void onRemoteMute() override { toggleMute(); }
   void onRemoteSource() override { 
     ampWaitSourceState.setDesiredSource(flipSource());
     toSource();
@@ -668,19 +665,11 @@ void setup() {
 void loop() {
   polls();
 
-  // Periodic requests
-  if (INTERVAL && ourMiniDSP.connected()) {
+  //if (INTERVAL /* && ourMiniDSP.connected() */) {
     uint32_t currentTime = millis();
     if ((currentTime - lastTime) >= INTERVAL) {
       requests();
-      // //showFrameInterval(currentTime, lastTime); // DEBUG: Show the update interval
-      // if (needStatus) {
-      //   //ourMiniDSP.RequestStatus(); // If parsing set responses, it may be sufficient to just skip a levels request
-      //   needStatus = false;
-      // } else {
-      //      ourMiniDSP.RequestInputLevels();
-      // }
       lastTime = currentTime;
     }
-  }
+  //}
 }

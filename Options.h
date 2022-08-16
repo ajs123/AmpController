@@ -50,18 +50,13 @@ constexpr char remoteCommandNames[REMOTE_COMMAND_COUNT][6] = {"Vol +", "Vol -", 
 
 // User-configurable (writable) options
 // Defaults are set in the initialization of the variables.
-// This is configured as a Meyer's singleton. Other classes can access it using
-// Options & options = Options::instance();
-// In namespaces cordoned off by namespace{} only, the reference in the main .ino remains
-// visible so either a unique name or an extern is needed.
+// This is configured as a Meyer's singleton. 
 
 const uint8_t MAX_LABEL_LENGTH = 12;
 const uint8_t MAX_VARIABLE_SIZE = MAX_LABEL_LENGTH + 1;
 const uint8_t MAX_FNAME_LENGTH = 10;
 
 class Options {
-
-    //Remote & ourRemote = Remote::instance();
 
     public:
         // The individual options are public, so they're accessed directly by any client.

@@ -1,9 +1,6 @@
 // Display for the amp controller
-// Simple layout: Volume in dB or %, or MUTE, in a large font, and source indicator (line or toslink)
-// The display should dim shortly after a volume or source change
-
-// The U8G2 display driver is declared and initialized in the .ino and a pointer to it is used here.
-// That's the same as is done with U8G2Log, but it may make more sense to full encapsulate the display here.
+// Simple layout: Volume in dB or %, or MUTE, in a large font, source indicator, and an area used for 
+// a VU meter or messages (typically for debugging)
 
 #pragma once
 
@@ -48,39 +45,7 @@ constexpr areaSpec_t volLabArea =       {101, 127, 20, 48, false};
 constexpr areaSpec_t wholeVolumeArea =  {  0, 127, 20, 48, false};
 constexpr areaSpec_t messageArea =      {  0, 127, 53, 63, false};
 
-/* OLD
-// Text areas {XLeft, XRight, YTop, YBottom, rightJustify}
-constexpr areaSpec_t sourceArea = {0, 127, 0, 15, false};
-constexpr areaSpec_t messageArea = {0, 127, 50, 63, false};
-constexpr areaSpec_t volumeArea = {0, 100, 21, 47, true};
-constexpr areaSpec_t volLabArea = {101, 127, 21, 47, false};
-constexpr areaSpec_t wholeVolumeArea = {0, 127, 22, 48, false};
-*/
-
-// Input icons
-#define icons_binary_width 32
-#define icons_binary_height 32
-static unsigned char icons_binary[] = {
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x70, 0x30, 0x70, 0x30, 0xfc, 0x70, 0xfc, 0x70,
-   0xfc, 0x71, 0xfc, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71,
-   0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0xce, 0x71, 0xce, 0x71,
-   0xfc, 0x71, 0xfc, 0x71, 0xf8, 0x70, 0xf8, 0x70, 0x30, 0x20, 0x30, 0x20,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x80, 0x81, 0x21,
-   0xf8, 0xe0, 0x87, 0x71, 0xfc, 0xe1, 0x87, 0x71, 0xce, 0x71, 0x8e, 0x71,
-   0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71, 0x8e, 0x71,
-   0x8e, 0x71, 0x8e, 0x71, 0xfc, 0xf1, 0x8f, 0x71, 0xfc, 0xe0, 0x87, 0x71,
-   0x70, 0xc0, 0x83, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-// Inputs
-// enum source_t { 
-//     Analog = 0,
-//     Toslink = 1,
-//     Unset = 2};
-
-class AmpDisplay
-{
+class AmpDisplay {
 
 protected:
     U8G2 * display;
@@ -179,8 +144,7 @@ public:
      * send the draw buffer to the display. When unset (default), displayUpdate() will note the need
      * for a refresh but a call to refresh() will be required to copy the buffer.
      * This provides better control over timing when multiple sources such as callbacks
-     * modify the display. NOTE: When unset, and multiple sources share a display area,
-     * only the last content drawn prior to refresh() will be visible.
+     * modify the display. 
      * 
      * @param immediate
      */

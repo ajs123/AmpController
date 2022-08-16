@@ -1,18 +1,17 @@
 // Input sensing
+// Classes to provide filtering and trigger functions
 
 #pragma once
 
 #include <Arduino.h>
 #include "Configuration.h"
 #include "Options.h"
-//#include <math.h>
 
-// Minimum voltage on a trigger input
+// Minimum valid voltage on a trigger input
 constexpr float triggerVoltage = 3.0;
 
-constexpr int x = 1;
-constexpr float analogRef = 3.3; 
-constexpr float analogInputRatio = 3.3/(10 + 3.3);
+constexpr float analogRef = 3.6;                    // Default Vref for the nRF52840
+constexpr float analogInputRatio = 3.3/(10 + 3.3);  // Voltage divider: 3.3V -- 10K -- 3.3K -- GND
 constexpr int analogBits = 12;
 constexpr int triggerADC = triggerVoltage * analogInputRatio / analogRef * (1 << analogBits);
 
@@ -54,8 +53,6 @@ template <class T> class IIR {
         T _coeff;
 };
 
-//template <> int IIR<int>::next(int u) { return _x += (_coeff * (u - _x)) / 100; };
-
 // Single-pole IIR filter using integer arithmetic
 class IIIR {
     public:
@@ -94,7 +91,8 @@ class SampleTrigger {
         bool _state {false};
 };
 
-// Timed trigger. Goes high on exceeding threshold and stays high for specified time. Used for the clipping indicator.
+// Timed trigger. Goes high on exceeding threshold and stays high for specified time. 
+// If indicator pin provided, writes to an LED output. Used for the clipping indicator.
 template <class T> class TimedTrigger {
     public:
         TimedTrigger(T threshold, uint32_t minTime, uint32_t indicator = 0) :

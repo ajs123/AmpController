@@ -120,6 +120,7 @@
         displayUpdate();
     }
 
+    // @brief Dims the display
     void AmpDisplay::dim() {
         if (dimState) return;
         display->setContrast(contrast(ampOptions.brightness.lowBrightness - 1));

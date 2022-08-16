@@ -13,9 +13,6 @@
 
 namespace OptionsMenu {
 
-    // The following gives a linker error because things in the .ino are in the global namespace.
-    //Remote ourRemote = Remote::instance();
-
     #define fontName u8g2_font_7x13_mf
     //#define titleFontName u8g2_font_7x13_mf
     #define titleFontName u8g2_font_9x18_mf
