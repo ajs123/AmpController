@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "src/UHS/MiniDSP.h"
-//#include <MiniDSP.h>
 #include "AmpDisplay.h"
 #include "PowerControl.h"
 #include "RemoteHandler.h"
@@ -15,7 +14,7 @@
 #include "Configuration.h"
 #include "logo.h"
 #include "InputSensing.h"
-//#include "NoisyLogo.h"
+#include "util.h"
 
 // Options store
 Options & ampOptions = Options::instance();                   // Options store - singleton form
@@ -39,11 +38,10 @@ PowerControl powerControl;
 // Input and trigger monitoring
 InputMonitor inputMonitor(1);  // Arg is minutes. Will get set to the actual option value
 TriggerSensing triggerMonitor;
-//TimedTrigger<float> clipSensor(clipThreshold, clipIndicatorTime);
 TimedTrigger<float> clipSensor(-defaultClippingHeadroom, clipIndicatorTime, LED_RED);
 
 // Interval (ms) between queries to the dsp.
-// Limited mainly by the 36 ms for refresh of the nrf52840 and generic OLED display.
+// Limited mainly by the 36 ms for refresh of the OLED display.
 constexpr uint32_t INTERVAL = 50;   
 
 // Persistent state
@@ -54,29 +52,26 @@ BLEDfu bledfu;      // Device firmware update
 BLEDis bledis;      // Device information service
 
 void BLESetup() {
-  if (goButton.rawClosed()) {
-    Bluefruit.begin();
-    Bluefruit.setName("LXMini");
+  Bluefruit.begin();
+  Bluefruit.setName("LXMini");
 
-    bledfu.begin();
+  bledfu.begin();
 
-    bledis.setManufacturer("BistroDad");  // Not sure that we need dis if using only dfu
-    bledis.setModel("LXMini Amp");
-    bledis.begin();
+  bledis.setManufacturer("BistroDad");  // Not sure that we need dis if using only dfu
+  bledis.setModel("LXMini Amp");
+  bledis.begin();
 
-    Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
-    Bluefruit.Advertising.addService(bledfu);
-    Bluefruit.Advertising.restartOnDisconnect(true);
-    Bluefruit.Advertising.setInterval(32, 244);
-    Bluefruit.Advertising.setFastTimeout(30);
-    Bluefruit.Advertising.start(60);
-  }
+  Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+  Bluefruit.Advertising.addService(bledfu);
+  Bluefruit.Advertising.restartOnDisconnect(true);
+  Bluefruit.Advertising.setInterval(32, 244);
+  Bluefruit.Advertising.setFastTimeout(30);
+  Bluefruit.Advertising.start(60);
 }
 
 void DisplaySetup() {
   display.begin();
   display.setFontMode(0);
-  //ampDisp.displayMessage("START");
   ampDisp.scheduleDim();
   ampDisp.refresh();
   ampDisp.setImmediateUpdate(false);
@@ -85,32 +80,33 @@ void DisplaySetup() {
 // For debugging: Puts the first 8 bytes of received messages on the display.
 void OnParse(uint8_t * buf) {
   char bufStr[28];
-  snprintf(bufStr, 28, "%02X %02X %02X %02X %02X %02X %02X %02X %02X", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8], buf[9]);
+  snprintf(bufStr, 28, "%02X %02X %02X %02X %02X %02X %02X %02X", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8]);
   ampDisp.displayMessage(bufStr);
 }
 
 constexpr float VUCoeff = 0.32 * INTERVAL / 50; // Approximates std. VU step response 90% at 300 ms
 constexpr float signalFloorDB = -128.0;
 
+// Filtered levels for the VU meter
 IIR<float> leftLevel(VUCoeff, signalFloorDB);
 IIR<float> rightLevel(VUCoeff, signalFloorDB);
 
+// MiniDSP input gain setting according to the selected source
 float sourceGain(source_t source) {
   return (source == source_t::Analog) ? (float)ampOptions.analogDigitalDifference : 0.0;
 }
 
+// Callback for new input levels
 void handleInputLevels(float * levels) {
   float left = leftLevel.next(levels[1]);
   float right = rightLevel.next(levels[0]);
   inputVUMeter(left, right);
   inputMonitor.task(left, right);
-  clipSensor.next(max(left, right));
-  //digitalWrite(LED_RED, clipSensor.next(max(left, right)) ? HIGH : LOW);
+  clipSensor.next(max(left, right));  // The clipping sensor includes an LED indicator
 }
 
 /**
  * @brief Provides a VU meter based on input levels and the volume setting.
- * 
  * @param levels The two inputs, in dB.
  */
 void inputVUMeter(float leftLevel, float rightLevel) {
@@ -123,27 +119,24 @@ void inputVUMeter(float leftLevel, float rightLevel) {
 
 // Utility functions for the various callbacks
 
-template<class T> 
-inline T limit(const T& value, const T& min, const T& max) { 
-  T v = (value < min) ? min : value;
-  return (v > max) ? max : v; 
-  }
-
+// Set the volume in the DSP, respecting limits
 void setVolume(uint8_t volume) {
   ourMiniDSP.setVolume(limit(volume, ampOptions.maxVolume, uint8_t(0xFF)));   // Unsigned int representing negative dB, so min is maxVolume
   lastTime = millis();
 }
 
+// Callback for the knob: Increase or decrease volume
 void volChange(int8_t change) {
   int currentVolume = ourMiniDSP.getVolume();
   int newVolume = currentVolume - change;     // + change is - change in the MiniDSP setting
-  newVolume = limit(newVolume, int(ampOptions.maxVolume), 0xFF); //min( max(newVolume, ampOptions.maxVolume), 0xFF);
+  newVolume = limit(newVolume, int(ampOptions.maxVolume), 0xFF); 
   if (newVolume != currentVolume) ourMiniDSP.setVolume(static_cast<uint8_t>(newVolume));
   if (ourMiniDSP.isMuted()) ourMiniDSP.setMute(false);
   ampDisp.wakeup();
   lastTime = millis();
 }
 
+// Callback for remote Vol+
 void volPlus() {
   uint8_t currentVolume = static_cast<uint8_t>(ourMiniDSP.getVolume());
   if (currentVolume > ampOptions.maxVolume) ourMiniDSP.setVolume(--currentVolume);
@@ -152,6 +145,7 @@ void volPlus() {
   lastTime = millis();
 }
 
+// Callback for remote Vol-
 void volMinus() {
   uint8_t currentVolume = static_cast<uint8_t>(ourMiniDSP.getVolume());
   if (currentVolume != 0xFF) ourMiniDSP.setVolume(++currentVolume);
@@ -159,11 +153,13 @@ void volMinus() {
   lastTime = millis();
 }
 
+// Set the mute state in the DSP
 void setMute(bool muted) {
   ourMiniDSP.setMute(muted);
   lastTime = millis();
 }
 
+// Callback for remote Mute and the button: Toggle the mute state
 void mute() {
   ourMiniDSP.setMute(!ourMiniDSP.isMuted());
   lastTime = millis();
@@ -172,20 +168,20 @@ void mute() {
   //if (m) powerControl.ampDisable(); else powerControl.ampEnable();
 }
 
+// Set the source in the DSP
 void setSource(source_t source) {
   ourMiniDSP.setSource(source);
-  //ourMiniDSP.setVolumeOffset(source == source_t::Analog ? 0 : ampOptions.analogDigitalDifference);
   lastTime = millis();
 }
 
+// For remote Input and button Long Press callbacks: Provide the new intended source.
+// We don't call setSource here, because it's called from the WaitSource state
 source_t flipSource() {
-  //ampDisp.displayMessage("INPUT");
   source_t newSource = ourMiniDSP.getSource() == source_t::Analog ? source_t::Toslink : source_t::Analog;
-  //setSource(newSource);
-  //lastTime = millis();
   return newSource;
 }
 
+// Set input gain in the DSP
 void setInputGain(source_t source) {
   //const float aGains[] = {6.0, 6.0};
   //const float dGains[] = {-40.0, 0.0};
@@ -194,6 +190,7 @@ void setInputGain(source_t source) {
   lastTime = millis();
 }
 
+// Start up the options store
 void optionsSetup() {
   // These could possibly be done in the private constructor, as long as 
   // dependencies such as (when debugging) Serial are initialized first.
@@ -202,6 +199,7 @@ void optionsSetup() {
   ourRemote.loadFromOptions();
 }
 
+// Show the logo
 void showLogo() {
   display.clear();
   display.drawXBMP(0, (64 - logo_height) / 2, logo_width, logo_height, logo_bits);
@@ -243,23 +241,13 @@ void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
   }
 }
 
-// TEST: To experiment with display brighness
-uint8_t brightness {128};
-void changeBrighness(int8_t change) {
-  int b = brightness;
-  //Serial.printf("Brightness was %d\n", brightness);
-  brightness = limit<int>((b + change), 0, 255);
-  Serial.printf("Change %d, Brightness %d\n", change, brightness);
-  display.setContrast(brightness);
-}
-
 // The main state machine - uses a classic state pattern.
 // Each state has 
 //   a method invoked upon entry, 
 //   a poll method invoked each time around the loop,
 //   a request method invoked on each tick, and
 //   a callback for each possible event.
-// Naming convention for callbacks is on<Source><Event>(...)
+// The naming convention for callbacks is on<Source><Event>(...)
 
 class AmpState {
   public:
@@ -648,7 +636,7 @@ void setup() {
   powerControl.begin();
   optionsSetup();
   DisplaySetup();
-  BLESetup();
+  if (goButton.rawClosed()) BLESetup();
   knob.begin();
   ourRemote.listen();
   triggerMonitor.begin();

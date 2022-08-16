@@ -196,9 +196,7 @@ public:
 // }
 // //------------------------------------------------
 
-//custom field print
-//implementing a customized menu component
-//this numeric field prints formatted number with leading zeros
+//custom field print: "NONE" instead of 0
 template<typename T>
 class offField:public menuField<T> {
 public:
