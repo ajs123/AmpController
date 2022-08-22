@@ -13,6 +13,7 @@
         "cstdlib": "cpp",
         "bit": "cpp",
         "functional": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "3421_Host.C": "cpp"
     }
 }

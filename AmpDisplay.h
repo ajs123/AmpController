@@ -54,15 +54,15 @@ protected:
     bool dBDisplay = DBDISPLAY;      // Show dB (true) or %
 
     // State - supports updates only when necessary
-    uint8_t muteState = 3;                      // Muted? 0 = no; 1 = yes; 3 = undetermined
-    float volumeState = -129;                   // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
-    source_t sourceState = source_t::Unset;     // Current source. 
-    bool dimState;                              // True if dimmed.
-    uint32_t brightTime;                        // Time when dim timer was reset
-    bool volumeShown = false;                   // Enables selective re-draw of volume in display wakeup 
+    uint8_t muteState {3};                      // Muted? 0 = no; 1 = yes; 3 = undetermined
+    float volumeState {-129};                   // dB.  Can be set below MIN_VOLUME to denote as-yet-undetermined.
+    source_t sourceState {source_t::Unset};     // Current source. 
+    bool dimState {false};                              // True if dimmed.
+    uint32_t brightTime {false};                        // Time when dim timer was reset
+    bool volumeShown {false};                   // Enables selective re-draw of volume in display wakeup 
 
-    bool newContent = false;
-    bool autoRefresh = false;
+    bool newContent {false};
+    bool autoRefresh {false};
 
 public:
 
@@ -70,6 +70,14 @@ public:
     AmpDisplay(U8G2 * u8g2)
     {
         display = u8g2;
+        muteState = 3;
+        volumeState = -129;
+        sourceState = source_t::Unset;
+        dimState = false;
+        brightTime = millis();
+        volumeShown = false;
+        newContent = false;
+        autoRefresh = false;
     }
 
     AmpDisplay(U8G2 * u8g2, float vol, bool mute, source_t input, bool dB)
@@ -130,7 +138,10 @@ public:
     // @brief Check if the display is dimmed
     bool dimmed();
 
-    // @brief Wake up the display
+    // @brief Un-dim the display, without restoring the volume indicator, or scheduling dimming
+    void undim();
+
+    // @brief Wake up the display, restoring the volume indicator as needed and scheduling dimming
     void wakeup();
 
     // @brief Cue a pending long press

@@ -60,19 +60,22 @@ class Options {
 
     public:
         // The individual options are public, so they're accessed directly by any client.
-        // The defaults for these options are set in initialization.
+        // NOTE: Slightly better practice would be to make all of these const, then
+        // const_cast that away when truly needing to change them (i.e., in the options menu only).
+        // The defaults for these options are set in their initialization. Any values
+        // stored in flash overwrite the defaults.
 
-        // For better or for worse, volume options are in MiniDSP units (-0.5 dB).
-        // Maximum volume at any time (protects the neighbors)
+        // For better or for worse, maximum volume options are in MiniDSP units (-0.5 dB).
+        // Maximum volume at any time (protects the neighbors), in MiniDSP units
         uint8_t maxVolume = 0;
 
-        // Maximum volume at startup (avoids getting blasted in the morning)
+        // Maximum volume at startup (avoids getting blasted in the morning), in MiniDSP units
         uint8_t maxInitialVolume = 10;
 
-        // Analog-digital volume difference, to compensate for input level differences
+        // Analog-digital volume difference in dB, to compensate for input level differences
         int8_t analogDigitalDifference = 0;
 
-        // Headroom for the clipping indicator
+        // Headroom for the clipping indicator, in dB
         uint8_t clippingHeadroom = defaultClippingHeadroom;
 
         // Label for the analog input

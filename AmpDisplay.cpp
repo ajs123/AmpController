@@ -146,6 +146,11 @@
         }
     }
 
+    void AmpDisplay::undim() {
+        display->setContrast(contrast(ampOptions.brightness.highBrightness));
+        dimState = false;
+    }
+    
     void AmpDisplay::wakeup() {
     #ifdef TRANSIENTVOLUME
         if (!volumeShown) drawVolume();

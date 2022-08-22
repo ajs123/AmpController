@@ -260,7 +260,7 @@ void MiniDSP::ParseHIDData(USBHID *hid __attribute__ ((unused)), bool is_rpt_id 
 
         // ...or the response to a DSP memory (fp) write
         else if (buf[1] == dspWriteCommand) {
-                Serial.println("Parsing dsp write response");
+                //Serial.println("Parsing dsp write response");
                 parseDSPWriteResponse(buf);
         }
 }; 

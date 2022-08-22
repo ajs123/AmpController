@@ -162,7 +162,8 @@ public:
         uint8_t getVbusState(void) {
                 return vbusState;
         };
-        void busprobe();
+
+        void busprobe(bool regardless = false);
         uint8_t GpxHandler();
         uint8_t IntHandler();
         uint8_t Task();
@@ -508,10 +509,13 @@ int8_t MAX3421e< SPI_SS, INTR >::Init(int mseconds) {
         return ( 0);
 }
 
+
 /* probe bus to determine device presence and speed and switch host to this speed */
+/* Patch by tmk to sample the bus (by SAMPLEBUS) in the absence of CONDETIRQ if the current vbusStatus indicates no connection */
+/* Additional patch by ajs: If regardless is true, SAMPLEBUS is used regardless of vbusState. To be used when we know there's no connection */
 template< typename SPI_SS, typename INTR >
-void MAX3421e< SPI_SS, INTR >::busprobe() {
-        static uint8_t prev_bus = -1; // tmk Plugin detect patch
+void MAX3421e< SPI_SS, INTR >::busprobe(bool regardless) {
+        static uint8_t prev_bus = -1; // tmk Plugin detect patch see https://github.com/felis/USB_Host_Shield_2.0/pull/653
         uint8_t bus_sample;
 
         // tmk plug-in detect patch start
@@ -521,8 +525,8 @@ void MAX3421e< SPI_SS, INTR >::busprobe() {
             regWr(rHIRQ, bmCONDETIRQ);
         } else {
             // check current bus state when no device(SE0),
-            // otherwise transient state will be read due to bus activity.
-            if (vbusState != SE0) return;
+            // or regardless == true.
+            if ((vbusState != SE0) && !regardless) return;
 
             // read current bus state
             regWr(rHCTL, bmSAMPLEBUS);
@@ -531,7 +535,14 @@ void MAX3421e< SPI_SS, INTR >::busprobe() {
 
         bus_sample = regRd(rHRSL); //Get J,K status
         bus_sample &= (bmJSTATUS | bmKSTATUS); //zero the rest of the byte
+
+        // tmk plug-in detect patch start
+        if (prev_bus == bus_sample) { return; }
+        prev_bus = bus_sample;
+        // tmk plug-in detect patch end
+
         switch(bus_sample) { //start full-speed or low-speed host
+
                 case( bmJSTATUS):
                         if((regRd(rMODE) & bmLOWSPEED) == 0) {
                                 regWr(rMODE, MODE_FS_HOST); //start full-speed host

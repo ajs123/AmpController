@@ -24,8 +24,8 @@
 #include "src/IR/IRLibCombo.h" // <IRLibCombo.h>            // Uses the first protocol that appears to match
 
 // A button press on a remote will send a command, followed by repeats if the button is held down.
-// Repeats transmit at ~50-100 ms intervals, so even an intentionally quick click can produce multiple codes.
-// In addition, some remotes retransmit each button press. Sony remotes are said to retransmit 3 times. 
+// Repeats transmit at ~50-100 ms intervals, so even a quick click can produce multiple codes.
+// In addition, some remotes retransmit with each button press. Sony remotes are said to retransmit 3 times. 
 // Some buttons can be marked here as non-repeatable. See the dispatch table.
 // For others, we provide a short time after each fresh command during which repeats are not acted upon.
 

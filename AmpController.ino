@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "src/UHS/MiniDSP.h"
-//#include <MiniDSP.h>
 #include "AmpDisplay.h"
 #include "PowerControl.h"
 #include "RemoteHandler.h"
@@ -16,19 +15,21 @@
 #include "logo.h"
 #include "InputSensing.h"
 
+//#define VBUS_DEBUG
+//#define INCLUDE_DEBUG
+
 // Options store
-Options & ampOptions = Options::instance();                   // Options store - singleton form
+Options & ampOptions = Options::instance();                   // singleton form
 
 // Hardware and interface class instances
 USB thisUSB;                                                  // USB via Host Shield
 MiniDSP ourMiniDSP(&thisUSB);                                 // MiniDSP on thisUSB
-
 U8G2_SH1107_64X128_F_HW_I2C display(U8G2_R1, U8X8_PIN_NONE);  // Adafruit OLED Featherwing display on I2C bus
 AmpDisplay ampDisp(&display);                                 // Live display on the OLED
 
 // Input devices
 //Remote ourRemote(IR_PIN);                                     // IR receiver
-Remote & ourRemote = Remote::instance();                      // IR receiver - singleton form
+Remote & ourRemote = Remote::instance();                      // singleton form
 Button goButton(ENCODER_BUTTON);                              // Encoder action button
 Knob knob(ENCODER_A, ENCODER_B);                              // Rotary encoder
 
@@ -41,11 +42,11 @@ TriggerSensing triggerMonitor;
 TimedTrigger<float> clipSensor(-defaultClippingHeadroom, clipIndicatorTime, LED_RED);
 
 // Interval (ms) between queries to the dsp.
-// Limited mainly by the 36 ms for refresh of the nrf52840 and generic OLED display.
+// Limited mainly by the ~36 ms needed for refresh of the nrf52840 and generic OLED display.
 constexpr uint32_t INTERVAL = 50;   
 
 // Persistent state
-uint32_t lastTime;    // millis() of the last timed query
+uint32_t lastTime {0};    // millis() of the last timed query
 
 // BLE services
 BLEDfu bledfu;      // Device firmware update
@@ -57,7 +58,7 @@ void BLESetup() {
 
   bledfu.begin();
 
-  bledis.setManufacturer("BistroDad");  // Not sure that we need dis if using only dfu
+  bledis.setManufacturer("Fushing");  // Not sure that we need dis if using only dfu
   bledis.setModel("LXMini Amp");
   bledis.begin();
 
@@ -78,12 +79,50 @@ void DisplaySetup() {
   ampDisp.setImmediateUpdate(false);
 }
 
-// For debugging: Puts the first 8 bytes of received messages on the display.
+#ifdef INCLUDE_DEBUG
+// DEBUG: Puts the first 8 bytes of received messages on the display.
 void OnParse(uint8_t * buf) {
   char bufStr[28];
   snprintf(bufStr, 28, "%02X %02X %02X %02X %02X %02X %02X %02X", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8]);
   ampDisp.displayMessage(bufStr);
 }
+
+// DEBUG: for USB state reporting
+void showUSBTaskState(bool regardless = false) {
+  static uint16_t lastUSBState = 0xFFFF;
+  char strBuf[20];
+  uint8_t taskState = thisUSB.getUsbTaskState();
+  uint8_t vbusState = thisUSB.getVbusState();
+  uint16_t USBState = taskState | (vbusState << 8);
+  if ((USBState != lastUSBState) || regardless) {
+    snprintf(strBuf, sizeof(strBuf), "TASK %02x VBUS %02x", taskState, vbusState);
+    ampDisp.displayMessage(strBuf);
+    ampDisp.refresh();
+    //if ((taskState != 0x90) || (vbusState != 0x02)) ampDisp.displayMessage("WAIT..."); 
+    lastUSBState = USBState;
+  }
+}
+
+// DEBUG: for showing the update interval
+void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
+  constexpr uint32_t frameReportInterval = 1000;
+  char strBuf[24];
+  static uint16_t intervalAccum = 0;
+  static uint16_t intervalCount = 0;
+  static uint32_t lastFrameReport = millis();
+
+  intervalAccum += currentTime - lastTime;
+  intervalCount ++;
+
+  if ((currentTime - lastFrameReport) >= frameReportInterval) {
+    snprintf(strBuf, sizeof(strBuf), "Int %d", intervalAccum / intervalCount);
+    ampDisp.displayMessage(strBuf, sourceArea);
+    intervalAccum = 0;
+    intervalCount = 0;
+    lastFrameReport = currentTime;
+  }
+}
+#endif
 
 constexpr float VUCoeff = 0.32 * INTERVAL / 50; // Approximates std. VU step response 90% at 300 ms
 constexpr float signalFloorDB = -128.0;
@@ -97,7 +136,7 @@ float sourceGain(source_t source) {
   return (source == source_t::Analog) ? (float)ampOptions.analogDigitalDifference : 0.0;
 }
 
-// Callback for new input levels from the MiniDSP: VU meter, silence monitor, clipping sensor
+// On state callback for new input levels from the MiniDSP: VU meter, silence monitor, clipping sensor
 void handleInputLevels(float * levels) {
   float left = leftLevel.next(levels[1]);
   float right = rightLevel.next(levels[0]);
@@ -175,7 +214,6 @@ void setSource(source_t source) {
   //ourMiniDSP.setVolumeOffset(source == source_t::Analog ? 0 : ampOptions.analogDigitalDifference);
   lastTime = millis();
 }
-
 // Identify the currently unselected
 source_t flipSource() {
   source_t newSource = ourMiniDSP.getSource() == source_t::Analog ? source_t::Toslink : source_t::Analog;
@@ -201,41 +239,6 @@ void showLogo() {
   display.clear();
   display.drawXBMP(0, (64 - logo_height) / 2, logo_width, logo_height, logo_bits);
   display.updateDisplay();
-}
-
-// DEBUG: for USB state reporting
-void showUSBTaskState() {
-  static uint16_t lastUSBState = 0xFFFF;
-  char strBuf[20];
-  uint8_t taskState = thisUSB.getUsbTaskState();
-  uint8_t vbusState = thisUSB.getVbusState();
-  uint16_t USBState = taskState | (vbusState << 8);
-  if (USBState != lastUSBState) {
-    snprintf(strBuf, sizeof(strBuf), "TASK %02x   VBUS %02x", taskState, vbusState);
-    ampDisp.displayMessage(strBuf);
-    //if ((taskState != 0x90) || (vbusState != 0x02)) ampDisp.displayMessage("WAIT..."); 
-    lastUSBState = USBState;
-  }
-}
-
-// DEBUG: for showing the update interval
-void showFrameInterval(uint32_t currentTime, uint32_t lastTime) {
-  constexpr uint32_t frameReportInterval = 1000;
-  char strBuf[24];
-  static uint16_t intervalAccum = 0;
-  static uint16_t intervalCount = 0;
-  static uint32_t lastFrameReport = millis();
-
-  intervalAccum += currentTime - lastTime;
-  intervalCount ++;
-
-  if ((currentTime - lastFrameReport) >= frameReportInterval) {
-    snprintf(strBuf, sizeof(strBuf), "Int %d", intervalAccum / intervalCount);
-    ampDisp.displayMessage(strBuf, sourceArea);
-    intervalAccum = 0;
-    intervalCount = 0;
-    lastFrameReport = currentTime;
-  }
 }
 
 // The main state machine - uses a classic state pattern.
@@ -277,19 +280,60 @@ class AmpState {
 
 void transitionTo(AmpState * newState);
 
-// The Off state - just watch the remote, button, and triggers
+#ifdef VBUS_DEBUG
+// VBUS_DEBUG code for automatically doing N power cycles
+const int testCycles = 500;
+int cycleCount {0};
+int offStateExtras {0};
+int initCount {0};
+int powerCycles {0};
+
+void showDebugData() {
+  Serial.printf("N %d E %d I %d P %d\n", cycleCount, offStateExtras, initCount, powerCycles);
+  // char buf[30];
+  // snprintf(buf, 25, "N %d E %d I %d P %d", cycleCount, offStateExtras, initCount, powerCycles);
+  // ampDisp.displayMessage(buf);
+  // ampDisp.refresh();
+}
+// 
+#endif
+
+// The Off state - power down, then just watch the remote, button, and triggers
+const uint32_t minOffTime = 1000;
 class AmpOffState : public AmpState {
+  uint32_t entryTime {0};
   void onEntry() override {
+    entryTime = millis();
     powerControl.ampDisable();
     powerControl.powerOff();
     display.clear();
     display.updateDisplay();
+    ourRemote.stopListening(); // Empty the receive buffer
     ourRemote.listen();
   }
   void polls() override {
-    ourRemote.Task();
-    goButton.Task();
-    triggerMonitor.task();
+    if (thisUSB.getVbusState() != SE0) thisUSB.Task();  // After powerOff, continue polling the USB until we see the disconnect
+    //thisUSB.Task();
+    uint32_t currentTime = millis();
+    if ((currentTime - entryTime) > minOffTime) {       // Avoid re-applying power too soon
+      // if (thisUSB.getVbusState() != SE0) {
+      //   thisUSB.busprobe(true);  // Just in case the chip missed the disconnect - This appears never to be reached
+      //   #ifdef VBUS_DEBUG
+      //   offStateExtras++;
+      //   #endif
+      // }
+      ourRemote.Task();
+      goButton.Task();
+      triggerMonitor.task();
+      entryTime = currentTime + minOffTime;         // Keep working 45 days later!
+      #ifdef VBUS_DEBUG
+      showDebugData();
+      if (cycleCount < testCycles) {
+        ++cycleCount;
+        onButtonShortPress();
+      }
+      #endif
+    }
   }
   void onButtonFullHold() override;                 // --> Menu - See the transition table
   void onButtonShortPress() override;               // --> Start seq - See transition table
@@ -326,27 +370,38 @@ class AmpMenuState : public AmpState {
   void onMenuExit() override;                       // --> Off - See the transition table
 } ampMenuState;
 
-// DSP wait state - power up and watch for the DSP to become connected
-const uint32_t maxDSPStartupTime = 10000; // ms
+// DSP wait state - power up and watch for the DSP to become connected.
+const uint32_t maxDSPStartupTime = 10000; // ms. Normal MiniDSP startup is about 6 seconds
 class AmpWaitDSPState : public AmpState {
   uint32_t entryTime {0};
   void onEntry() override {
+    #ifdef VBUS_DEBUG
+    showDebugData();
+    #endif
     entryTime = millis();
+    thisUSB.Task();                       // Just in case we enter this state from other than AmpOff
+    if (thisUSB.getVbusState() != SE0) {  // This should have been satisfied while in AmpOff - and it appears that it reliably is
+      //showUSBTaskState(true);
+      #ifdef VBUS_DEBUG
+      initCount++;
+      #endif
+      thisUSB.Init();
+      thisUSB.busprobe(true);
+      ampDisp.displayMessage("0");
+    } else {
+      ampDisp.displayMessage(".");
+    }
     powerControl.ampDisable();
     powerControl.powerOn();
-    showLogo();
-    ampDisp.displayMessage(".");
     ampDisp.refresh();
-    ampDisp.wakeup();
+    ampDisp.undim();
   }
+
   void onDSPTimeout();                              // --> Cycle power - See transition table
   void polls() override {
     thisUSB.Task();
-    if ((millis() - entryTime) > maxDSPStartupTime) onDSPTimeout();
     //showUSBTaskState();
-    //ampDisp.refresh();
-    // TEMPORARY: Until power control is implemented, the dsp may already be connected
-    //if (ourMiniDSP.connected()) onDSPConnected();
+    if ((millis() - entryTime) > maxDSPStartupTime) onDSPTimeout();
   }
   void onDSPConnected() override;                   // --> Source check - See transition table
 } ampWaitDSPState;
@@ -356,12 +411,23 @@ const uint32_t DSPPowerDownTime = 2000; // ms
 class AmpCyclePowerState : public AmpState {
   uint32_t entryTime {0};
   void onEntry() override {
-    powerControl.powerOff();
     entryTime = millis();
+    powerControl.powerOff();
+    #ifdef VBUS_DEBUG
+    powerCycles++;
+    Serial.printf("Timeout on cycle %d with Task state %02X and Vbus state %02X\n", cycleCount, thisUSB.getUsbTaskState(), thisUSB.getVbusState());
+    #endif
+    ampDisp.displayMessage("*");
+    ampDisp.refresh();
   }
   void onTime();                                    // --> Wait for DSP - see transition table
   void polls() override {
-    if ((millis() - entryTime) > DSPPowerDownTime) onTime();
+    thisUSB.Task();
+    if ((millis() - entryTime) > DSPPowerDownTime) {
+      thisUSB.Init();  
+      thisUSB.busprobe(true);
+      onTime();
+    }
   }
 } ampCylcePowerState;
 
@@ -370,6 +436,7 @@ class AmpCyclePowerState : public AmpState {
 class AmpWaitSourceState : public AmpState {
   private:
     source_t desiredSource {source_t::Unset};
+
   public:
     void setDesiredSource(source_t source) { desiredSource = source; }
 
@@ -382,12 +449,13 @@ class AmpWaitSourceState : public AmpState {
     thisUSB.Task();
   }
   void requests() override {
-    ourMiniDSP.requestSource(); // Could be requestSource()
+    ourMiniDSP.requestSource(); 
   }
+
   void toSetGain();
   void onDSPSource(source_t source) override {
+    // If a desired source is set, check input against that
     if (desiredSource != source_t::Unset) {
-      //Serial.printf("Handling desired source %d and actual %d\n", (uint8_t)desiredSource, (uint8_t)source);
       if (source == desiredSource) {
         toSetGain();
         desiredSource = source_t::Unset;
@@ -396,7 +464,7 @@ class AmpWaitSourceState : public AmpState {
       }
       return;
     }
-    // Check input against what's called for by the triggers
+    // Otherwise, check input against what's called for by the triggers
     trigger_t triggers = triggerMonitor.getTriggers();
     if (triggers.analog && triggers.digital) {              // If both, leave source as is
       toSetGain();
@@ -414,10 +482,6 @@ class AmpWaitSourceState : public AmpState {
   }
 } ampWaitSourceState;
 
-inline bool fEqual(float x, float y, float p = 0.1) {
-  return (abs(x - y) < p);
-}
-
 // Set gain state - ensure that input gains match the options settings
 class AmpSetGainState : public AmpState {
   void onEntry() override { 
@@ -432,13 +496,14 @@ class AmpSetGainState : public AmpState {
   }
   void toWaitVolume();
   void onDSPInputGains(float * gains) {
-    //Serial.printf("Gains set to %f, %f\n", gains[0], gains[1]);
     float reqGain = sourceGain(ourMiniDSP.getSource());
     if (fEqual(gains[1], reqGain) && fEqual(gains[1], reqGain)) toWaitVolume();   
   }
 } ampSetGainState;
 
 // Volume wait state - ensure that the volume is within range (generally, and for startup)
+// Placing this in the sequence after the source change means that the startup volume limit applies
+// whenever the source is changed.
 class AmpWaitVolumeState : public AmpState {
   void onEntry() override { 
     ampDisp.displayMessage("...."); 
@@ -451,7 +516,7 @@ class AmpWaitVolumeState : public AmpState {
     ourMiniDSP.requestVolume(); 
   }
   void toWaitMute();
-  // WE DON'T NEED A MAX VOLUME CHECK WHEN ALREADY ON AND SWITCHING INPUTS
+  
   void onDSPVolume(uint8_t volume) override {
     if (volume < ampOptions.maxInitialVolume) setVolume(ampOptions.maxInitialVolume);
     else toWaitMute();                              // --> Mute check - See transition table
@@ -490,6 +555,7 @@ class AmpOnState : public AmpState {
     ampDisp.source((source_t) ourMiniDSP.getSource());
     ampDisp.volume(-ourMiniDSP.getVolume()/2.0);
     ampDisp.mute(ourMiniDSP.isMuted());
+    ourRemote.stopListening();  // Empty the receive buffer
     ourRemote.listen();
   }
   void polls() override {
@@ -500,6 +566,9 @@ class AmpOnState : public AmpState {
     triggerMonitor.task();
     ampDisp.checkDim();
     ampDisp.refresh();
+    #ifdef VBUS_DEBUG
+    transitionTo(&ampOffState);
+    #endif
   };
 
   void requests() override { ourMiniDSP.RequestInputLevels(); }
@@ -642,6 +711,8 @@ void setup() {
   showLogo();
   delay(2000);
 
+  // Init is called with each entry to WaitDSP, so it's possibly not needed here.
+  // But it's helpful to know at power-on if something's wrong with the UHS
   if(thisUSB.Init() == -1) {
     ampDisp.displayMessage("USB didn't start.");
     ampDisp.refresh();
@@ -653,11 +724,14 @@ void setup() {
   ourMiniDSP.attachOnVolumeChange(&onDSPVolume);
   ourMiniDSP.attachOnMutedChange(&onDSPMute);
   ourMiniDSP.attachOnSourceChange(&onDSPSource);
-  //ourMiniDSP.attachOnParse(&OnParse);
+  //ourMiniDSP.attachOnParse(&OnParse);         // Only for debugging
   ourMiniDSP.attachOnNewInputLevels(&onDSPInputLevels);
   ourMiniDSP.attachOnNewInputGains(&onDSPInputGains);
   // Remote and knob callbacks have fixed names so they don't need to be registered.
-  ourMiniDSP.callbackOnResponse();
+
+  ourMiniDSP.callbackOnResponse();              // We want a callback even if the value is unchanged
+
+  lastTime = millis();
 
   transitionTo(&ampOffState);
 }
