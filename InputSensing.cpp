@@ -2,35 +2,31 @@
 
 #include <Arduino.h>
 #include "InputSensing.h"
-//#include <MiniDSP.h>
 
-extern Options & ampOptions;
+//extern Options & ampOptions;
 
-//template <> int IIR<int>::next(int u) { return _x += (_coeff * (u - _x)) / 100; };
-
-        bool SampleTrigger::next(int input) {
-            if (_state) {
-                if (input < _threshold) {
-                    _howLong++;
-                    if (_howLong >= _samplesLow) {
-                        _state = false;
-                        _howLong = 0;
-                    }
-                } else _howLong = 0; 
-            } else {
-                if (input > _threshold) {
-                    _howLong++;
-                    if (_howLong >= _samplesHigh) {
-                        _state = true;
-                        _howLong = 0;
-                    }
-                } else _howLong = 0;
+bool SampleTrigger::next(int input) {
+    if (_state) {
+        if (input < _threshold) {
+            _howLong++;
+            if (_howLong >= _samplesLow) {
+                _state = false;
+                _howLong = 0;
             }
-            return _state;
-        };
+        } else _howLong = 0; 
+    } else {
+        if (input > _threshold) {
+            _howLong++;
+            if (_howLong >= _samplesHigh) {
+                _state = true;
+                _howLong = 0;
+            }
+        } else _howLong = 0;
+    }
+    return _state;
+};
 
 void TriggerSensing::begin() {
-
     // Pins
     pinMode(ANALOG_TRIGGER_PIN, INPUT);
     pinMode(DIGITAL_TRIGGER_PIN, INPUT);
@@ -61,6 +57,7 @@ trigger_t TriggerSensing::task() {
 }
 
 bool InputMonitor::task(float leftLevel, float rightLevel) {
+    Options & ampOptions = Options::instance();
     if (_silentTime < oneMinute) return false; 
     uint32_t time = millis();
     bool ret = false;

@@ -7,9 +7,9 @@
 #include "Knob.h"
 #include <RotaryEncoder.h>
 #include "OptionsMenu.h"
-#include <Wire.h>       // For the I2C display. Also provides Serial.
-#include <SPI.h>        // This doesn't seem to matter, at least not for the Adafruit nrf52840
-#include <bluefruit.h>  // For OTA updates
+#include <Wire.h>           // For the I2C display. Also provides Serial.
+#include <SPI.h>            // This doesn't seem to matter, at least not for the Adafruit nrf52840
+#include <bluefruit.h>      // For OTA updates
 #include "Options.h"
 #include "Configuration.h"
 #include "logo.h"
@@ -33,16 +33,16 @@ Remote & ourRemote = Remote::instance();                      // singleton form
 Button goButton(ENCODER_BUTTON);                              // Encoder action button
 Knob knob(ENCODER_A, ENCODER_B);                              // Rotary encoder
 
-// Amp control: power relay and amp enables
+// Power relay and amp enables
 PowerControl powerControl;
 
 // Input and trigger monitoring
-InputMonitor inputMonitor(1);  // Arg is minutes. Will get set to the actual option value
+InputMonitor inputMonitor;
 TriggerSensing triggerMonitor;
-TimedTrigger<float> clipSensor(-defaultClippingHeadroom, clipIndicatorTime, LED_RED);
+TimedTrigger<float> clipSensor(-defaultClippingHeadroom, clipIndicatorTime, LED_RED);  // Headroom will get set per the stored options
 
-// Interval (ms) between queries to the dsp.
-// Limited mainly by the ~36 ms needed for refresh of the nrf52840 and generic OLED display.
+// Interval (ms) between queries to the dsp (requests() in the main loop)
+// Limited mainly by the ~36 ms needed for refresh of the OLED display.
 constexpr uint32_t INTERVAL = 50;   
 
 // Persistent state
@@ -243,12 +243,13 @@ void showLogo() {
 
 // The main state machine - uses a classic state pattern.
 // Each state has 
-//   a method invoked upon entry, 
-//   a poll method invoked each time around the loop,
-//   a request method invoked on each tick, and
-//   a callback for each possible event.
+//   entry(), invoked when switching to the state 
+//   poll(), invoked each time around the loop,
+//   request(), invoked on each 50 ms tick, and
+//   a callback for each possible event. 
 // Naming convention for callbacks is on<Source><Event>(...)
 
+// Virtual class for states
 class AmpState {
   public:
     virtual void onEntry(){}
@@ -278,6 +279,7 @@ class AmpState {
     virtual void onMenuExit(){}
 };
 
+// Transition to the identified state
 void transitionTo(AmpState * newState);
 
 #ifdef VBUS_DEBUG

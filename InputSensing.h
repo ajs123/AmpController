@@ -172,6 +172,7 @@ class InputMonitor {
 
     public:
         InputMonitor(uint32_t silentTime) : _silentTime{silentTime * oneMinute} {}
+        InputMonitor() : _silentTime{0} {}
 
         // @brief Reset the silence timer
         void resetTimer() { lastSound = millis(); }
@@ -184,6 +185,6 @@ class InputMonitor {
         bool task(float leftLevel, float rightLevel);
 
     private:
-        uint32_t _silentTime;
+        uint32_t _silentTime{0};
         uint32_t lastSound{0};
 };
