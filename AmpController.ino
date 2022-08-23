@@ -377,6 +377,7 @@ const uint32_t maxDSPStartupTime = 10000; // ms. Normal MiniDSP startup is about
 class AmpWaitDSPState : public AmpState {
   uint32_t entryTime {0};
   void onEntry() override {
+    showLogo();
     #ifdef VBUS_DEBUG
     showDebugData();
     #endif
