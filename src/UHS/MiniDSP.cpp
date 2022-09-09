@@ -27,6 +27,7 @@
 
 // So far, this parser handles responses to 
 //      the unary volume set (0x42), mute (0x17), and source (0x34) commmands
+//      the set config (0x25) command
 //      byte read (0x05) for certain known addresses
 //      floating point read (0x14) for certain known addresses
 //
@@ -46,17 +47,21 @@
 //              004C            - Level output 3
 //              004D            - Level output 4
 //
-// Byte read reports can be initiated in two ways that we know about:
+// Byte read reports originate in two ways that we know about:
 //      1. In response to a request, such as 0x05 0xFF 0xDA 0x02 - read 2 bytes starting at FF DA (volume and mute)
 //      2. Automatically, as an HID report, when changes are initiated with the remote, BUT only if the interface isn't busy with another request
 // The automatic reports look like responses to a byte read request, so the same code handles either case.
 //
 // As far as we know, float read reports are only in response to a specific request.
 //
-// For the unary set commands, the minidsp responds with
+// For the unary set commands for source, volume, and mute, the minidsp responds with
 // [0x01]       command response indicator
 // [opcode]     the original command
 // [data]       one data byte
+//
+// TO BE VERIFIED - For the set preset command, the minidsp responds with
+// [0x01]       VERIFY THIS
+// [0xAB]       config changed
 //
 // In response to the memory read commands and the equivalent HID reports, the minidsp provides
 //
@@ -65,13 +70,14 @@
 // [address_h]  see below
 // [address_l]  see below
 // [...]        data  ([length] - 4) bytes
-// [check_byte]
+//
+// All messages from the miniDSP end with a check byte
 //
 // NOTE: All messages or 64 bytes long, so the len argument to ParseHIDData will always be 64.
 
 void MiniDSP::parseDirectSetResponse(const uint8_t * buf) {
 
-        bool presetChanged = false;  // No longer needed
+        bool presetChanged = false;
         bool sourceChanged = false;
         bool volumeChanged = false;
         bool mutedChanged = false;
@@ -100,10 +106,15 @@ void MiniDSP::parseDirectSetResponse(const uint8_t * buf) {
                                 pFuncOnSourceChange(source);
                                 }
                         break;
+                case 0x25:      // Immediate response to set preset with reset = false
+                case 0xab:      // Delayed response to set preset with reset = true
+                        presetChanged = data != preset;
+                        preset = data;
+                        if ((callbackAlways || presetChanged) && (pFuncOnPresetChange != nullptr)) {
+                                pFuncOnPresetChange(preset);
+                                }
+                        break;
         }
-//        if (pFuncOnSourceChange != nullptr && sourceChanged) pFuncOnSourceChange(source);
-//        if (pFuncOnVolumeChange != nullptr && volumeChanged)  pFuncOnVolumeChange(volume);
-//        if (pFuncOnMutedChange != nullptr && mutedChanged) pFuncOnMutedChange(muted);
 }
 
 void MiniDSP::parseByteReadResponse(const uint8_t * buf) {
@@ -114,7 +125,6 @@ void MiniDSP::parseByteReadResponse(const uint8_t * buf) {
         bool mutedChanged = false;
 
         uint8_t dataLength = buf[0] - 4;
-        //uint8_t baseAddr = buf[3];
         uint16_t baseAddr = buf[2] << 8 | buf[3];
         for (uint8_t i = 0; i < dataLength; i++) // run through the address range
         {
@@ -125,8 +135,10 @@ void MiniDSP::parseByteReadResponse(const uint8_t * buf) {
                         case 0xFFD8:
                                 presetChanged = data != preset;
                                 preset = data;
+                                if ((callbackAlways || presetChanged) && (pFuncOnPresetChange != nullptr)) {
+                                        pFuncOnPresetChange(preset);
+                                }
                                 break;
-                                // if (pFuncOnPresetChange != nullptr && presetChanged) pFuncOnPresetChange(preset);
                         case 0xFFA9:
                         case 0xFFD9:
                                 sourceChanged = (source_t) data != source;
@@ -250,7 +262,10 @@ void MiniDSP::ParseHIDData(USBHID *hid __attribute__ ((unused)), bool is_rpt_id 
 
         // Check if this is a response to a direct set command
         // This is the only case in which buf[0] isn't the length of the whole message
-        if ((buf[0] == 0x01) && (buf[1] != dspWriteCommand)) parseDirectSetResponse(buf);
+        if (
+                ((buf[0] == 0x01) || (buf[0] == 0x02)) 
+                && (buf[1] != dspWriteCommand)
+           ) parseDirectSetResponse(buf);
         
         // ... or a byte read.
         else if ((buf[1] == readByteCommand) /*&& (buf[2] == readByteHighAddr)*/) parseByteReadResponse(buf);
@@ -353,6 +368,11 @@ void MiniDSP::requestMute() const {
         SendCommand(requestMuteOutputCommand, sizeof(requestMuteOutputCommand));
 }
 
+void MiniDSP::requestPreset() const {
+        constexpr uint8_t requestPresetCommand[] = {0x05, 0xFF, 0xD8, 0x01};
+        SendCommand(requestPresetCommand, sizeof(requestPresetCommand));
+}
+
 void MiniDSP::requestInputGains() const {
         //Sent: [13, 80, 00, 1b, 00, 00, f0, c1] - set ch1 gain to -30
         constexpr uint8_t requestInputGainsCommand[] = {0x02, 0x80, 0x00, 0x1A, 0x04};     // 3-byte address 80 00 1A
@@ -404,6 +424,16 @@ void MiniDSP::setMute(bool muteOn)
         buf[1] = muteOn ? 0x01 : 0x00;
         SendCommand(buf, 2);
 }
+
+void MiniDSP::setPreset(uint8_t preset, bool reset) 
+{
+        uint8_t buf[3];
+        buf[0] = 0x25;
+        buf[1] = preset % 4;
+        buf[2] = reset ? 1 : 0;
+        SendCommand(buf, 3);
+}
+
 
 void MiniDSP::setSource(source_t source)
 {

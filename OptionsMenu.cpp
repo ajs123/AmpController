@@ -91,6 +91,7 @@ namespace OptionsMenu {
     result muteOp(eventMask event, prompt &item) {remoteLearn(REMOTE_MUTE); return proceed;}
     result inputOp(eventMask event, prompt &item) {remoteLearn(REMOTE_INPUT); return proceed;}
     result powerOp(eventMask event, prompt &item) {remoteLearn(REMOTE_POWER); return proceed;}
+    result presetOp(eventMask event, prompt &item) {remoteLearn(REMOTE_PRESET); return proceed;}
 
     char analogBuf[MAX_LABEL_LENGTH + 1];
     char digitalBuf[MAX_LABEL_LENGTH + 1];
@@ -256,6 +257,7 @@ namespace OptionsMenu {
         OP("Vol -", volMinusOp, enterEvent),
         OP("Mute", muteOp, enterEvent),
         OP("Input", inputOp, enterEvent),
+        OP("Preset", presetOp, enterEvent),
         OP("Power", powerOp, enterEvent),
         OP("<< KEEP", saveRemoteCodesOp, enterEvent),
         OP("<< CANCEL", quitRemoteOp, enterEvent)

@@ -97,6 +97,9 @@ public:
     void volumeMode(bool dB);
     void volumeMode(); // toggles dB/% mode
 
+    // @brief Show the preset (uses the volume area)
+    void preset(uint8_t preset);
+
     // @brief Display mute
     // This sets the mute state and as needed updates and wakes the display
     void mute(bool isMuted);

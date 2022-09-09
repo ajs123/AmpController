@@ -22,6 +22,9 @@ const int8_t MINBARLEVEL = -60;
 // Setup menu timeout (sec)
 const uint16_t MENU_TIMEOUT = 120;
 
+// Choose preset timeout (ms) - clicks of the remote preset button no more than this far apart count as preset selection
+const uint32_t CHOOSE_PRESET_TIMEOUT = 1200;
+
 // Clipping detector threshold and persistence
 const float defaultClippingHeadroom = 6.0;
 const uint32_t clipIndicatorTime = 500;
@@ -31,8 +34,9 @@ const uint32_t clipIndicatorTime = 500;
 #define DEFAULT_VOLPLUS_CMD     0x77E1507C // Apple remote UP
 #define DEFAULT_VOLMINUS_CMD    0x77E1307C //              DOWN
 #define DEFAULT_MUTE_CMD        0x77E1A07C //              PLAY/PAUSE
-#define DEFAULT_INPUT_CMD       0x77E1C07C //              INPUT
-#define DEFAULT_POWER_CMD       0x00
+#define DEFAULT_INPUT_CMD       0x77E1607C //              RIGHT
+#define DEFAULT_POWER_CMD       0x77E1C07C //              MENU
+#define DEFAULT_PRESET_CMD      0x77E1907C //              LEFT
 
 // Remote commands and their names
 // Tables in this file, and in the remote handler, are indexed by this enum.
@@ -43,6 +47,7 @@ enum remoteCommands {
     REMOTE_MUTE,
     REMOTE_INPUT,
     REMOTE_POWER,
+    REMOTE_PRESET,
     REMOTE_COMMAND_COUNT
 };
 

@@ -42,7 +42,7 @@ typedef void cmdHandler_t();    // Command handlers take nothing and return noth
 // Command handlers are externals. They can also be called from other classes, such as the
 // one that handles the control knob.
 //extern cmdHandler_t volPlus, volMinus, mute, input, power;
-extern cmdHandler_t onRemoteVolMinus, onRemoteVolPlus, onRemoteMute, onRemoteSource, onRemotePower;
+extern cmdHandler_t onRemoteVolMinus, onRemoteVolPlus, onRemoteMute, onRemoteSource, onRemotePower, onRemotePreset;
 
 class Remote : public IRrecvPCI, IRdecode {
 
@@ -98,7 +98,8 @@ private:
         {DEFAULT_VOLMINUS_CMD, true, remoteCommandNames[REMOTE_VOLMINUS], onRemoteVolMinus},
         {DEFAULT_MUTE_CMD, false, remoteCommandNames[REMOTE_MUTE], onRemoteMute},
         {DEFAULT_INPUT_CMD, false, remoteCommandNames[REMOTE_INPUT], onRemoteSource},
-        {DEFAULT_POWER_CMD, false, remoteCommandNames[REMOTE_POWER], onRemotePower}  
+        {DEFAULT_POWER_CMD, false, remoteCommandNames[REMOTE_POWER], onRemotePower},
+        {DEFAULT_PRESET_CMD, false, remoteCommandNames[REMOTE_PRESET], onRemotePreset}  
         };
 
     uint32_t receivedTime;

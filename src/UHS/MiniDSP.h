@@ -104,6 +104,15 @@ public:
         }
 
         /**
+         * Used to call your own function when receiving the preset.
+         * The preset will be passed as an unsinged 8-bit integer 0..3
+         * @param funcOnPresetChange Function to call
+         */
+        void attachOnPresetChange(void (*funcOnPresetChange)(uint8_t)) {
+                pFuncOnPresetChange = funcOnPresetChange;
+        }
+
+        /**
          * @brief For debug - used to call your own function when parsing a new message.
          * 
          */
@@ -229,6 +238,13 @@ public:
         void setSource(source_t source);
 
         /**
+         * @brief Set the Preset 
+         * @param preset Preset number 0..3
+         * @param reset  Uncertain usage; defaults to true which appears to be necessary to change presets
+         */
+        void setPreset(uint8_t preset, bool reset = true);
+
+        /**
          * @brief Set the input gains
          * @param gains 
          */
@@ -271,6 +287,11 @@ public:
          * @brief Request the current input from the MiniDSP
          */
         void requestSource() const;
+
+        /**
+         * @brief Request the current preset from the MiniDSP
+         */
+        void requestPreset() const;
 
         /**
          * @brief Request current input gains
@@ -392,6 +413,9 @@ private:
 
         // Pointer to function called when muted status changes.
         void (*pFuncOnMutedChange)(bool) = nullptr;
+
+        // Pointer to function called when the preset changes.
+        void (*pFuncOnPresetChange)(uint8_t) = nullptr;
 
         // Pointer to function called when a new message is parsed.
         void (*pFuncOnParse)(uint8_t *) = nullptr;

@@ -106,6 +106,15 @@
         wakeup();
     }
 
+    void AmpDisplay::preset(uint8_t preset)
+    {
+        char buf[9];
+        eraseArea(volLabArea);
+        snprintf(buf, 9, "Preset %1d", preset);
+        displayText(buf, MUTE_FONT, wholeVolumeArea, true);
+        displayUpdate();
+    }
+
 
     // @brief Displays a message in the message area.
     // Does not wake up the display from a dimmed state

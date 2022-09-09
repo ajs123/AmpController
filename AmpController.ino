@@ -229,6 +229,13 @@ void setInputGain(source_t source) {
   lastTime = millis();
 }
 
+// Show the preset, using the volume area
+void showPreset(const uint8_t preset) {
+  ampDisp.preset(preset + 1);
+  ampDisp.refresh();
+  ampDisp.undim();
+}
+
 void optionsSetup() {
   ampOptions.begin();
   ampOptions.load();
@@ -260,6 +267,7 @@ class AmpState {
     virtual void onDSPVolume(uint8_t volume){}
     virtual void onDSPMute(bool mute){}
     virtual void onDSPSource(source_t source){}
+    virtual void onDSPPreset(uint8_t preset){}
     virtual void onDSPInputLevels(float * levels){}
     virtual void onDSPInputGains(float * gains) {}
     virtual void onButtonShortPress(){}
@@ -272,6 +280,7 @@ class AmpState {
     virtual void onRemoteMute(){}
     virtual void onRemoteSource(){}
     virtual void onRemotePower(){}
+    virtual void onRemotePreset(){}
     virtual void onKnobTurned(int8_t change){}
     virtual void onTriggerRise(trigger_t source){}
     virtual void onTriggerFall(trigger_t source){}
@@ -599,6 +608,7 @@ class AmpOnState : public AmpState {
     ampWaitSourceState.setDesiredSource(flipSource());
     toSource();
   }
+  void onRemotePreset() override;                           // --> Choose preset - See transition table
   void onRemotePower() override;                            // --> Off - See transition table
 
   void onKnobTurned(int8_t change) override { volChange(change); }
@@ -648,6 +658,91 @@ class AmpOnState : public AmpState {
 
 } ampOnState;
 
+// Set preset state - set the new preset
+const uint32_t SET_PRESET_TIMEOUT {4000};   // ms. Normal response is about 2 seconds
+class AmpSetPreState : public AmpState {
+
+  private:
+    uint8_t newPreset {4};
+    uint32_t setTime {0};
+
+  public:
+    void setDesiredPreset(uint8_t preset) {
+      newPreset = preset % 4;
+    }
+
+  private:
+    void toOn();
+    void onEntry() override {
+      setTime = millis();
+      if (newPreset > 3) toOn();
+      else ourMiniDSP.setPreset(newPreset, true);
+    }
+
+    void polls() override {
+      thisUSB.Task();
+      if ((millis() - setTime) > SET_PRESET_TIMEOUT) {
+        setTime = millis();
+        ourMiniDSP.setPreset(newPreset, true);
+      }
+    }
+
+    void onDSPPreset(uint8_t preset) override;      // --> ampOnState - see transition table
+
+} ampSetPreState;
+
+// Choose preset state - display the current preset and increment with each remote press. 
+class AmpChoosePreState : public AmpState {
+
+  uint8_t currentPreset {4};  // Presets are 0..3
+  uint8_t newPreset {4};
+  uint32_t lastTime {0};
+
+  void onEntry() override {
+    Serial.println("Entered ChoosePreState.");
+    lastTime = millis();
+    currentPreset = 4;     
+    ampDisp.displayMessage("", messageArea); // No VU display 
+    ampDisp.refresh();
+  }
+
+  void toSetPreset();
+  void toOn();
+  void polls() override {
+    thisUSB.Task();
+    ourRemote.Task();
+    if ((millis() - lastTime) > CHOOSE_PRESET_TIMEOUT) {
+      if (newPreset != currentPreset) {
+        ampSetPreState.setDesiredPreset(newPreset);
+        toSetPreset();
+      }
+      else {
+        toOn();
+      }
+    }
+  }
+
+  void requests() override {
+    if (currentPreset > 3) ourMiniDSP.requestPreset();
+  }
+
+  void onDSPPreset(uint8_t preset) {
+    currentPreset = preset;
+    newPreset = preset;
+    showPreset(preset);
+  }
+
+  void onRemotePreset() {
+    if (newPreset > 3) return;      // Not until we've gotten the preset from the MiniDSP
+    newPreset = (newPreset + 1) % 4;
+    showPreset(newPreset);
+    lastTime = millis();
+  }
+
+} ampChoosePreState;
+
+
+
 // State transitions
 void AmpOffState::        onRemotePower()           { transitionTo(&ampWaitDSPState); }
 void AmpOffState::        onButtonShortPress()      { transitionTo(&ampWaitDSPState); }
@@ -665,6 +760,11 @@ void AmpOnState::         onRemotePower()           { transitionTo(&ampOffState)
 void AmpOnState::         onButtonFullHold()        { transitionTo(&ampOffState); }
 void AmpOnState::         toOff()                   { transitionTo(&ampOffState); }         // silence without trigger, or trigger loss when the other is low
 void AmpOnState::         toSource()                { transitionTo(&ampWaitSourceState); }  // trigger loss when the other is high
+void AmpOnState::         onRemotePreset()          { transitionTo(&ampChoosePreState); }
+void AmpChoosePreState::  toSetPreset()             { transitionTo(&ampSetPreState); }      // timeout when a new preset has been chosen
+void AmpChoosePreState::  toOn()                    { transitionTo(&ampOnState); }          // timeout if the preset hasn't been changed
+void AmpSetPreState::     onDSPPreset(uint8_t)      { transitionTo(&ampOnState); }
+void AmpSetPreState::     toOn()                    { transitionTo(&ampOnState); }          // on entry without setting intended preset
 
 // The state pattern context
 
@@ -676,6 +776,7 @@ void onDSPConnected() { ampState->onDSPConnected(); }
 void onDSPVolume(uint8_t volume) { ampState->onDSPVolume(volume); }
 void onDSPMute(bool mute) { ampState->onDSPMute(mute); }
 void onDSPSource(source_t source) { ampState->onDSPSource(source); }
+void onDSPPreset(uint8_t preset) { ampState->onDSPPreset(preset); }
 void onDSPInputLevels(float * levels) { ampState->onDSPInputLevels(levels); }
 void onDSPInputGains(float * gains) { ampState->onDSPInputGains(gains); }
 void onButtonShortPress() { ampState->onButtonShortPress(); }
@@ -688,6 +789,7 @@ void onRemoteVolMinus(){ ampState->onRemoteVolMinus(); }
 void onRemoteMute() { ampState->onRemoteMute(); }
 void onRemoteSource() { ampState->onRemoteSource(); }
 void onRemotePower() { ampState->onRemotePower(); }
+void onRemotePreset() { ampState->onRemotePreset(); }
 void onTriggerRise(trigger_t source) { ampState->onTriggerRise(source); }
 void onTriggerFall(trigger_t source) { ampState->onTriggerFall(source); }
 void onSilence() { ampState->onSilence(); }
@@ -726,6 +828,7 @@ void setup() {
   ourMiniDSP.attachOnInit(&onDSPConnected);
   ourMiniDSP.attachOnVolumeChange(&onDSPVolume);
   ourMiniDSP.attachOnMutedChange(&onDSPMute);
+  ourMiniDSP.attachOnPresetChange(&onDSPPreset);
   ourMiniDSP.attachOnSourceChange(&onDSPSource);
   //ourMiniDSP.attachOnParse(&OnParse);         // Only for debugging
   ourMiniDSP.attachOnNewInputLevels(&onDSPInputLevels);
@@ -742,11 +845,9 @@ void setup() {
 void loop() {
   polls();
 
-  //if (INTERVAL /* && ourMiniDSP.connected() */) {
-    uint32_t currentTime = millis();
-    if ((currentTime - lastTime) >= INTERVAL) {
-      requests();
-      lastTime = currentTime;
-    }
-  //}
+  uint32_t currentTime = millis();
+  if ((currentTime - lastTime) >= INTERVAL) {
+    requests();
+    lastTime = currentTime;
+  }
 }
