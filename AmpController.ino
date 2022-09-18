@@ -60,6 +60,7 @@ void BLESetup() {
 
   bledis.setManufacturer("Fushing");  // Not sure that we need dis if using only dfu
   bledis.setModel("LXMini Amp");
+  bledis.setFirmwareRev(VERSION);
   bledis.begin();
 
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
@@ -242,9 +243,10 @@ void optionsSetup() {
   ourRemote.loadFromOptions();
 }
 
-void showLogo() {
+void showLogo(bool version = false) {
   display.clear();
   display.drawXBMP(0, (64 - logo_height) / 2, logo_width, logo_height, logo_bits);
+  if (version) ampDisp.displayMessage(VERSION);
   display.updateDisplay();
 }
 
@@ -351,7 +353,7 @@ class AmpOffState : public AmpState {
 
   void onTriggerRise(trigger_t sources) override;   // --> Start seq - See transition table
 
-  void onRemotePower() override;                    // -- Start seq - See transition table below
+  void onRemotePower() override;                    // --> Start seq - See transition table below
 } ampOffState;
 
 // Menu state
@@ -637,7 +639,7 @@ class AmpOnState : public AmpState {
   void onSilence() override {
     if (ourMiniDSP.getSource() == source_t::Analog) {
       if (triggerMonitor.getTriggers().analog) return;  // Ignore silence when trigger present
-      if (triggerMonitor.getTriggers().digital) {
+      if (silenceSourceChange && triggerMonitor.getTriggers().digital) {
         toSource();                                     // Silence with other trigger present
         return;
       }
@@ -646,7 +648,7 @@ class AmpOnState : public AmpState {
       return;
     } else{
       if (triggerMonitor.getTriggers().digital) return;
-      if (triggerMonitor.getTriggers().analog) {
+      if (silenceSourceChange && triggerMonitor.getTriggers().analog) {
         toSource();
         return;
       }
@@ -813,7 +815,7 @@ void setup() {
   triggerMonitor.begin();
 
   //animateLogo();
-  showLogo();
+  showLogo(true);
   delay(2000);
 
   // Init is called with each entry to WaitDSP, so it's possibly not needed here.

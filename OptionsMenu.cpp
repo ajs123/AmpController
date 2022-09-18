@@ -232,7 +232,7 @@ namespace OptionsMenu {
         );
 
     altMENU(altTitle, autoOffMenu, "Auto off", setAutoOffVals, /*setupEntry, exitEvent*/ (eventMask)(enterEvent | exitEvent), noStyle, (Menu::_menuData|Menu::_canNav),
-        altFIELD(offField, ampOptions.autoOffTime, "Auto off", " min", 0, 60, 1, 0, doNothing, noEvent, noStyle),
+        altFIELD(offField, ampOptions.autoOffTime, "Auto off", " min", 0, 60, 5, 0, doNothing, noEvent, noStyle),
         altFIELD(decPlaces<1>::menuField, f_silence, "Level", " dB", -80, -30, 5, 0, doNothing, noEvent, noStyle),
         EXIT("<< BACK")
         );

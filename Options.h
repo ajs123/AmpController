@@ -29,6 +29,10 @@ const uint32_t CHOOSE_PRESET_TIMEOUT = 1200;
 const float defaultClippingHeadroom = 6.0;
 const uint32_t clipIndicatorTime = 500;
 
+// Silence detection behavior
+// If the trigger for the non-selected source is present, will silence on the selected source cause a source change?
+const bool silenceSourceChange = false;
+
 // Default remote codes
 // These are for a particular Apple remote. The last two hex digits are the individual remote ID.
 #define DEFAULT_VOLPLUS_CMD     0x77E1507C // Apple remote UP

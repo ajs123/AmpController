@@ -1,4 +1,8 @@
 // Hardware-dependent and other configuration parameters to change only with forethought
+#pragma once
+
+// SW version
+const char VERSION[] {"1.0.0"};
 
 // Pin assignments
 // IR receiver
