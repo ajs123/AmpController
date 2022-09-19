@@ -4,6 +4,11 @@
 // SW version
 const char VERSION[] {"1.0.0"};
 
+// BLE identification
+#define BLE_NAME "LXMini"
+#define BLE_MANUF "Fushing"
+#define BLE_MODEL "LXMiniAmp"
+
 // Pin assignments
 // IR receiver
 #define IR_PIN          2   // Requires having run code to enable GPIO on D2

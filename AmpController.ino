@@ -54,13 +54,13 @@ BLEDis bledis;      // Device information service
 
 void BLESetup() {
   Bluefruit.begin();
-  Bluefruit.setName("LXMini");
+  Bluefruit.setName(BLE_NAME);
 
   bledfu.begin();
 
-  bledis.setManufacturer("Fushing");  // Not sure that we need dis if using only dfu
-  bledis.setModel("LXMini Amp");
-  bledis.setFirmwareRev(VERSION);
+  bledis.setManufacturer(BLE_MANUF);
+  bledis.setModel(BLE_MODEL);
+  if (setFirmwareString) bledis.setFirmwareRev(VERSION);
   bledis.begin();
 
   Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);

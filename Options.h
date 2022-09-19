@@ -33,8 +33,15 @@ const uint32_t clipIndicatorTime = 500;
 // If the trigger for the non-selected source is present, will silence on the selected source cause a source change?
 const bool silenceSourceChange = false;
 
+// Include our version as the BLE DIS firmware string
+const bool setFirmwareString = false;   // The default bootloader version may be more helpful
+
 // Default remote codes
-// These are for a particular Apple remote. The last two hex digits are the individual remote ID.
+// These are for a particular Apple remote. 
+// Hex codes are MMMMCCRR
+//      MMMM - Remote model
+//      CC   - Command code
+//      RR   - Individual remote (allows two remotes of the same model to work separately)
 #define DEFAULT_VOLPLUS_CMD     0x77E1507C // Apple remote UP
 #define DEFAULT_VOLMINUS_CMD    0x77E1307C //              DOWN
 #define DEFAULT_MUTE_CMD        0x77E1A07C //              PLAY/PAUSE
